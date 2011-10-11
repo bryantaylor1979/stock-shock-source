@@ -1,0 +1,12 @@
+classdef StructureManagement < handle
+    properties
+    end
+    methods
+        function [Dat] = GetField(obj,struct,field)
+            %%
+            field = 'Duration'
+            Dat = squeeze(struct2cell(struct)
+            
+        end
+    end
+end

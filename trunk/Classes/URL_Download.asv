@@ -1,0 +1,72 @@
+classdef URL_Download < handle
+    properties
+        sURL
+        eURL
+        timeout = 200;
+        t1 = 5000;  
+    end
+    methods
+        function SaveALLURL(obj,Symbols,ResultName)
+            %
+            disp(['Executed: ',datestr(now)])
+
+            %% Load Objects
+            %Verfied - The symbols 
+            [x] = size(Symbols,1)
+            tic
+            for j = 1:x
+                  waitbar(j/x,obj.handles.figure,['Processing... ',num2str(j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)'])
+                  drawnow;
+
+                  Symbol = strrep(Symbols{j},'.L','');
+
+                  obj.SaveURL(Symbol,ResultName);
+            end
+            waitbar(i/x,    obj.handles.figure, obj.CalculateTime(toc));
+        end
+    end
+        function [s,Error] = SaveURL(obj,Symbol,ResultName)
+            %%
+            %Error codes:
+            %   0 : Successfull.
+            %  -1 : No Data On web page.
+            Error = 0;
+            time = 1;
+            while time < obj.timeout
+                try
+                    s = urlread2([obj.sURL,Symbol,obj.eURL],[],[],obj.t1);
+                    break
+                catch
+                    disp(['Connection problems, Wait: ',num2str(time)])
+                    pause(time);
+                    time = time*2;
+                end
+            end
+            if obj.timeout < time
+               return 
+               s = [];
+               Error = -2;
+            end
+            %%
+            PWD = pwd;
+            Path = [obj.InstallDir,'Results\',ResultName,'\URL\',strrep(datestr(today),'-','_'),'\'];
+            try
+                cd(Path);
+            catch
+                mkdir(Path);
+                cd(Path);
+            end
+            Filename = [Path,Symbol,'.mat'];
+            save(Filename,'s');
+            cd(PWD);
+        end
+        function TimeStr = CalculateTime(obj,Seconds)
+            secs = round(Seconds);
+            minutes = floor(secs/60);
+            hours = floor(minutes/60);
+            min = minutes - hours*60;
+            secs = secs - minutes*60;
+            TimeStr = [num2str(hours),'h ',num2str(min),'m ',num2str(secs),'s'];
+        end  
+    end
+end
