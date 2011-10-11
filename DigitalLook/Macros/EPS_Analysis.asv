@@ -1,0 +1,20 @@
+%% RENE
+Date = today;
+Symbols = obj.GetSymbols;
+
+%%
+obj.DownloadAllEPS(Symbols);
+
+%%
+DataSet = obj.EPS_All(Symbols,today-7);
+
+%%
+[obj.InstallDir,'DataSet\']
+
+%%
+[DATASET] = obj.SuccessRate;
+
+%%
+DataSet_5Star = obj.NumRange(DataSet,'PE_Star',[4,6])
+DataSet_5Star_Sorted = sortrows(DataSet_5Star,8,'descend')
+DataSet_5Star_Sorted(1:10,:)

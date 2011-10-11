@@ -1,0 +1,13 @@
+classdef Symbol2Num <   handle & ...
+                        URL_Download
+    methods
+        function Main
+            %%
+            Symbol = 'HAWK';
+            ProgramName = 'DigitalLook';
+            ResultName = 'Symbol2Num';
+            Date = today;
+            s = obj.Load(Symbol,ProgramName,ResultName,Type,Date)
+        end
+    end
+end
