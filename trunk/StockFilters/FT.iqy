@@ -1,0 +1,11 @@
+WEB
+1
+http://www.iii.co.uk/markets/index.epl?type=stockfilter&peratiomin=10&buys_1min=1&
+
+Selection=EntirePage
+Formatting=None
+PreFormattedTextToColumns=True
+ConsecutiveDelimitersAsOne=True
+SingleBlockTextImport=False
+DisableDateRecognition=False
+DisableRedirections=False

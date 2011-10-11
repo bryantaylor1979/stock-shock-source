@@ -1,0 +1,11 @@
+WEB
+1
+http://www.shareprice.co.uk/PCF
+
+Selection=EntirePage
+Formatting=None
+PreFormattedTextToColumns=True
+ConsecutiveDelimitersAsOne=True
+SingleBlockTextImport=False
+DisableDateRecognition=False
+DisableRedirections=False

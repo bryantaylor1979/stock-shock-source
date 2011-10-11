@@ -1,0 +1,1 @@
+InvestedSymbolList = {'WKP.L';'PXS.L';'YELL.L;'SXX.L';'BARC.L';'RBS.L';'BLNX.L';'LLOY.L';'PCI.L','EPO.L'};

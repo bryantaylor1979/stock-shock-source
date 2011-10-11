@@ -1,0 +1,136 @@
+%% Key Figures
+% Open
+count = 1;
+struct(count).Name = 'Open';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '426.00';
+struct(count).VCT_31_May_2011.ExpectedValue = '1,484';
+
+% Av Volume Str
+count = count + 1;
+struct(count).Name = 'AvVolumeStr';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = '6.06k';
+struct(count).VCT_31_May_2011.ExpectedValue = '102.95k';
+
+% Day Low 
+count = count + 1;
+struct(count).Name = 'DayLow';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '0.00';
+struct(count).VCT_31_May_2011.ExpectedValue = '1,484';
+
+% DayHigh
+count = count + 1;
+struct(count).Name = 'DayHigh';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '0.00';
+struct(count).VCT_31_May_2011.ExpectedValue = '1,517';
+
+% OfficialClose
+count = count + 1;
+struct(count).Name = 'OfficialClose';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '0.00';
+struct(count).VCT_31_May_2011.ExpectedValue = '1,503';
+
+% EPS
+count = count + 1;
+struct(count).Name = 'EPS';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '6.39';
+struct(count).VCT_31_May_2011.ExpectedValue = '79.75';
+
+% DivYield
+count = count + 1;
+struct(count).Name = 'DivYield';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '3.05';
+struct(count).VCT_31_May_2011.ExpectedValue = '1.68';
+
+% DivPS
+count = count + 1;
+struct(count).Name = 'DivPS';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = '13.00<span class="currencyCode">GBX';	
+struct(count).VCT_31_May_2011.ExpectedValue = '25.00<span class="currencyCode">GBX'; %25.00GBX
+
+% DivExDate
+count = count + 1;
+struct(count).Name = 'DivExDate';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = 'Jan 26 2011';
+struct(count).VCT_31_May_2011.ExpectedValue = 'Feb 09 2011';
+
+% PreviousClose
+count = count + 1;
+struct(count).Name = 'PreviousClose';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '426.00';
+struct(count).VCT_31_May_2011.ExpectedValue = '1,484';
+
+% SharesOutstanding
+count = count + 1;
+struct(count).Name = 'SharesOutstanding';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = '10.24m';
+struct(count).VCT_31_May_2011.ExpectedValue = '83.76m';
+
+% DivPayDate
+count = count + 1;
+struct(count).Name = 'DivPayDate';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = 'Mar 04 2011';
+struct(count).VCT_31_May_2011.ExpectedValue = 'Feb 25 2011';
+
+% NextDivExDate
+count = count + 1;
+struct(count).Name = 'NextDivExDate';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = 'Sep 14 2011';
+struct(count).VCT_31_May_2011.ExpectedValue = 'Jun 08 2011';
+
+% NextDivPayDate
+count = count + 1;
+struct(count).Name = 'NextDivPayDate';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = 'Oct 21 2011';
+struct(count).VCT_31_May_2011.ExpectedValue = 'Jul 05 2011';
+
+% MarketCap
+count = count + 1;
+struct(count).Name = 'MarketCap';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = '43.62m<span class="currencyCode">GBP'; 
+struct(count).VCT_31_May_2011.ExpectedValue = '1.24bn<span class="currencyCode">GBP';
+
+% PE
+count = count + 1;
+struct(count).Name = 'PE';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).TET_31_May_2011.ExpectedValue = '66.71';
+struct(count).VCT_31_May_2011.ExpectedValue = '18.62';
+
+% FreeFloat
+count = count + 1;
+struct(count).Name = 'FreeFloat';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).TET_31_May_2011.ExpectedValue = '3.65m';
+struct(count).VCT_31_May_2011.ExpectedValue = '78.28m';

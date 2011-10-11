@@ -1,0 +1,230 @@
+%% Key Figures
+% Target Six Months
+count = 1;
+struct(count).Name = 'TargetsSixMonths';
+struct(count).NoOfIndices = 2;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '448.85';
+struct(count).CHG_14_June_2011.ExpectedValue = '975.81';
+struct(count).ZYT_14_June_2011.ExpectedValue = '289.08';
+struct(count).ZOX_14_June_2011.ExpectedValue = '75.74';
+
+% Target One Year
+count = count + 1;
+struct(count).Name = 'TargetOneYear';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '501.19';
+struct(count).CHG_14_June_2011.ExpectedValue = '1123.06';
+struct(count).ZYT_14_June_2011.ExpectedValue = '337.65';
+struct(count).ZOX_14_June_2011.ExpectedValue = '88.47';
+
+% Resistance One
+count = count + 1;
+struct(count).Name = 'ResistanceOne';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '384.29';
+struct(count).CHG_14_June_2011.ExpectedValue = '835.45';
+struct(count).ZYT_14_June_2011.ExpectedValue = '247.50';
+struct(count).ZOX_14_June_2011.ExpectedValue = '64.85';
+
+% Resistance Two
+count = count + 1;
+struct(count).Name = 'ResistanceTwo';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '429.10';
+struct(count).CHG_14_June_2011.ExpectedValue = '961.52';
+struct(count).ZYT_14_June_2011.ExpectedValue = '289.08';
+struct(count).ZOX_14_June_2011.ExpectedValue = '75.74';
+
+% Support One
+count = count + 1;
+struct(count).Name = 'SupporteOne';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '311.80';
+struct(count).CHG_14_June_2011.ExpectedValue = '631.50';
+struct(count).ZYT_14_June_2011.ExpectedValue = '216.91';
+struct(count).ZOX_14_June_2011.ExpectedValue = '54.11';
+
+% Support Two
+count = count + 1;
+struct(count).Name = 'SupportTwo';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '259.42';
+struct(count).CHG_14_June_2011.ExpectedValue = '525.41';
+struct(count).ZYT_14_June_2011.ExpectedValue = '198.00';
+struct(count).ZOX_14_June_2011.ExpectedValue = '47.47';
+
+% Pivot Point
+count = count + 1;
+struct(count).Name = 'PivotPoint';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '323.86';
+struct(count).CHG_14_June_2011.ExpectedValue = '660.74';
+struct(count).ZYT_14_June_2011.ExpectedValue = '233.30';
+struct(count).ZOX_14_June_2011.ExpectedValue = '59.98';
+
+% MA(5)
+count = count + 1;
+struct(count).Name = 'MA_5';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '316.04';
+struct(count).CHG_14_June_2011.ExpectedValue = '657.30';
+struct(count).ZYT_14_June_2011.ExpectedValue = '241.70';
+struct(count).ZOX_14_June_2011.ExpectedValue = '63.61';
+
+% MA(20)
+count = count + 1;
+struct(count).Name = 'MA_20';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '327.01';
+struct(count).CHG_14_June_2011.ExpectedValue = '660.33';
+struct(count).ZYT_14_June_2011.ExpectedValue = '229.51';
+struct(count).ZOX_14_June_2011.ExpectedValue = '59.38';
+
+% MA(100)
+count = count + 1;
+struct(count).Name = 'MA_100';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '331.76';
+struct(count).CHG_14_June_2011.ExpectedValue = '8486.38';
+struct(count).ZYT_14_June_2011.ExpectedValue = '222.50';
+struct(count).ZOX_14_June_2011.ExpectedValue = '54.78';
+
+% MA(250)
+count = count + 1;
+struct(count).Name = 'MA_250';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '331.64';
+struct(count).CHG_14_June_2011.ExpectedValue = '12239.89';
+struct(count).ZYT_14_June_2011.ExpectedValue = '196.28';
+struct(count).ZOX_14_June_2011.ExpectedValue = '46.31';
+
+% Stochastic Oscillator K
+count = count + 1;
+struct(count).Name = ' StochasticOscillatorK';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '8.23';
+struct(count).CHG_14_June_2011.ExpectedValue = '31.84';
+struct(count).ZYT_14_June_2011.ExpectedValue = '100.00';
+struct(count).ZOX_14_June_2011.ExpectedValue = '88.19';
+
+% Stochastic Oscillator D
+count = count + 1;
+struct(count).Name = ' StochasticOscillatorD';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '5.42';
+struct(count).CHG_14_June_2011.ExpectedValue = '25.72';
+struct(count).ZYT_14_June_2011.ExpectedValue = '99.07';
+struct(count).ZOX_14_June_2011.ExpectedValue = '85.64';
+
+% RSI
+count = count + 1;
+struct(count).Name = ' RSI_14';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '32.60';
+struct(count).CHG_14_June_2011.ExpectedValue = '17.01';
+struct(count).ZYT_14_June_2011.ExpectedValue = '68.17';
+struct(count).ZOX_14_June_2011.ExpectedValue = '71.80';
+
+% 52 Week High
+count = count + 1;
+struct(count).Name = ' High_52Week';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '429.10';
+struct(count).CHG_14_June_2011.ExpectedValue = '18200.00';
+struct(count).ZYT_14_June_2011.ExpectedValue = '247.50';
+struct(count).ZOX_14_June_2011.ExpectedValue = '64.85';
+
+% 52 Week Low
+count = count + 1;
+struct(count).Name = ' Low_52Week';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '288.10';
+struct(count).CHG_14_June_2011.ExpectedValue = '631.50';
+struct(count).ZYT_14_June_2011.ExpectedValue = '148.00';
+struct(count).ZOX_14_June_2011.ExpectedValue = '31.00';
+
+% 52 Week Change
+count = count + 1;
+struct(count).Name = ' Change_52Week';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '-3.3';
+struct(count).CHG_14_June_2011.ExpectedValue = '-96.1';
+struct(count).ZYT_14_June_2011.ExpectedValue = '41.4';
+struct(count).ZOX_14_June_2011.ExpectedValue = '56.1';
+
+% Average Volume(K) - 3 Month
+count = count + 1;
+struct(count).Name = ' AverageVolumeK_3Months';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '8647';
+struct(count).CHG_14_June_2011.ExpectedValue = '503';
+struct(count).ZYT_14_June_2011.ExpectedValue = '110';
+struct(count).ZOX_14_June_2011.ExpectedValue = '168';
+
+% Average Volume(K) - 10 Days
+count = count + 1;
+struct(count).Name = ' AverageVolumeK_10Days';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '7257.279785';
+struct(count).CHG_14_June_2011.ExpectedValue = '427.889984';
+struct(count).ZYT_14_June_2011.ExpectedValue = '135.610001';
+struct(count).ZOX_14_June_2011.ExpectedValue = '240.779999';
+
+% Time
+count = count + 1;
+struct(count).Name = 'Time';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).BA_14_June_2011.ExpectedValue = '2011-06-14 12:14:48 PM';
+struct(count).CHG_14_June_2011.ExpectedValue = '2011-06-14 12:15:04 PM';
+struct(count).ZYT_14_June_2011.ExpectedValue = '2011-06-14 12:17:46 PM';
+struct(count).ZOX_14_June_2011.ExpectedValue = '2011-06-14 12:17:46 PM';
+
+% Price and moving averages
+count = count + 1;
+struct(count).Name = 'PriceAndMovingAverages';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).BA_14_June_2011.ExpectedValue  = 'Price and moving averages has closed below its Short term moving average. Short term moving average is currently below mid-term; AND below long term moving averages. From the relationship between price and moving averages; we can see that: This stock is BEARISH in short-term; and BEARISH in mid-long term.';
+struct(count).CHG_14_June_2011.ExpectedValue = 'Price and moving averages has closed above its Short term moving average. Short term moving average is currently below mid-term; AND below long term moving averages. From the relationship between price and moving averages; we can see that: This stock is NEUTRAL in short-term; and BEARISH in mid-long term.';
+struct(count).ZYT_14_June_2011.ExpectedValue = 'Price and moving averages has closed above its Short term moving average. Short term moving average is currently above mid-term; AND above long term moving averages. From the relationship between price and moving averages; we can see that: This stock is BULLISH in short-term; and NEUTRAL in mid-long term.';
+struct(count).ZOX_14_June_2011.ExpectedValue = 'Price and moving averages has closed above its Short term moving average. Short term moving average is currently above mid-term; AND above long term moving averages. From the relationship between price and moving averages; we can see that: This stock is BULLISH in short-term; and BULLISH in mid-long term.';
+
+% Bollinger Bands
+count = count + 1;
+struct(count).Name = 'BollingerBands';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).BA_14_June_2011.ExpectedValue  = 'BA.L has closed above bottom band by 14.5%. Bollinger Bands are 2.5% narrower than normal. The current width of the bands does not suggest anything about the future direction or movement of prices.';
+struct(count).CHG_14_June_2011.ExpectedValue = 'CHG.L has closed below upper band by 36.8%. Bollinger Bands are 99.2% narrower than normal. The narrow width of the bands suggests low volatility as compared to CHG.L''s normal range. The bands have been in this narrow range for 37 bars. This is a sign that the market may be about to initiate a new trend.';
+struct(count).ZYT_14_June_2011.ExpectedValue = 'ZYT.L has closed below upper band by 10.2%. Bollinger Bands are 72.7% wider than normal. The large width of the bands suggest high volatility as compared to ZYT.L''s normal range. The bands have been in this wide range for  6 bars. This is a sign that the current trend might continue.';
+struct(count).ZOX_14_June_2011.ExpectedValue = 'ZOX.L has closed below upper band by 16.6%. Bollinger Bands are 62.2% wider than normal. The large width of the bands suggest high volatility as compared to ZOX.L''s normal range. The bands have been in this wide range for  2 bars. This is a sign that the current trend might continue.';
+
+%Overall
+count = count + 1;
+struct(count).Name = 'Overall';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Char';
+struct(count).BA_14_June_2011.ExpectedValue  = '<img border=0 src=http://uk.stoxline.com/pics/3s.bmp>';
+struct(count).CHG_14_June_2011.ExpectedValue = '<img border=0 src=http://uk.stoxline.com/pics/3s.bmp>';
+struct(count).ZYT_14_June_2011.ExpectedValue = '<img border=0 src=http://uk.stoxline.com/pics/3s.bmp>';
+struct(count).ZOX_14_June_2011.ExpectedValue = '<img border=0 src=http://uk.stoxline.com/pics/2s.bmp>';

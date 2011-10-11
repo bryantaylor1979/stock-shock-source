@@ -1,0 +1,6 @@
+struct(1).Name = 'PivotPoint';
+struct(1).Class = 'Num';
+struct(1).StartString = 't</font></p><&CR&>            </td><&CR&>            <td align="center" height="25" width="327" style="border-style:solid; border-width:1; padding:0; line-height:1.25em; font-family:arial,helvetica,sans-serif; font-size:79
+struct(1).EndString = '&nbsp';
+ 
+ 

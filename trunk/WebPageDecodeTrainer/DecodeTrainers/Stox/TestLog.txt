@@ -1,0 +1,79 @@
+BA_14_June_2011
+================
+TargetsSixMonths: PASSED
+TargetOneYear: PASSED
+ResistanceOne: PASSED
+ResistanceTwo: PASSED
+SupporteOne: PASSED
+SupportTwo: PASSED
+PivotPoint: PASSED
+MA_5: PASSED
+MA_20: PASSED
+MA_100: PASSED
+MA_250: PASSED
+ StochasticOscillatorK: PASSED
+ StochasticOscillatorD: PASSED
+ RSI_14: PASSED
+ High_52Week: PASSED
+ Low_52Week: PASSED
+ Change_52Week: PASSED
+ AverageVolumeK_3Months: PASSED
+ AverageVolumeK_10Days: PASSED
+Time: PASSED
+PriceAndMovingAverages: PASSED
+BollingerBands: PASSED
+Overall: PASSED
+
+CHG_14_June_2011
+================
+TargetsSixMonths: PASSED
+TargetOneYear: PASSED
+ResistanceOne: PASSED
+ResistanceTwo: PASSED
+SupporteOne: PASSED
+SupportTwo: PASSED
+PivotPoint: PASSED
+MA_5: PASSED
+MA_20: PASSED
+MA_100: PASSED
+MA_250: PASSED
+ StochasticOscillatorK: PASSED
+ StochasticOscillatorD: PASSED
+ RSI_14: PASSED
+ High_52Week: PASSED
+ Low_52Week: PASSED
+ Change_52Week: PASSED
+ AverageVolumeK_3Months: PASSED
+ AverageVolumeK_10Days: PASSED
+Time: PASSED
+PriceAndMovingAverages: PASSED
+BollingerBands: PASSED
+Overall: PASSED
+
+ZYT_14_June_2011
+================
+TargetsSixMonths: PASSED
+TargetOneYear: PASSED
+ResistanceOne: PASSED
+ResistanceTwo: PASSED
+SupporteOne: PASSED
+SupportTwo: PASSED
+PivotPoint: PASSED
+MA_5: PASSED
+MA_20: PASSED
+MA_100: PASSED
+MA_250: PASSED
+ StochasticOscillatorK: PASSED
+ StochasticOscillatorD: PASSED
+ RSI_14: PASSED
+ High_52Week: PASSED
+ Low_52Week: PASSED
+ Change_52Week: PASSED
+ AverageVolumeK_3Months: PASSED
+ AverageVolumeK_10Days: PASSED
+Time: PASSED
+PriceAndMovingAverages: PASSED
+BollingerBands: PASSED
+Overall: PASSED
+
+All tests are successfull

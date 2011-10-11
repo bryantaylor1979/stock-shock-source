@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter>
+<?dbhtml filename="DayReport_No_-002.html"?>
+<title>Fundamentals</title>
+<programlisting xml:space="preserve">obj = DigitalLook('RunOnInt',false);
+Symbols = strrep(obj.LoadInvestedSymbols('InvestedSymbolList.txt'),'.L','');
+Symbols = strrep(Symbols,'_','');
+DATASET = obj.DownloadAll(Symbols);
+DATA = obj.DataSet2cell(DATASET);
+close(gcf)
+</programlisting>
+<programlisting xml:space="preserve">No appropriate method, property, or field DataSet2cell for class DigitalLook.</programlisting>
+<programlisting xml:space="preserve">messageLevel = 2; % 2 == warning messages
+rptgen.displayMessage(sprintf('Error during eval: %s',lasterr),messageLevel);
+
+%compressLine = false; % enable multi-line message
+%rptgen.displayMessage(sprintf('line1\nline2'),messageLevel,compressLine);
+%rptgen.displayMessage('Halting generation',messageLevel);rptgen.haltGenerate;</programlisting>
+<informaltable colsep="1" frame="all" pgwide="1" rowsep="1">
+    <tgroup align="left" cols="9">
+        <colspec colname="1" colnum="1" colwidth="1*"/>
+        <colspec colname="2" colnum="2" colwidth="1*"/>
+        <colspec colname="3" colnum="3" colwidth="1*"/>
+        <colspec colname="4" colnum="4" colwidth="1*"/>
+        <colspec colname="5" colnum="5" colwidth="1*"/>
+        <colspec colname="6" colnum="6" colwidth="1*"/>
+        <colspec colname="7" colnum="7" colwidth="1*"/>
+        <colspec colname="8" colnum="8" colwidth="1*"/>
+        <colspec colname="9" colnum="9" colwidth="1*"/>
+        <thead>
+            <row>
+                <entry>CSLT</entry>
+                <entry>Conv Fail</entry>
+                <entry>734442</entry>
+                <entry>103.2000</entry>
+                <entry>4.4700</entry>
+                <entry>0.7500</entry>
+                <entry>6.7000</entry>
+                <entry>-0.8200</entry>
+                <entry>0</entry>
+            </row>
+        </thead>
+        <tbody>
+            <row>
+                <entry>RENE</entry>
+                <entry>Conv Fail</entry>
+                <entry>734503</entry>
+                <entry>650.6600</entry>
+                <entry>92.5500</entry>
+                <entry>40.7500</entry>
+                <entry>6.4000</entry>
+                <entry>NaN</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>PYM</entry>
+                <entry>Conv Fail</entry>
+                <entry>734411</entry>
+                <entry>0.1000</entry>
+                <entry>-7.1500</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>TW.</entry>
+                <entry>Conv Fail</entry>
+                <entry>734503</entry>
+                <entry>2.5941e+003</entry>
+                <entry>24.5500</entry>
+                <entry>0.5100</entry>
+                <entry>51.9000</entry>
+                <entry>NaN</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>PCF</entry>
+                <entry>Conv Fail</entry>
+                <entry>734593</entry>
+                <entry>59.2300</entry>
+                <entry>0.5100</entry>
+                <entry>0.7100</entry>
+                <entry>10.3000</entry>
+                <entry>-0.2200</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>HAWK</entry>
+                <entry>Conv Fail</entry>
+                <entry>734319</entry>
+                <entry>1.9800</entry>
+                <entry>0.4300</entry>
+                <entry>0.1300</entry>
+                <entry>181.3000</entry>
+                <entry>NaN</entry>
+                <entry>0.0040</entry>
+            </row>
+            <row>
+                <entry>JPR</entry>
+                <entry>Conv Fail</entry>
+                <entry>734503</entry>
+                <entry>412.0700</entry>
+                <entry>34.8800</entry>
+                <entry>3.8500</entry>
+                <entry>4.1000</entry>
+                <entry>-0.3000</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>SXX</entry>
+                <entry>Conv Fail</entry>
+                <entry>734593</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>NaN</entry>
+                <entry>0</entry>
+            </row>
+            <row>
+                <entry>BP</entry>
+                <entry>Conv Fail</entry>
+                <entry>734534</entry>
+                <entry>2.8800</entry>
+                <entry>1.1100</entry>
+                <entry>3.2300</entry>
+                <entry>28.6000</entry>
+                <entry>2.2300</entry>
+                <entry>0.0110</entry>
+            </row>
+        </tbody>
+    </tgroup>
+</informaltable>
+</chapter>

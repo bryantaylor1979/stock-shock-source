@@ -1,0 +1,5 @@
+AnalysisView: 1
+EPS_ShortTermText: 1
+EPS_LongTermText: 1
+Rev_ShortTermText: 1
+Rev_LongTermText: 1

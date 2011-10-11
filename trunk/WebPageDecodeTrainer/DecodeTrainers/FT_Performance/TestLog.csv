@@ -1,0 +1,41 @@
+TET_31_May_2011
+================
+Open,426,426,PASSED
+AvVolumeStr,6.06k,6.06k,PASSED
+DayLow,0,0,PASSED
+DayHigh,0,0,PASSED
+OfficialClose,0,0,PASSED
+EPS,6.39,6.39,PASSED
+DivYield,3.05,3.05,PASSED
+DivPS,13.00<span class="currencyCode">GBX,13.00<span class="currencyCode">GBX,PASSED
+DivExDate,Jan 26 2011,Jan 26 2011,PASSED
+PreviousClose,426,426,PASSED
+SharesOutstanding,10.24m,10.24m,PASSED
+DivPayDate,Mar 04 2011,Mar 04 2011,PASSED
+NextDivExDate,Sep 14 2011,Sep 14 2011,PASSED
+NextDivPayDate,Oct 21 2011,Oct 21 2011,PASSED
+MarketCap,43.62m<span class="currencyCode">GBP,43.62m<span class="currencyCode">GBP,PASSED
+PE,66.71,66.71,PASSED
+FreeFloat,3.65m,3.65m,PASSED
+
+VCT_31_May_2011
+================
+Open,1484,1484,PASSED
+AvVolumeStr,102.95k,102.95k,PASSED
+DayLow,1484,1484,PASSED
+DayHigh,1517,1517,PASSED
+OfficialClose,1503,1503,PASSED
+EPS,79.75,79.75,PASSED
+DivYield,1.68,1.68,PASSED
+DivPS,25.00<span class="currencyCode">GBX,25.00<span class="currencyCode">GBX,PASSED
+DivExDate,Feb 09 2011,Feb 09 2011,PASSED
+PreviousClose,1484,1484,PASSED
+SharesOutstanding,83.76m,83.76m,PASSED
+DivPayDate,Feb 25 2011,Feb 25 2011,PASSED
+NextDivExDate,Jun 08 2011,Jun 08 2011,PASSED
+NextDivPayDate,Jul 05 2011,Jul 05 2011,PASSED
+MarketCap,1.24bn<span class="currencyCode">GBP,1.24bn<span class="currencyCode">GBP,PASSED
+PE,18.62,18.62,PASSED
+FreeFloat,78.28m,78.28m,PASSED
+
+All tests are successfull

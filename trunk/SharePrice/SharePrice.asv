@@ -1,0 +1,145 @@
+classdef SharePrice
+    %Example: obj = SharePrice;
+    %         DATASET = obj.WEB_Query({'HAWK','CSLT'})  
+    properties
+        url = 'http://www.shareprice.co.uk/'
+        loglevel = 0;
+        InstallDir = 'C:\SourceSafe\Stocks & Shares\Programs\SharePrice\';
+    end
+    methods
+        function DATASET = WEB_Query(obj,Symbols)
+            % Example 1:  DATASET = obj.WEB_Query('HAWK')
+            % Example 2:  DATASET = obj.WEB_Query({'HAWK','CSLT'})
+            switch class(Symbols)
+                case 'char'
+                    raw = obj.ReadWebQuery([obj.url,Symbols]); 
+                    Symbol = {Symbols};
+                    DATASET = [dataset(Symbol),obj.GetTradeTable(raw)];
+                case 'cell'
+                    x = size(Symbols,2);
+                    for i = 1:x
+                        Symbol = Symbols{i};
+                        raw = obj.ReadWebQuery([obj.url,Symbol]);  
+                        Symbol = {Symbol};
+                        if i == 1
+                        DATASET = [dataset(Symbol),obj.GetTradeTable(raw)] ;
+                        else
+                        DATASET = [DATASET;[dataset(Symbol),obj.GetTradeTable(raw)]];    
+                        end
+                    end
+                otherwise
+            end
+        end
+    end
+    methods (Hidden = true)
+        function DATASET = GetTradeTable(obj,raw)
+            n = find(strcmpi(raw(:,1),'Bid / Ask'));
+            try
+            DATA = raw(n-1:n+6,1:2);
+            catch
+                 Price = NaN
+                PriceChange, ...
+                PercentageChange, ...
+                Bid, ...
+                Ask, ...
+                Open, ...
+                PrevClose, ...
+                Volume, ...
+                DayLow, ...
+                DayHigh, ...
+                YearLow, ...
+                YearHigh, ...
+                Time, ...
+                TimeStr);
+               DATASET = dataset(   Price, ...
+                                    PriceChange, ...
+                                    PercentageChange, ...
+                                    Bid, ...
+                                    Ask, ...
+                                    Open, ...
+                                    PrevClose, ...
+                                    Volume, ...
+                                    DayLow, ...
+                                    DayHigh, ...
+                                    YearLow, ...
+                                    YearHigh, ...
+                                    Time, ...
+                                    TimeStr);
+               return
+            end
+            
+            %PercentageChange
+            PriceChange = DATA{1,1};
+            n1 = strfind(PriceChange,'(');
+            PercentageChange = str2num(PriceChange(n1+1:end-2));
+            
+            %Bid/Ask
+            BidAsk = DATA{2,2};
+            n2 = strfind(BidAsk,'-');
+            Bid = str2num(BidAsk(1:n2-1));
+            Ask = str2num(BidAsk(n2+1:end));
+            
+            %Open, PrevClose, Volume
+            Open =      DATA{3,2};
+            PrevClose = DATA{4,2};
+            Volume =    DATA{5,2};
+            
+            %Day range
+            DayRange = DATA{6,2};
+            n2 = strfind(DayRange,'-');
+            DayLow = str2num(DayRange(1:n2-1));
+            DayHigh = str2num(DayRange(n2+1:end));
+            
+            %52w range
+            YearRange = DATA{7,2};
+            n2 = strfind(YearRange,'-');
+            YearLow = str2num(YearRange(1:n2-1));
+            YearHigh = str2num(YearRange(n2+1:end)); 
+            
+            %Time
+            Time = datenum(strrep(DATA{8,2},'as of ',''));
+            TimeStr = {datestr(Time,13)};
+            
+            %Price
+            Price = PrevClose*(1+PercentageChange/100);
+            
+            %PriceChange
+            PriceChange = PrevClose*(PercentageChange/100);
+            
+            DATASET = dataset(Price,PriceChange,PercentageChange,Bid,Ask,Open,PrevClose,Volume,DayLow,DayHigh,YearLow,YearHigh,Time,TimeStr);            
+        end
+        function WriteWebQuery(obj,string)
+            if obj.loglevel > 0
+                disp(string)
+            end
+            fid = fopen([obj.InstallDir,'DL.iqy'], 'w');
+            fprintf(fid, [ ...
+                'WEB\n',...
+                '1\n', ...
+                string,'\n', ...
+                '\n', ...
+                'Selection=EntirePage\n', ...
+                'Formatting=None\n', ...
+                'PreFormattedTextToColumns=True\n', ...
+                'ConsecutiveDelimitersAsOne=True\n', ...
+                'SingleBlockTextImport=False\n', ...
+                'DisableDateRecognition=False\n', ...
+                'DisableRedirections=False']);
+            fclose(fid);
+        end
+        function raw = ReadWebQuery(obj,string)
+           time = 1;
+           while time <200
+                try
+                    obj.WriteWebQuery(string);
+                    [num,data,raw] = xlsread([obj.InstallDir,'DL.iqy']);
+                    break
+                catch
+                    disp('Connection problems')
+                    pause(time);
+                    time = time*2;
+                end
+            end            
+        end
+    end
+end

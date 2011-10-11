@@ -1,0 +1,1 @@
+FT_BrokersView "RunOnInt" "on" "CloseGUIwhenComplete" "on" "GUI_Mode" "Minimal" "Macro" "Invested" "Mode" "wq" "ForceUpdate" "on"
