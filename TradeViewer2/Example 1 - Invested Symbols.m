@@ -1,0 +1,19 @@
+%% 
+DataPath = 'C:\SourceSafe\Stocks & Shares\Programs\TradeViewer2\Data\';
+Symbols = {'HAWK.L'; ...
+           'PPA.L'; ...
+           'PYM.L'; ...
+           'TW.L'; ...
+           'CSLT.L'; ...
+           'RENE.L'; ...
+           'JPR.L'};
+x = size(Symbols,1);
+
+%%
+for i = 1:x
+    try
+    obj = StockAnalysis('Symbol',Symbols{i});
+    obj.SaveFig([DataPath,strrep(Symbols{i},'.','_'),'.bmp'])
+    close(obj.handles.figure)
+    end
+end

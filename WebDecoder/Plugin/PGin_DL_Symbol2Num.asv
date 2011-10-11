@@ -1,0 +1,15 @@
+  classdef PGin_BB_ALLSTATUS <    handle & ...
+                                DataSetFiltering
+    properties
+    end
+    methods 
+        function Num = URL2Num(obj,Str)
+            %%
+            Val = TABLE{3};
+n = findstr(Val,'=');
+Val = Val(n(end)+1:end);
+n = findstr(Val,'"');
+Num = str2num(Val(1:n(1)-1))
+        end
+    end
+end

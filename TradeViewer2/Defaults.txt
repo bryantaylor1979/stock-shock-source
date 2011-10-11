@@ -1,0 +1,2 @@
+obj.DataPath = 'C:\SourceSafe\Stocks & Shares\Programs\Stock Quote Sync\Data';
+obj.IsVisible = 'on';
