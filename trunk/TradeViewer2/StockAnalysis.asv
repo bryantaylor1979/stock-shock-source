@@ -1,0 +1,544 @@
+classdef StockAnalysis < handle
+    %TODO:  Date range Icons added to SS.
+    %TODO:  Change symbol by changing properties (using set/get events)
+    %TODO:  Change date range by changing the properties (using set/get)
+    %TODO:  Add support and resistance levels.
+   properties (SetObservable = true)
+      IsVisible = 'on';
+      Range = '3m'; %1w, 2w, 1m, 3m, 6m, 1y, All
+      Symbol = 'HAWK.L';
+      ToolbarVisible = 'off';
+      LegendsVisible = 'off';
+      ResistanceTwo = NaN;
+      ResistanceOne = 36;
+      SupportOne = 28;
+      SupportTwo = NaN;
+   end
+   properties % Read Only
+      Open = 1:300;
+      Close = 11:310;
+      Volume = 1:300;
+      SectorName
+      SectorSymbol
+      Name = 'Description';
+   end
+   properties (Hidden = true)
+      handles
+      Children
+      OpenLineColour = [1,0,0];
+      ProgramName = 'Stock Analysis'
+      Path = 'C:\SourceSafe\Stocks & Shares\Programs\TradeViewer2\';
+      DataPath = 'C:\SourceSafe\Stocks & Shares\Programs\Stock Quote Sync\Data\';
+      SectorList
+      Rev = 0.02
+      Date = now-300:now-1;
+   end
+   methods
+      function ReadDefaults(obj)
+          String = [obj.Path,'Defaults.txt'];
+          s = textread(String,'%s','delimiter','\n');
+          [x] = size(s,1);
+          for i = 1:x
+              eval(s{i});
+          end
+      end
+      function LoadObjects(obj)
+          %% Local Database Setup
+          obj.Children.LocalDatabase = LocalDatabase('ExternalCommObj','offline'); %'yahoo-fetch' or 'offline'          
+          obj.Children.LocalDatabase.Location = obj.DataPath;
+          
+          %% Symbol Info
+          obj.Children.SymbolObj = SymbolInfo;
+          obj.Children.SymbolObj.InstallDir = obj.Path;
+          obj.Children.SymbolObj = obj.Children.SymbolObj.ReadMap('III_IndexMap');
+   
+          obj.Children.LocalDatabase.Symbol = obj.Symbol;   
+          obj.Children.LocalDatabase = obj.Children.LocalDatabase.LoadData;
+          obj.Symbol = obj.Children.LocalDatabase.Symbol;  
+          try
+          obj.Name = obj.Children.SymbolObj.GetIndexDescription(obj.Children.LocalDatabase.Symbol); 
+          catch
+          obj.Name = obj.Children.SymbolObj.GetSymbolDescription(obj.Children.LocalDatabase.Symbol); 
+          end
+      end
+      function SaveFig(obj,filename)
+          %%
+%            set(obj.handles.figure,'Visible','off')
+          saveas(obj.handles.figure,filename)
+%            set(obj.handles.figure,'Visible','on')
+      end
+   end
+   methods (Hidden = true) %Listeners
+       function IsVisibleCallback(varargin)
+           obj = varargin{1};
+           set(obj.handles.figure,'visible',obj.IsVisible)
+       end
+       function IsLegendsVisibleCallback(varargin)
+           obj = varargin{1};
+           set(obj.handles.legends,'visible',obj.LegendsVisible)
+       end
+   end
+   methods (Hidden = true)%GUI
+       function PlotResistanceLevels(obj)
+           %%
+           if not(isnan(obj.ResistanceOne))
+               obj.PlotLine(obj.ResistanceOne)
+           end
+           if not(isnan(obj.ResistanceTwo))
+               obj.PlotLine(obj.ResistanceTwo)
+           end
+           if not(isnan(obj.SupportOne))
+               obj.PlotLine(obj.SupportOne)
+           end
+           if not(isnan(obj.SupportTwo))
+               obj.PlotLine(obj.SupportTwo)
+           end
+       end
+       function PlotLine(obj,Value)
+           %%
+           axes(obj.handles.candle_ax);
+           obj.handles.resistance1 = plot([obj.Date(1),obj.Date(end)],[Value,Value],'r:');
+           
+           %%
+           set(obj.handles.resistance1, ...
+                            'LineWidth',3, ...
+                            'Color',[1,0.2,1]);
+       end
+       function CreateFigure(obj)
+          % Create Main Figure
+          obj.handles.figure       =figure ('Name',[obj.ProgramName,' - R',num2str(obj.Rev)], ...
+                                            'Color',[0.92549 0.913725 0.847059], ...
+                                            'NumberTitle','off',...
+                                            'Visible','off', ...
+                                            'MenuBar','none', ...
+                                            'Resize','on');
+                                        
+          % Last Price Text Box.                             
+          obj.handles.LstPriceTxt=uicontrol('Style','text', ...
+                                            'Position',[504,371,250,19], ...
+                                            'HorizontalAlignment','left', ...
+                                            'FontWeight','bold', ... 
+                                            'String',num2str(obj.Children.LocalDatabase.LastPrice), ...
+                                            'ForegroundColor',[0.2,0.2,1]);
+                                        
+          % Company Name Text Box
+%           obj.handles.CoNameTxt = uicontrol('Style','text', ...
+%                                             'String','CompanyName', ...
+%                                             'Position',[54,371,250,19], ...
+%                                             'HorizontalAlignment','left', ...
+%                                             'FontWeight','bold', ...
+%                                             'ForegroundColor',[0.2,0.2,1]);
+                                        
+          % Data Type (e.g. Open Close) Pulldown create.
+          FieldNames = obj.Children.LocalDatabase.DataStoreColumnNames;
+          if isempty(FieldNames(7:end))
+              String = {'N/A'};
+          else
+              String = FieldNames(7:end);
+          end
+          obj.handles.DataType =uicontrol(  'Style',    'popupmenu', ...
+                                            'String',   String, ...
+                                            'Position', [2,380,130,40]);
+          try                              
+          obj.IndexPullDown;
+          obj.SymbolPullDown;
+          end
+          obj.AddButton;
+          
+          
+          %Menu Bar
+          obj.handles.menu = uimenu(obj.handles.figure,'Label','Help');
+          obj.handles.About = uimenu(obj.handles.menu, ...
+                            'Label',['About ',upper(obj.ProgramName)], ...
+                            'Callback',@obj.About);
+       end
+       function IndexPullDown(varargin)
+          obj = varargin{1};
+          SectorList = obj.Children.SymbolObj.SectorList;
+          obj.SectorList = SectorList;
+          [x] = size(SectorList,1);
+          for i = 1:x
+            Combined{i} = [SectorList{i,1},' (',SectorList{i,2},')'];
+          end
+          obj.SectorName = obj.Children.SymbolObj.Symbol2Sector(obj.Symbol);
+          try
+          obj.SectorSymbol = obj.Children.SymbolObj.SectorName2Symbol(obj.SectorName{1});
+          catch
+          obj.SectorSymbol = 'NaN';    
+          end
+          n = find(strcmpi(SectorList(:,1),obj.SectorName{1}));
+          obj.handles.IndexPulldown = uicontrol(  'Style',    'popupmenu', ...
+                                                  'Value',    n, ...
+                                                  'String',    Combined );
+          %%
+          set(obj.handles.IndexPulldown,'Position', [132,380,316,40]);     
+       end
+       function SymbolPullDown(varargin)
+          obj = varargin{1};
+          
+          SectorList = obj.Children.SymbolObj.SectorList;
+          Symbol = obj.Children.SymbolObj.GetIndexSymbols(obj.SectorSymbol);
+          
+          n = find(strcmpi(Symbol,obj.Symbol));
+          
+          obj.handles.SymbolPulldown = uicontrol(  'Style',    'popupmenu', ...
+                                                    'Value',   n+1, ...
+                                                    'String',    [{'Parent Index'};Symbol] );
+          %%
+          set(obj.handles.SymbolPulldown,'Position', [449,380,178,40]);   
+       end
+       function DateRangeButtons(obj)
+         obj.handles.DataRangeToolbar = uitoolbar(obj.handles.figure,'Visible','on');
+         
+         Ranges = { '5d','5 Days'; ...
+                    '2w','2 Weeks'; ...
+                    '1m','1 Month'; ...
+                    '3m','3 Months'; ...
+                    '6m','6 Months'; ...
+                    '1y','1 Year'};
+                
+         [x] = size(Ranges,1);
+         for i = 1:x
+             CDATA = imread([obj.Path,'\Icons\',Ranges{i,1},'.bmp']);
+             h = uitoggletool(obj.handles.DataRangeToolbar, ...
+                                              'TooltipString',Ranges{i,2}, ...
+                                              'CDATA',CDATA, ...
+                                              'tag',Ranges{i,1});  
+             obj.handles.(['H_',Ranges{i,1}]) = h;
+         end
+         for i = 1:x
+             set(obj.handles.(['H_',Ranges{i,1}]),'ClickedCallback',{@obj.DataRangeButtonCallback});
+         end
+       end
+       function Plot(varargin)
+          obj = varargin{1};
+          try
+              First = varargin{2};
+          catch
+              try
+                 obj.handles.candle_ax;
+                 First = false;
+              catch
+                 subplot(2,1,2);
+                 obj.handles.volume_ax = gca;
+                 drawnow
+                 subplot(2,1,1);
+                 obj.handles.candle_ax = gca;
+                 drawnow
+                 First = true;
+              end
+          end
+          %%
+          obj.CandlePlot(First);
+          obj.VolumePlot;
+          obj.PlotResistanceLevels;
+       end
+       function CandlePlot(obj,First)
+          % This has been generated invisible!
+          mode = 0;
+          if mode == 1
+              High = obj.Children.LocalDatabase.GetRange('High',obj.Range);
+              Low = obj.Children.LocalDatabase.GetRange('Low',obj.Range);
+              Close = obj.Children.LocalDatabase.GetRange('Close',obj.Range);
+              Open = obj.Children.LocalDatabase.GetRange('Open',obj.Range);
+              date = obj.Children.LocalDatabase.GetRange('date',obj.Range);
+          else
+              ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close'},today-31*3,today,'d');
+              High = ARRAY(:,2);
+              Low = ARRAY(:,3);
+              Close = ARRAY(:,4);
+              Open = ARRAY(:,5);
+              date = ARRAY(:,1);
+          end
+          obj.Date = date;
+          
+          if First == false
+          axes(obj.handles.candle_ax);
+          cla;
+          end
+          candle(High, Low, Close, Open, [1,0,0], date); %Appears
+          grid on
+          set(obj.handles.candle_ax,    'Position',[0.094,0.268,0.862,0.6], ...
+                                        'XTickLabel',[], ...
+                                        'XLim',[min(date)-5,max(date)+5], ...
+                                        'YLim',[min(Low),max(High)]);
+
+          hold on
+          PriceMean = mean(rot90([High,Low,Close,Open]));
+          obj.handles.pricemean = plot(date,PriceMean, ...
+                       'k:','Color',[0.2,0.8,0.2], ...
+                       'LineWidth',2.5,...
+                       'MarkerEdgeColor','k',...
+                       'MarkerFaceColor','k',...
+                       'MarkerSize',8);
+          hold on
+          obj.handles.LastPrice = plot(obj.Children.LocalDatabase.LastPriceDate,obj.Children.LocalDatabase.LastPrice,'d', ...
+                       'LineWidth',2,...
+                       'MarkerEdgeColor','b',...
+                       'MarkerFaceColor','b',...
+                       'MarkerSize',8);
+          set(obj.handles.LstPriceTxt,'String',[num2str(obj.Children.LocalDatabase.LastPrice),' @ ',datestr(obj.Children.LocalDatabase.LastPriceDate)]);
+
+          %format graph
+          h = ylabel('Price');
+          set(h,'FontWeight','bold');
+          Description = obj.Children.SymbolObj.GetSymbolDescription(obj.Children.LocalDatabase.Symbol);
+          title([obj.Symbol,' - ',Description]);
+          obj.handles.legends = legend({  'High-Low'; ...
+                    'Rise-Open-Close'; ...
+                    'Fall-Close-Open'; ...
+                    'PriceMean'; ...
+                    'LastPrice'}, ...
+                    'Location','NorthWest');
+          set(obj.handles.legends,'visible',obj.LegendsVisible);
+       end
+       function VolumePlot(obj)
+           mode = 0
+           if mode == 1 
+           Date = obj.Children.LocalDatabase.GetRange('date',obj.Range);
+           Volume = obj.Children.LocalDatabase.GetRange('Volume',obj.Range);
+           else
+           ARRAY = fetch(yahoo,obj.Symbol,{'volume'},today-31*3,today,'d')
+           Volume = ARRAY(:,2)
+           Date = 
+           end
+                    
+          % Check to see if plot has happened.
+          Names = fieldnames(obj.handles);
+          n = find(strcmpi(Names,'volume_data'));
+          
+          if isempty(n) %Plot for first time
+              axes(obj.handles.volume_ax)
+
+              obj.handles.volume_data = bar(Date,Volume, ...
+                                    'EdgeColor',[1,1,1], ...
+                                    'FaceColor',[0,0,0.3]);
+              datetick;
+              grid on
+              set(obj.handles.volume_ax,    'XLim',[min(Date)-5,max(Date)+5], ...
+                                            'Position',[0.094,0.125,0.862,0.135]);
+
+              xlabel('Date','FontWeight','bold');
+              ylabel('Volume','FontWeight','bold');
+          else
+              set(obj.handles.volume_data, ...
+                            'XDATA',Date, ...
+                            'YDATA',Volume);
+              set(obj.handles.volume_ax,'XLim',[min(Date)-5,max(Date)+5])
+          end
+       end
+       function AddButton(obj);
+        handles.toolbar = uitoolbar(obj.handles.figure,'Visible',obj.ToolbarVisible);
+
+        [a,b,c] = imread([obj.Path,'\Icons\','ADD.Ico']);
+        BackgroundColour = [0.8314    0.8157    0.7843];
+        b2 = [b; BackgroundColour]; 
+        % Create new image for display. 
+        d = ones(size(a)) * (length(b2) - 1); 
+        % Use the AND mask to mix the background and
+        % foreground data on the new image
+        d(c == 0) = a(c == 0); 
+
+        % Display new image 
+        RGB = ind2rgb(uint8(d),colormap(b2));
+        RGB = imcrop(RGB,[10,10,16,16]);
+        RGB = imresize(RGB,[16 16],'nearest');
+        handles.Add = uipushtool(handles.toolbar, ...
+                                          'CData',RGB, ... 
+                                          'TooltipString','Take Measurement', ...
+                                          'tag','Add', ...
+                                          'ClickedCallback',{@obj.AddButtonCallback});
+       end
+       function Resize(varargin);
+          
+          obj = varargin{1};
+          oldpos = get(obj.handles.figure,'UserData');
+          PosFig = get(obj.handles.figure,'Position');
+          
+          % Apply min size
+          if PosFig(1) == oldpos(1)
+              if PosFig(3) < 628
+                  PosFig(3) = 628;
+              end
+          elseif PosFig(3)< 628
+              diff = PosFig(3) - oldpos(3);
+              PosFig(1) = PosFig(1) + diff;
+              if PosFig(3) < 628
+                  PosFig(3) = 628;
+              end
+          end
+          if PosFig(2) == oldpos(2)
+              if PosFig(4) < 400
+                  PosFig(4) = 400;
+              end
+          elseif PosFig(4) < 400
+              diff = PosFig(4) - oldpos(4);
+              PosFig(2) = PosFig(2) + diff;
+              if PosFig(4) < 400
+                  PosFig(4) = 400;
+              end              
+          end
+          set(obj.handles.figure,'Position',PosFig);
+          
+          % 
+          PosPulldown = get(obj.handles.DataType,'Position');
+          PosPulldown(2) = PosFig(4)-40;
+          set(obj.handles.DataType,'Position',PosPulldown);
+          
+          PosPulldown = get(obj.handles.IndexPulldown,'Position');
+          PosPulldown(2) = PosFig(4)-40;
+          set(obj.handles.IndexPulldown,'Position',PosPulldown);
+          
+          PosPulldown = get(obj.handles.SymbolPulldown,'Position');
+          PosPulldown(2) = PosFig(4)-40;
+          set(obj.handles.SymbolPulldown,'Position',PosPulldown);
+          
+          PosPulldown = get(obj.handles.LstPriceTxt,'Position');
+          PosPulldown(2) = PosFig(4)-50;
+          set(obj.handles.LstPriceTxt,'Position',PosPulldown);
+          
+%           PosPulldown = get(obj.handles.CoNameTxt,'Position');
+%           PosPulldown(2) = PosFig(4)-50;
+%           set(obj.handles.CoNameTxt,'Position',PosPulldown);
+          
+          set(obj.handles.figure,'UserData',PosFig);
+       end
+       function About(varargin)
+            obj = varargin{1};
+            names = fieldnames(obj.Children);
+            [x] = size(names,1);
+            for i = 1:x
+                Componet = getfield(obj.Children,names{i});
+                Rev = Componet.Rev;
+                String{i,1} = [names{i},': R',num2str(Rev)];
+            end
+            msgbox([{'Component Information';'==================';''};String])
+       end
+       function AddButtonCallback(varargin)
+          obj = varargin{1};
+                   
+          Value = get(obj.Children.IndexPulldown,'Value');
+          obj.LDobj.Symbol =  obj.SymbolObj.SectorList{Value};
+          
+          DataStore = obj.LDobj.DataStore;
+          FieldNames = obj.LDobj.DataStoreColumnNames;
+          
+          String = get(obj.Children.Pulldown,'String');
+          Value = get(obj.Children.Pulldown,'Value');
+          
+          hold on
+          Data = obj.LDobj.GetRange(String{Value},obj.Range);
+          Date = obj.LDobj.GetRange('Date',obj.Range);
+          PriceMean = obj.LDobj.GetRange('PriceMean',obj.Range);
+          
+          ax2 = axes(   'Position',[0.094,0.268,0.862,0.6],...
+                        'XAxisLocation','top',...
+                        'YAxisLocation','right',...
+                        'XTick',[],...
+                        'YTick',[],...
+                        'Color','none',...
+                        'XColor','k',...
+                        'YColor','k');
+       
+          h.Children.Line = line(Date,Data,'Color','k','Parent',ax2);
+          XLim = get(obj.Children.OpenLineHandle,'XLim');
+          YLim = get(obj.Children.OpenLineHandle,'YLim');
+          set(gca,'Position',[0.094,0.268,0.862,0.6]);
+          set(ax2,'YLim',YLim);
+          set(ax2,'XLim',XLim);
+       end
+       function IndexPulldownCallback(varargin)
+          %Sector Update
+          obj = varargin{1};
+          
+          Value = get(obj.handles.IndexPulldown,'Value');
+          obj.Children.LocalDatabase.Symbol = obj.SectorList{Value,2};
+          
+          % Index
+          Symbol = obj.Children.SymbolObj.GetIndexSymbols(obj.Children.LocalDatabase.Symbol);
+          set(obj.handles.SymbolPulldown,'Value', 1);
+          set(obj.handles.SymbolPulldown,'String',    [{'Parent Index'};Symbol]);
+          title('');
+          
+          obj.Children.LocalDatabase = obj.Children.LocalDatabase.LoadData;         
+          obj.Plot;
+       end
+       function SymbolPulldownCallback(varargin)
+          obj = varargin{1};
+          
+          Value = get(obj.handles.SymbolPulldown,'Value');
+          String = get(obj.handles.SymbolPulldown,'String');
+          obj.Children.LocalDatabase.Symbol = String{Value};
+          obj.Symbol = obj.Children.LocalDatabase.Symbol;
+          
+          obj.Children.LocalDatabase = obj.Children.LocalDatabase.LoadData;         
+          obj.Plot
+       end
+       function DataRangeButtonCallback(varargin)
+          obj = varargin{1};
+          hObject = varargin{2}
+          
+          Ranges = { '5d','5 Days'; ...
+                     '2w','2 Weeks'; ...
+                     '1m','1 Month'; ...
+                     '3m','3 Months'; ...
+                     '6m','6 Months'; ...
+                     '1y','1 Year'};
+          [x] = size(Ranges,1);
+          for i = 1:x
+              try
+              set(obj.handles.(['H_',Ranges{i,1}]),'State','off','Enable','on');
+              end
+          end
+          set(hObject,'State','on','Enable','on');
+          obj.Range = get(hObject,'tag');
+          obj.Plot(false);
+       end
+       function ResistanceCallback(varargin)
+           obj = varargin{1};
+           obj.Plot;
+       end
+       function obj = StockAnalysis(varargin)
+          %% Manage input varaiables
+          % variable arg in
+          [x] = size(varargin,2);
+          for i = 1:2:x
+              obj.(varargin{i}) = varargin{i+1};
+          end
+          obj.ReadDefaults;
+          
+          %%
+          addlistener(obj,'IsVisible','PostSet',@obj.IsVisibleCallback);
+          addlistener(obj,'LegendsVisible','PostSet',@obj.IsLegendsVisibleCallback); 
+          
+                   
+          %%
+          obj.LoadObjects;
+          obj.CreateFigure;
+          obj.Plot;
+          
+          Fields = {    'ResistanceTwo'; ...
+                        'ResistanceOne'; ...
+                        'SupportOne'; ...
+                        'SupportTwo'};
+                    
+          obj.addlistener(Fields,'PostSet',@obj.ResistanceCallback);
+         
+          try
+          obj.DateRangeButtons;
+          end
+                                              
+          %%
+          set(obj.handles.figure,'ResizeFcn',{@obj.Resize});
+          
+          PosFig = get(obj.handles.figure,'Position');
+          set(obj.handles.figure,'UserData',PosFig);
+          obj.Resize;
+          
+          set(obj.handles.figure,'Visible','on');
+          set(obj.handles.IndexPulldown,'Callback',@obj.IndexPulldownCallback);  
+          set(obj.handles.SymbolPulldown,'Callback',@obj.SymbolPulldownCallback);  
+          
+      end
+   end
+end
