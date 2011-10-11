@@ -1,0 +1,11 @@
+WEB
+1
+http://markets.ft.com/tearsheets/analysis.asp?s=BP.%3ALSE
+
+Selection=EntirePage
+Formatting=None
+PreFormattedTextToColumns=True
+ConsecutiveDelimitersAsOne=True
+SingleBlockTextImport=False
+DisableDateRecognition=False
+DisableRedirections=False

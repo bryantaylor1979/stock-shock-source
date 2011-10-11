@@ -1,0 +1,3 @@
+function [] = ConfigMode(varargin);
+
+CalculationSelection

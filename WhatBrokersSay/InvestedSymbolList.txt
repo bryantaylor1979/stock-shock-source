@@ -1,0 +1,1 @@
+InvestedSymbolList = {'CSLT.L';'RENE.L';'PPA.L';'PYM.L';'TW..L';'PCF.L';'HAWK.L';'JPR.L';'SXX.L';'BP_.L'};

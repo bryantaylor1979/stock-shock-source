@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stylesheet_registry xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+   <stylesheet id="custom" transformtype="fo"><!--11-Jun-2011 12:26:29-->
+      <name>Simple Print</name>
+      <description>Suppresses title page, table of contents, list of titles</description>
+      <filename>$matlabroot/sys/namespace/docbook/v4/xsl/fo/docbook_rptgen.xsl</filename>
+      <xsl_code>
+         <xsl:template name="header.content">
+  
+            <xsl:param name="pageclass" select="''"/>
+  
+            <xsl:param name="sequence" select="''"/>
+  
+            <xsl:param name="position" select="''"/>
+  
+            <xsl:param name="gentext-key" select="''"/>
+
+  
+            <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
+               <xsl:choose>
+      
+                  <xsl:when test="$sequence = 'blank'"><!-- No header on blank pages --></xsl:when>
+      
+                  <xsl:when test="$position = 'left'"><!-- enter left cell content -->
+
+
+                     <xsl:text>CoLogic</xsl:text>
+                  </xsl:when>
+      
+                  <xsl:when test="$position = 'right'"><!-- enter right cell content -->
+
+                     <xsl:text>Confidential</xsl:text>
+                  </xsl:when>
+      
+                  <xsl:when test="($sequence='odd' or $sequence='even') and $position='center' and $pageclass != 'titlepage'">
+          
+                     <xsl:choose>
+            
+                        <xsl:when test="ancestor::book and ($double.sided != 0)">
+              
+                           <fo:retrieve-marker retrieve-boundary="page-sequence" retrieve-class-name="section.head.marker" retrieve-position="first-including-carryover"/>
+            
+                        </xsl:when>
+            
+                        <xsl:otherwise>
+              
+                           <xsl:apply-templates mode="titleabbrev.markup" select="."/>
+            
+                        </xsl:otherwise>
+          
+                     </xsl:choose>
+      
+                  </xsl:when>
+      
+                  <xsl:when test="$position = 'center'"><!-- No header on empty and blank sequences --></xsl:when>
+      
+                  <xsl:when test="$sequence = 'first'"><!-- No header on first pages --></xsl:when>
+      
+                  <xsl:otherwise/>
+  
+               </xsl:choose>
+            </fo:block>
+
+         </xsl:template>
+         <xsl:template name="footer.content">
+  
+            <xsl:param name="pageclass" select="''"/>
+  
+            <xsl:param name="sequence" select="''"/>
+  
+            <xsl:param name="position" select="''"/>
+  
+            <xsl:param name="gentext-key" select="''"/>
+
+  
+            <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
+               <xsl:choose>
+      
+                  <xsl:when test="$pageclass = 'titlepage'"><!-- no footer on title pages --></xsl:when>
+      
+                  <xsl:when test="$double.sided != 0 and ($sequence = 'even' or $sequence = 'blank') and $position = 'left'">
+                     <fo:page-number/>
+                  </xsl:when>
+      
+                  <xsl:when test="$double.sided != 0 and ($sequence = 'odd' or $sequence = 'first') and $position = 'right'">
+                     <fo:page-number/>
+                  </xsl:when>
+      
+                  <xsl:when test="$double.sided = 0 and $position='center'">
+                     <fo:page-number/>
+                  </xsl:when>
+      
+                  <xsl:otherwise/>
+  
+               </xsl:choose>
+            </fo:block>
+
+         </xsl:template>
+         <xsl:variable name="show.comments" select="0"/>
+         <xsl:param name="generate.toc">
+        book      nop
+        chapter   nop
+        section   nop
+      </xsl:param>
+      </xsl_code>
+   </stylesheet>
+</stylesheet_registry>

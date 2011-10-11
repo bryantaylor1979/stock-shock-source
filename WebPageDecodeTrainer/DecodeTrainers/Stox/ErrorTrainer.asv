@@ -1,0 +1,39 @@
+% Pivot Point
+count = 1;
+struct(count).Name = 'PivotPoint';
+struct(count).NoOfIndices = NaN;
+struct(count).Class = 'Num';
+struct(count).BA_14_June_2011.ExpectedValue = '323.86';
+struct(count).CHG_14_June_2011.ExpectedValue = '660.74';
+
+% % Time
+% count = count + 1;
+% struct(count).Name = 'Time';
+% struct(count).NoOfIndices = NaN;
+% struct(count).Class = 'Char';
+% struct(count).BA_14_June_2011.ExpectedValue = '2011-06-14 12:14:48 PM';
+% struct(count).CHG_14_June_2011.ExpectedValue = '2011-06-14 12:15:04 PM';
+
+% % Price and moving averages
+% count = count + 1;
+% struct(count).Name = 'PriceAndMovingAverages';
+% struct(count).NoOfIndices = NaN;
+% struct(count).Class = 'Char';
+% struct(count).BA_14_June_2011.ExpectedValue  = 'Price and moving averages has closed below its Short term moving average. Short term moving average is currently below mid-term; AND below long term moving averages. From the relationship between price and moving averages; we can see that: This stock is BEARISH in short-term; and BEARISH in mid-long term.';
+% struct(count).CHG_14_June_2011.ExpectedValue = 'Price and moving averages has closed above its Short term moving average. Short term moving average is currently below mid-term; AND below long term moving averages. From the relationship between price and moving averages; we can see that: This stock is NEUTRAL in short-term; and BEARISH in mid-long term.';
+
+% % Bollinger Bands
+% count = count + 1;
+% struct(count).Name = 'BollingerBands';
+% struct(count).NoOfIndices = NaN;
+% struct(count).Class = 'Char';
+% struct(count).BA_14_June_2011.ExpectedValue  = 'BA.L has closed above bottom band by 14.5%. Bollinger Bands are 2.5% narrower than normal. The current width of the bands does not suggest anything about the future direction or movement of prices. ';
+% struct(count).CHG_14_June_2011.ExpectedValue = 'CHG.L has closed below upper band by 36.8%. Bollinger Bands are 99.2% narrower than normal. The narrow width of the bands suggests low volatility as compared to CHG.L''s normal range. The bands have been in this narrow range for 37 bars. This is a sign that the market may be about to initiate a new trend.';
+
+% % Overall
+% count = count + 1;
+% struct(count).Name = 'Overall';
+% struct(count).NoOfIndices = NaN;
+% struct(count).Class = 'Char';
+% struct(count).BA_14_June_2011.ExpectedValue  = '<img border=0 src=http://uk.stoxline.com/pics/3s.bmp>';
+% struct(count).CHG_14_June_2011.ExpectedValue = '<img border=0 src=http://uk.stoxline.com/pics/3s.bmp>';

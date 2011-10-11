@@ -1,0 +1,411 @@
+struct(1).Name = 'MarketCap';
+struct(1).Class = 'Num';
+struct(1).StartString = '3'' ><td class=''m'' align=''center''>&nbsp;';
+struct(1).EndString = '</td>';
+ 
+struct(2).Name = 'SharesInIssue';
+struct(2).Class = 'Num';
+struct(2).StartString = 'sue</a></td><td class=''s'' align=''right''>';
+struct(2).EndString = '</td>';
+ 
+struct(3).Name = 'PrevClose';
+struct(3).Class = 'Num';
+struct(3).StartString = 'se</a></td><td class=''s'' align=''right''>';
+struct(3).EndString = '</td>';
+ 
+struct(4).Name = 'PE_Ratio';
+struct(4).Class = 'Num';
+struct(4).StartString = 'b'' align=''left''><a href="/Help/price-earnings-ratio-pe-ratio-117.html" class="Lcc" target="help">PE Ratio</a></td><td class=''s'' align=''right''>';
+struct(4).EndString = '</td>';
+ 
+struct(5).Name = 'DividendYield';
+struct(5).Class = 'Num';
+struct(5).StartString = 'b'' align=''left''><a href="/Help/dividend-yield-105.html" class="Lcc" target="help">Dividend Yield</a></td><td class=''s'' align=''right''>';
+struct(5).EndString = '</td>';
+ 
+struct(6).Name = 'EPS_basic';
+struct(6).Class = 'Num';
+struct(6).StartString = 'c</a></td><td class=''s'' align=''right''>';
+struct(6).EndString = '</td>';
+ 
+struct(7).Name = 'Dividend_PS';
+struct(7).Class = 'Num';
+struct(7).StartString = 'd PS</a></td><td class=''s'' align=''right''>';
+struct(7).EndString = '</td>';
+ 
+struct(8).Name = 'Dividend_Cover';
+struct(8).Class = 'Num';
+struct(8).StartString = 'Cover</a></td><td class=''s'' align=''right''>';
+struct(8).EndString = '</td>';
+ 
+struct(9).Name = 'CashFlowPS';
+struct(9).Class = 'Num';
+struct(9).StartString = '>Cash Flow PS</a></td><td class=''s'' align=''right''>';
+struct(9).EndString = '</td>';
+ 
+struct(10).Name = 'ReturnOnEquity';
+struct(10).Class = 'Num';
+struct(10).StartString = 'b'' align=''left''><a href="/Help/return-on-equity-roe-115.html" class="Lcc" target="help">Return On Equity (ROE)</a></td><td class=''s'' align=''right''>';
+struct(10).EndString = '</td>';
+ 
+struct(11).Name = 'OperatingMargin';
+struct(11).Class = 'Num';
+struct(11).StartString = 'g Margin</a></td><td class=''s'' align=''right''>';
+struct(11).EndString = '</td>';
+ 
+struct(12).Name = 'PEG_Factor';
+struct(12).Class = 'Num';
+struct(12).StartString = 'or</a></td><td class=''s'' align=''right''>';
+struct(12).EndString = '</td>';
+ 
+struct(13).Name = 'TurnoverPS';
+struct(13).Class = 'Num';
+struct(13).StartString = 'r PS</a></td><td class=''s'' align=''right''>';
+struct(13).EndString = '</td>';
+ 
+struct(14).Name = 'PreTaxProfitPS';
+struct(14).Class = 'Num';
+struct(14).StartString = '>Pre-Tax Profit PS</a></td><td class=''s'' align=''right''>';
+struct(14).EndString = '</td>';
+ 
+struct(15).Name = 'RetainedProfitPS';
+struct(15).Class = 'Num';
+struct(15).StartString = '>Retained Profit PS</a></td><td class=''s'' align=''right''>';
+struct(15).EndString = '</td>';
+ 
+struct(16).Name = 'CashPS';
+struct(16).Class = 'Num';
+struct(16).StartString = '>Cash PS</a></td><td class=''s'' align=''right''>';
+struct(16).EndString = '</td>';
+ 
+struct(17).Name = 'NetCashPS';
+struct(17).Class = 'Num';
+struct(17).StartString = ' Cash PS</a></td><td class=''s'' align=''right''>';
+struct(17).EndString = '</td>';
+ 
+struct(18).Name = 'NetTangibleAssetValuePS';
+struct(18).Class = 'Num';
+struct(18).StartString = '*</a></td><td class=''s'' align=''right''>';
+struct(18).EndString = '</td>';
+ 
+struct(19).Name = 'NetAssetValuePS';
+struct(19).Class = 'Num';
+struct(19).StartString = 't Asset Value PS</a></td><td class=''s'' align=''right''>';
+struct(19).EndString = '</td>';
+ 
+struct(20).Name = 'PQ_Ratio';
+struct(20).Class = 'Num';
+struct(20).StartString = 'Q Ratio</a></td><td class=''s'' align=''right''>';
+struct(20).EndString = '</td>';
+ 
+struct(21).Name = 'PE_Ratio';
+struct(21).Class = 'Num';
+struct(21).StartString = 'b'' align=''left''><a href="/Help/price-earnings-ratio-pe-ratio-117.html" class="Lcc" target="help">PE Ratio</a></td><td class=''s'' align=''right''>';
+struct(21).EndString = '</td>';
+ 
+struct(22).Name = 'TobinsQRatio';
+struct(22).Class = 'Num';
+struct(22).StartString = ' </a></td><td class=''s'' align=''right''>';
+struct(22).EndString = '</td>';
+ 
+struct(23).Name = 'TobinsQRatio_Excl_intangibles';
+struct(23).Class = 'Num';
+struct(23).StartString = 'intangibles)</a></td><td class=''s'' align=''right''>';
+struct(23).EndString = '</td>';
+ 
+struct(24).Name = 'Market2Book_Ratio';
+struct(24).Class = 'Num';
+struct(24).StartString = 'ok Ratio</a></td><td class=''s'' align=''right''>';
+struct(24).EndString = '</td>';
+ 
+struct(25).Name = 'Price2PreTax_Profit_PS';
+struct(25).Class = 'Num';
+struct(25).StartString = '-Pre-Tax Profit PS</a></td><td class=''s'' align=''right''>';
+struct(25).EndString = '</td>';
+ 
+struct(26).Name = 'Price2Retained_Profit_PS';
+struct(26).Class = 'Num';
+struct(26).StartString = '-Retained Profit PS</a></td><td class=''s'' align=''right''>';
+struct(26).EndString = '</td>';
+ 
+struct(27).Name = 'Price2CashFlow_PS';
+struct(27).Class = 'Num';
+struct(27).StartString = '-Cash Flow PS</a></td><td class=''s'' align=''right''>';
+struct(27).EndString = '</td>';
+ 
+struct(28).Name = 'Price2Sales_PS';
+struct(28).Class = 'Num';
+struct(28).StartString = 's PS</a></td><td class=''s'' align=''right''>';
+struct(28).EndString = '</td>';
+ 
+struct(29).Name = 'Price2NetTangibleAssetValue_PS';
+struct(29).Class = 'Num';
+struct(29).StartString = 'e Asset Value PS</a></td><td class=''s'' align=''right''>';
+struct(29).EndString = '</td>';
+ 
+struct(30).Name = 'Price2Cash_PS';
+struct(30).Class = 'Num';
+struct(30).StartString = '-Cash PS</a></td><td class=''s'' align=''right''>';
+struct(30).EndString = '</td>';
+ 
+struct(31).Name = 'NetWorkingCapital_PS';
+struct(31).Class = 'Num';
+struct(31).StartString = 't Working Capital PS</a></td><td class=''s'' align=''right''>';
+struct(31).EndString = '</td>';
+ 
+struct(32).Name = 'PricePct2WorkingCapital_PS';
+struct(32).Class = 'Num';
+struct(32).StartString = 'o Working Capital PS</a></td><td class=''s'' align=''right''>';
+struct(32).EndString = '</td>';
+ 
+struct(33).Name = 'EarningsYield';
+struct(33).Class = 'Num';
+struct(33).StartString = 's Yield</a></td><td class=''s'' align=''right''>';
+struct(33).EndString = '</td>';
+ 
+struct(34).Name = 'AveragePE';
+struct(34).Class = 'Num';
+struct(34).StartString = 'E</a></td><td class=''s'' align=''right''>';
+struct(34).EndString = '</td>';
+ 
+struct(35).Name = 'YearsInAverage';
+struct(35).Class = 'Num';
+struct(35).StartString = 'n average</a></td><td class=''s'' align=''right''>';
+struct(35).EndString = '</td>';
+ 
+struct(36).Name = 'Pe2Pe_Average';
+struct(36).Class = 'Num';
+struct(36).StartString = 'E average</a></td><td class=''s'' align=''right''>';
+struct(36).EndString = '</td>';
+ 
+struct(37).Name = 'ROCE';
+struct(37).Class = 'Num';
+struct(37).StartString = 'CE)</a></td><td class=''s'' align=''right''>';
+struct(37).EndString = '</td>';
+ 
+struct(38).Name = 'ROA';
+struct(38).Class = 'Num';
+struct(38).StartString = 'A)</a></td><td class=''s'' align=''right''>';
+struct(38).EndString = '</td>';
+ 
+struct(39).Name = 'NetProfitMargin';
+struct(39).Class = 'Num';
+struct(39).StartString = 't Margin</a></td><td class=''s'' align=''right''>';
+struct(39).EndString = '</td>';
+ 
+struct(40).Name = 'AssetsTurnover';
+struct(40).Class = 'Num';
+struct(40).StartString = '>Assets Turnover</a></td><td class=''s'' align=''right''>';
+struct(40).EndString = '</td>';
+ 
+struct(41).Name = 'ROE';
+struct(41).Class = 'Num';
+struct(41).StartString = 'b'' align=''left''><a href="/Help/return-on-equity-roe-115.html" class="Lcc" target="help">Return On Equity (ROE)</a></td><td class=''s'' align=''right''>';
+struct(41).EndString = '</td>';
+ 
+struct(42).Name = 'ROT';
+struct(42).Class = 'Num';
+struct(42).StartString = 'I)</a></td><td class=''s'' align=''right''>';
+struct(42).EndString = '</td>';
+ 
+struct(43).Name = 'DividendPayoutRatio';
+struct(43).Class = 'Num';
+struct(43).StartString = 'ut Ratio</a></td><td class=''s'' align=''right''>';
+struct(43).EndString = '</td>';
+ 
+struct(44).Name = 'PlowbackRatio';
+struct(44).Class = 'Num';
+struct(44).StartString = '>Plowback Ratio</a></td><td class=''s'' align=''right''>';
+struct(44).EndString = '</td>';
+ 
+struct(45).Name = 'GrowthFrom_PlowbackRatio';
+struct(45).Class = 'Num';
+struct(45).StartString = ' Plowback Ratio</a></td><td class=''s'' align=''right''>';
+struct(45).EndString = '</td>';
+ 
+struct(46).Name = 'NetIncome_OfRevenues';
+struct(46).Class = 'Num';
+struct(46).StartString = 'ues</a></td><td class=''s'' align=''right''>';
+struct(46).EndString = '</td>';
+ 
+struct(47).Name = 'ShareholdersEquityTurnover';
+struct(47).Class = 'Num';
+struct(47).StartString = 'ty Turnover</a></td><td class=''s'' align=''right''>';
+struct(47).EndString = '</td>';
+ 
+struct(48).Name = 'FixedAssetsTurnover';
+struct(48).Class = 'Num';
+struct(48).StartString = 'd Assets Turnover</a></td><td class=''s'' align=''right''>';
+struct(48).EndString = '</td>';
+ 
+struct(49).Name = 'CurrentAssetsTurnover';
+struct(49).Class = 'Num';
+struct(49).StartString = 't Assets Turnover</a></td><td class=''s'' align=''right''>';
+struct(49).EndString = '</td>';
+ 
+struct(50).Name = 'InventoryTurnover';
+struct(50).Class = 'Num';
+struct(50).StartString = 'ry Turnover</a></td><td class=''s'' align=''right''>';
+struct(50).EndString = '</td>';
+ 
+struct(51).Name = 'TotalAssets2Sales';
+struct(51).Class = 'Num';
+struct(51).StartString = 'ts-to-Sales</a></td><td class=''s'' align=''right''>';
+struct(51).EndString = '</td>';
+ 
+struct(52).Name = 'Debtors2Sales';
+struct(52).Class = 'Num';
+struct(52).StartString = 'rs-to-Sales</a></td><td class=''s'' align=''right''>';
+struct(52).EndString = '</td>';
+ 
+struct(53).Name = 'DebtCollectionPeriod';
+struct(53).Class = 'Num';
+struct(53).StartString = 'od</a></td><td class=''s'' align=''right''>';
+struct(53).EndString = '</td>';
+ 
+struct(54).Name = 'DebtRatio';
+struct(54).Class = 'Num';
+struct(54).StartString = 'bt Ratio</a></td><td class=''s'' align=''right''>';
+struct(54).EndString = '</td>';
+ 
+struct(55).Name = 'Debt2EquityRatio';
+struct(55).Class = 'Num';
+struct(55).StartString = 'uity Ratio</a></td><td class=''s'' align=''right''>';
+struct(55).EndString = '</td>';
+ 
+struct(56).Name = 'Debt2EquityRatioExclIntgbl';
+struct(56).Class = 'Num';
+struct(56).StartString = 'o (excl. Intgbl)</a></td><td class=''s'' align=''right''>';
+struct(56).EndString = '</td>';
+ 
+struct(57).Name = 'Debt2EquityMarketValue';
+struct(57).Class = 'Num';
+struct(57).StartString = '-Equity Market Value</a></td><td class=''s'' align=''right''>';
+struct(57).EndString = '</td>';
+ 
+struct(58).Name = 'NetGearing';
+struct(58).Class = 'Num';
+struct(58).StartString = 't Gearing</a></td><td class=''s'' align=''right''>';
+struct(58).EndString = '</td>';
+ 
+struct(59).Name = 'NetGearing_ExclIntangibles';
+struct(59).Class = 'Num';
+struct(59).StartString = 't Gearing (excl. Intangibles)</a></td><td class=''s'' align=''right''>';
+struct(59).EndString = '</td>';
+ 
+struct(60).Name = 'GrossGearing';
+struct(60).Class = 'Num';
+struct(60).StartString = 'b'' align=''left''><a href="/Help/gross-gearing-97.html" class="Lcc" target="help">Gross Gearing</a></td><td class=''s'' align=''right''>';
+struct(60).EndString = '</td>';
+ 
+struct(61).Name = 'GrossGearing_ExclIntangibles';
+struct(61).Class = 'Num';
+struct(61).StartString = 's Gearing (excl. Intangibles)</a></td><td class=''s'' align=''right''>';
+struct(61).EndString = '</td>';
+ 
+struct(62).Name = 'GearingUnder1_Year';
+struct(62).Class = 'Num';
+struct(62).StartString = 'ar</a></td><td class=''s'' align=''right''>';
+struct(62).EndString = '</td>';
+ 
+struct(63).Name = 'GearingUnder1_YearExclIntgbl';
+struct(63).Class = 'Num';
+struct(63).StartString = 'r (excl. Intgbl)</a></td><td class=''s'' align=''right''>';
+struct(63).EndString = '</td>';
+ 
+struct(64).Name = 'AssetsDivEquity';
+struct(64).Class = 'Num';
+struct(64).StartString = 's/Equity</a></td><td class=''s'' align=''right''>';
+struct(64).EndString = '</td>';
+ 
+struct(65).Name = 'CashDivEquity';
+struct(65).Class = 'Num';
+struct(65).StartString = 'h/Equity</a></td><td class=''s'' align=''right''>';
+struct(65).EndString = '</td>';
+ 
+struct(66).Name = 'NetWorkingCapital2TotalAssets';
+struct(66).Class = 'Num';
+struct(66).StartString = 'l Assets</a></td><td class=''s'' align=''right''>';
+struct(66).EndString = '</td>';
+ 
+struct(67).Name = 'CurrentRatio';
+struct(67).Class = 'Num';
+struct(67).StartString = 'nt Ratio</a></td><td class=''s'' align=''right''>';
+struct(67).EndString = '</td>';
+ 
+struct(68).Name = 'QuickRatio_AcidTest';
+struct(68).Class = 'Num';
+struct(68).StartString = 't)</a></td><td class=''s'' align=''right''>';
+struct(68).EndString = '</td>';
+ 
+struct(69).Name = 'LiquidityRatio';
+struct(69).Class = 'Num';
+struct(69).StartString = 'dity Ratio</a></td><td class=''s'' align=''right''>';
+struct(69).EndString = '</td>';
+ 
+struct(70).Name = 'Cash&EquivDivCurrentAssets';
+struct(70).Class = 'Num';
+struct(70).StartString = '/Current Assets</a></td><td class=''s'' align=''right''>';
+struct(70).EndString = '</td>';
+ 
+struct(71).Name = 'EnterpriseValue';
+struct(71).Class = 'Num';
+struct(71).StartString = 'e Value</a></td><td class=''s'' align=''right''>';
+struct(71).EndString = '</td>';
+ 
+struct(72).Name = 'CFO_Div_Sales';
+struct(72).Class = 'Num';
+struct(72).StartString = 'O/Sales</a></td><td class=''s'' align=''right''>';
+struct(72).EndString = '</td>';
+ 
+struct(73).Name = 'CFO_Div_AttributableProfit';
+struct(73).Class = 'Num';
+struct(73).StartString = 'e Profit</a></td><td class=''s'' align=''right''>';
+struct(73).EndString = '</td>';
+ 
+struct(74).Name = 'CFO_Div_Assets';
+struct(74).Class = 'Num';
+struct(74).StartString = '/Assets</a></td><td class=''s'' align=''right''>';
+struct(74).EndString = '</td>';
+ 
+struct(75).Name = 'CFO_Div_Debt';
+struct(75).Class = 'Num';
+struct(75).StartString = '/Debt</a></td><td class=''s'' align=''right''>';
+struct(75).EndString = '</td>';
+ 
+struct(76).Name = 'TotalDebt_Div_EquityMarketValue';
+struct(76).Class = 'Num';
+struct(76).StartString = '/Equity Market Value</a></td><td class=''s'' align=''right''>';
+struct(76).EndString = '</td>';
+ 
+struct(77).Name = 'TotalDebt_Div_Sales';
+struct(77).Class = 'Num';
+struct(77).StartString = 't/Sales</a></td><td class=''s'' align=''right''>';
+struct(77).EndString = '</td>';
+ 
+struct(78).Name = 'TotalDebt_Div_PreTaxProfit';
+struct(78).Class = 'Num';
+struct(78).StartString = 'x Profit</a></td><td class=''s'' align=''right''>';
+struct(78).EndString = '</td>';
+ 
+struct(79).Name = 'TotalDebt';
+struct(79).Class = 'Num';
+struct(79).StartString = 'l Debt</a></td><td class=''s'' align=''right''>';
+struct(79).EndString = '</td>';
+ 
+struct(80).Name = 'TotalDebt_Div_NetCurrentAssets';
+struct(80).Class = 'Num';
+struct(80).StartString = ' Current Assets</a></td><td class=''s'' align=''right''>';
+struct(80).EndString = '</td>';
+ 
+struct(81).Name = '3yr_CompoundEarningsGrowth';
+struct(81).Class = 'Num';
+struct(81).StartString = '3 yr Compound Earnings Growth</a></td><td class=''s'' align=''right''>';
+struct(81).EndString = '</td>';
+ 
+struct(82).Name = 'EarnDrops_GreaterthanFivePercentage_in10yrs';
+struct(82).Class = 'Num';
+struct(82).StartString = 'rs</a></td><td class=''s'' align=''right''>';
+struct(82).EndString = '</td>';
+ 
+ 

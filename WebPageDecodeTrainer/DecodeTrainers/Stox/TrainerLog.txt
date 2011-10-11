@@ -1,0 +1,23 @@
+TargetsSixMonths: 1
+TargetOneYear: 1
+ResistanceOne: 1
+ResistanceTwo: 1
+SupporteOne: 1
+SupportTwo: 1
+PivotPoint: 1
+MA_5: 1
+MA_20: 1
+MA_100: 1
+MA_250: 1
+ StochasticOscillatorK: 1
+ StochasticOscillatorD: 1
+ RSI_14: 1
+ High_52Week: 1
+ Low_52Week: 1
+ Change_52Week: 1
+ AverageVolumeK_3Months: 1
+ AverageVolumeK_10Days: 1
+Time: 1
+PriceAndMovingAverages: 1
+BollingerBands: 1
+Overall: 1

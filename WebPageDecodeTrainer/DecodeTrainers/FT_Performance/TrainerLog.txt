@@ -1,0 +1,17 @@
+Open: 1
+AvVolumeStr: 1
+DayLow: 1
+DayHigh: 1
+OfficialClose: 1
+EPS: 1
+DivYield: 1
+DivPS: 1
+DivExDate: 1
+PreviousClose: 1
+SharesOutstanding: 1
+DivPayDate: 1
+NextDivExDate: 1
+NextDivPayDate: 1
+MarketCap: 1
+PE: 1
+FreeFloat: 1
