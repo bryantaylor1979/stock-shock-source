@@ -1,0 +1,11 @@
+WEB
+1
+http://www.digitallook.com/cgi-bin/dlmedia/security.cgi?username=&ac=&csi=168888
+
+Selection=EntirePage
+Formatting=None
+PreFormattedTextToColumns=True
+ConsecutiveDelimitersAsOne=True
+SingleBlockTextImport=False
+DisableDateRecognition=False
+DisableRedirections=False
