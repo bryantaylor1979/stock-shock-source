@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stylesheet_registry xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+   <registry>
+<!--========= v1.x DSSSL STYLESHEETS =========-->
+
+      <fileentities>
+         <refname>PRINT</refname>
+         <filename>
+            <d>$MATLABroot$</d>
+            <d>sys</d>
+            <d>jade</d>
+            <d>docbook</d>
+            <d>print</d>
+            <f>docbook.dsl</f>
+         </filename>
+         <refname>HTML</refname>
+         <filename>
+            <d>$MATLABroot$</d>
+            <d>sys</d>
+            <d>jade</d>
+            <d>docbook</d>
+            <d>print</d>
+            <f>docbook.dsl</f>
+         </filename>
+      </fileentities>
+      <stylesheet><!--25-Jun-2010 02:30:52-->
+         <name>Standard Print</name>
+         <description>Displays titlepage, table of contents, list of titles</description>
+         <ID>temp2</ID>
+         <fileref>PRINT</fileref>
+         <validformats>
+            <format>$stdprint$</format>
+         </validformats>
+         <variables>
+            <varpair>
+               <varname>%component-subtitle-quadding%</varname>
+               <varvalue>'start</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%title-font-family%</varname>
+               <varvalue>"Arial"</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%body-font-family%</varname>
+               <varvalue>"Arial"</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%section-title-quadding%</varname>
+               <varvalue>'start</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%section-subtitle-quadding%</varname>
+               <varvalue>'start</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%section-autolabel%</varname>
+               <varvalue>#f</varvalue>
+            </varpair>
+            <varpair>
+               <varname>%chapter-autolabel%</varname>
+               <varvalue>#t</varvalue>
+            </varpair> 
+         </variables>
+      </stylesheet>
+   </registry>
+</stylesheet_registry>

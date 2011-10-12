@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY sect-002 SYSTEM "./DayReport_No__xml_files/image-001-chapter.xfrag">
+]>
+<book lang="en">
+<?dbhtml filename="DayReport_No_.html"?>
+<!--Created by: Report Generator v3.3, The MathWorks Inc.-->
+<!--Daily Report on current investments.-->
+<!--Component skipped-->
+<!--Component skipped-->
+<!--Component skipped-->
+&sect-002;
+<!--Component skipped-->
+</book>
+ 

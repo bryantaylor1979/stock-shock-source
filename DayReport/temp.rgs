@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stylesheet_registry xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+   <stylesheet id="temp" transformtype="fo"><!--25-Jun-2010 03:02:08-->
+      <name>Standard Print</name>
+      <description>Displays titlepage, table of contents, list of titles</description>
+      <filename>$matlabroot/sys/namespace/docbook/v4/xsl/fo/docbook_rptgen.xsl</filename>
+      <xsl_code>
+         <xsl:param name="generate.toc">
+book toc,title,figure,table,example,equation
+chapter title
+section toc
+</xsl:param>
+         <xsl:attribute-set name="section.title.level1.properties">
+  
+            
+            <xsl:attribute name="font-size">
+    
+               
+               <xsl:value-of select="$body.font.master * 2.0736"/>
+    
+               
+               <xsl:text>pt</xsl:text>
+  
+            
+            </xsl:attribute>
+
+         
+         </xsl:attribute-set>
+         <xsl:attribute-set name="section.title.properties">
+  
+  
+            
+            <xsl:attribute name="font-weight">bold</xsl:attribute>
+  <!-- font size is calculated dynamically by section.heading template -->
+  
+            
+            <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
+  
+            
+            <xsl:attribute name="space-before.minimum">0.8em</xsl:attribute>
+  
+            
+            <xsl:attribute name="space-before.optimum">1.0em</xsl:attribute>
+  
+            
+            <xsl:attribute name="space-before.maximum">1.2em</xsl:attribute>
+  
+            
+            <xsl:attribute name="text-align">left</xsl:attribute>
+  
+            
+            <xsl:attribute name="start-indent">
+               
+               <xsl:value-of select="$title.margin.left"/>
+            
+            </xsl:attribute>
+
+         
+         </xsl:attribute-set>
+         <xsl:attribute-set name="section.title.level2.properties">
+  
+            
+            <xsl:attribute name="font-size">
+    
+               
+               <xsl:value-of select="$body.font.master * 1.728"/>
+    
+               
+               <xsl:text>pt</xsl:text>
+  
+            
+            </xsl:attribute>
+
+         
+         </xsl:attribute-set>
+      </xsl_code>
+   </stylesheet>
+</stylesheet_registry>
