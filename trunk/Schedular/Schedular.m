@@ -1,6 +1,7 @@
 classdef Schedular <    handle & ...
                         MacroRun & ...
-                        TaskMonitor
+                        TaskMonitor & ...
+                        DataSetFiltering
     properties
         job
         timers
@@ -41,9 +42,10 @@ classdef Schedular <    handle & ...
                         disp('Could not create log file')
                     end
                     Plan = obj.LoadPlanner('Planner');
+                    N_DATASET = obj.Planner2DataSet(Plan)
                     NumberOfPasses = 3;
                     disp('Planner loaded sucessfully')
-                    obj.Run(Plan,NumberOfPasses);
+                    obj.Run(N_DATASET,NumberOfPasses);
                     
                     diary off
                 end
@@ -52,18 +54,18 @@ classdef Schedular <    handle & ...
 %                 uiwait(msgbox('Error occured')) 
 %             end
         end
-        function Run(obj,Macros,NumberOfPasses)
+        function Run(obj,DATASET,NumberOfPasses)
             NextAgentID = obj.CheckHung;
             
             date = today;
             date = obj.GetStoreDate(date);  
             Name = getComputerName;
             disp(['ComputerName: ',Name])
-            Macros = obj.FilterPCTaskOnly(Macros,Name);
-            if isempty(Macros), error('No tasks for this computer'), end %Check that task are required for this PC.
+            DATASET = obj.ColumnStr(DATASET,'PC_Name',Name);
+            if isempty(DATASET), error('No tasks for this computer'), end %Check that task are required for this PC.
 
             %%
-            struct = obj.GetStatusStruct(Macros,date,Name); %Load if file exist, create if not found and save.
+            struct = obj.GetStatusStruct(DATASET,date,Name); %Load if file exist, create if not found and save.
             [ProgramName,MacroName] = obj.GetNextAction(struct);
             struct.(ProgramName).(MacroName).Started = true;
             struct.(ProgramName).(MacroName).TimeOfLastPulse = now;
@@ -132,6 +134,21 @@ classdef Schedular <    handle & ...
             disp(['Load planner: ',obj.InstallDir,'Macros\',Name,'.m'])
             [DATASET,Error] = obj.ExecuteMacro([obj.InstallDir,'Macros\',Name,'.m']);
             Macro = DATASET;
+        end
+        function N_DATASET = Planner2DataSet(obj,Plan)
+            %%
+            NumberOfFields = size(DATASET.table,2)
+            FieldNames = DATASET.FieldNames
+            for i = 1:NumberOfFields
+                FieldName = FieldNames{i}
+                columndata = DATASET.table(:,i)
+                column = dataset({columndata,FieldName})
+                if i == 1
+                    N_DATASET = column;
+                else
+                    DATASET = [N_DATASET,column];
+                end
+            end
         end
         function KillStatus = CheckKillAll(obj,KillTime,KillStatus)
             %%
@@ -237,11 +254,9 @@ classdef Schedular <    handle & ...
             disp(['Starting macro: ',ProgamName,'-',MacroName])
             obj.job.(ProgamName).(MacroName) = obj.RunMaro(ProgamName,MacroName);
         end
-        function Macros = FilterPCTaskOnly(obj,Macros,name)
+        function DATASET = FilterPCTaskOnly(obj,DATASET,name)
             %%
-            Names = Macros(:,1);
-            n = find(strcmpi(name,Names));
-            Macros = Macros(n,:);
+            [DATASET] = obj.ColumnStr(DATASET,'PC_Name',name)
         end
         function [struct, Error] = LoadStatus(obj,date,Name)
             %%
