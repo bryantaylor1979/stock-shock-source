@@ -3,16 +3,8 @@ classdef TaskMonitor <  handle & ...
     properties
     end
     methods
-        function [DATASET] = GetPcsTasks(obj,Name)
-            %%
-            Macros = obj.LoadPlanner('Planner');
-            date = today;
-            date = obj.GetStoreDate(date);  
-            disp(['ComputerName: ',Name])
-            Macros = obj.FilterPCTaskOnly(Macros,Name);
-            if isempty(Macros), error('No tasks for this computer'), end %Check that task are required for this PC.
-            struct = obj.GetStatusStruct(Macros,date,Name); %Load if file exist, create if not found and save.
-            
+        function [DATASET] = struct2DATASET(obj,struct)
+           
             %%
             ProgramNames = fieldnames(struct);
             x = size(ProgramNames,1);
@@ -38,7 +30,7 @@ classdef TaskMonitor <  handle & ...
             %%
             DATASET = dataset(Program,Result,Started,Complete,TimeOfLastPulse,AgentName);
             x = size(DATASET,1);
-            disp(['Number Of Tasks for ',Name,': ',num2str(x)])
+            disp(['Number Of Tasks for this PC: ',num2str(x)])
         end
         function [N_DATASET] = AddTimeSinceLastPulse(obj,DATASET)
             %% Time since last update
