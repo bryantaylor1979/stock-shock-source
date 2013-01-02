@@ -10,7 +10,7 @@ ProgramName = 'BritishBulls';
 ResultName = 'CurrentEvent';
 MacroName = 'BritishBulls_HIST';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 % Should use BB ALL_STATUS Symbol Set. 

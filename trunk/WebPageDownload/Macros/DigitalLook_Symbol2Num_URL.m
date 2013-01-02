@@ -10,7 +10,7 @@ ProgramName = 'DigitalLook';
 ResultName = 'Symbol2Num';
 MacroName = 'DigitalLook_Symbol2Num_URL';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 % Should use BB ALL_STATUS Symbol Set. 

@@ -7,7 +7,7 @@ ProgramName = 'NewsAlerts';
 ResultName = 'RNS';
 MacroName = 'NewsAlerts_RNS';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);

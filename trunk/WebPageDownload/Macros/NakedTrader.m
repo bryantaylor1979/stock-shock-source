@@ -10,7 +10,7 @@ ProgramName = 'NakedTrader';
 ResultName = 'Shares';
 MacroName = 'NakedTrader';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = { 'sh' ; ...

@@ -8,7 +8,7 @@ ProgramName = 'FinicialTimes';
 ResultName = 'Performance';
 MacroName = 'FT_Performance';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);

@@ -9,7 +9,7 @@ ProgramName = 'ADVFN';
 ResultName = 'Finacials';
 MacroName = 'ADVFN_URL_CompanyInfo';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
