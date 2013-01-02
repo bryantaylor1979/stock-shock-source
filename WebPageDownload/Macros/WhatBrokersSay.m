@@ -10,7 +10,7 @@ ProgramName = 'WhatBrokersSay';
 ResultName = 'BrokersView';
 MacroName = 'WhatBrokersSay';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = { '0' ; ...

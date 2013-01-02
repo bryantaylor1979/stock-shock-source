@@ -8,7 +8,7 @@ ProgramName = 'BritishBulls';
 ResultName = 'ALL_STATUS';
 MacroName = 'BritishBulls_ALLSTATUS';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 PageList = {'BasicMaterials'; ...

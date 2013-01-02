@@ -8,7 +8,7 @@ ProgramName = 'Stox';
 ResultName = 'Best_Investments';
 MacroName = 'Stox';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);

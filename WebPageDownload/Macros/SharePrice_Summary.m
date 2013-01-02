@@ -8,7 +8,7 @@ ProgramName = 'SharePrice';
 ResultName = 'Summary';
 MacroName = 'SharePrice_Summary';
 
-Date = today;
+Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
