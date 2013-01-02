@@ -183,13 +183,6 @@ classdef Reliabilty <   handle & ...
             Status2 = obj.ColumnFiltering(Status,{'ProgramName','ResultName','NumberOfDaysSinceLastUpdate'});
             Status2 = sortrows(Status2,3,'descend');
         end
-        function DATASET = ReadTaskList(obj)
-            %% 
-            filename = obj.RunTaskList;
-            drawnow
-            DATASET = obj.TaskListFile2DataSet(filename);
-
-        end
         function Table = HistTimeDurationALL(obj)
             %%
             DATA = {    'ADVFN',          'Finacials'; ...
@@ -256,6 +249,7 @@ classdef Reliabilty <   handle & ...
                         'NewsAlerts',     'RNS'; ...
                         'SharePrice',     'Summary'; ...
                         'Stox',           'Best_Investments'; ...
+                        'NakedTrader',    'Shares'; ...
                         'WhatBrokersSay', 'BrokersView'};       
             x = size(DATA,1);
             for i = 1:x
@@ -341,57 +335,6 @@ classdef Reliabilty <   handle & ...
         end
     end
     methods (Hidden = true)
-        function DATASET = TaskListFile2DataSet(obj,filename)
-            %%
-            [p] = textread(filename,'%s','delimiter','\n','whitespace','');
-            Strings = cell2mat(p(2:end));
-            
-            ImageName = Strings(3:end,1:26);
-            x = size(ImageName,1);
-            for i = 1:x
-                Name{i,1} = strrep(ImageName(i,:),' ','');
-            end
-            ImageName = Name;
-            
-            PID = Strings(3:end,27:35);
-            x = size(PID,1);
-            for i = 1:x
-                PID_(i,1) = str2num(strrep(PID(i,:),' ',''));
-            end
-            PID = PID_;
-            
-            SessionName = Strings(3:end,36:53);
-            x = size(SessionName,1);
-            for i = 1:x
-                Name{i,1} = strrep(SessionName(i,:),' ','');
-            end
-            SessionName = Name;
-            
-            
-            Session = Strings(3:end,53:65);
-            x = size(Session,1);
-            for i = 1:x
-                Session_(i,1) = str2num(strrep(Session(i,:),' ',''));
-            end
-            Session = Session_;
-            
-            MemUsage = Strings(3:end,65:end); 
-            x = size(MemUsage,1);
-            for i = 1:x
-                MemUsage_(i,1) = str2num(strrep(strrep(MemUsage(i,:),'K',''),',',''));
-            end
-            MemUsage = MemUsage_;            
-
-            
-            DATASET = dataset(ImageName,PID,SessionName,Session,MemUsage);            
-        end
-        function filename = RunTaskList(obj)
-            filename = ['TaskList__',strrep(datestr(now),':','_'),'.txt'];
-            diary(filename);
-            dos('TaskList');
-            drawnow
-            diary off;
-        end
         function [Status,error] = Get(obj,ProgramName,ResultName,Type,Frequency,FolderType)
             %%
             [DateNum, error] = obj.GetResultDateNums(ProgramName,ResultName,FolderType);
