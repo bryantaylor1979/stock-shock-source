@@ -3,35 +3,6 @@ classdef TaskMonitor <  handle & ...
     properties
     end
     methods
-        function [DATASET] = struct2DATASET(obj,struct)
-           
-            %%
-            ProgramNames = fieldnames(struct);
-            x = size(ProgramNames,1);
-            count = 1;
-            for i = 1:x
-                ProgramName = ProgramNames{i};
-                ResultNames = fieldnames(struct.(ProgramName));
-                y = size(ResultNames,1);
-                for j = 1:y
-                    Program{count,1} = ProgramName;
-                    Result{count,1} = ResultNames{j};
-                    AgentName{count,1} = struct.(ProgramName).(ResultNames{j}).AgentName;
-                    Started(count,1) = struct.(ProgramName).(ResultNames{j}).Started;
-                    Complete(count,1) = struct.(ProgramName).(ResultNames{j}).Complete;
-                    temp = struct.(ProgramName).(ResultNames{j}).TimeOfLastPulse;
-                    if ischar(temp)
-                        temp = NaN;                      
-                    end
-                    TimeOfLastPulse(count,1) = temp;
-                    count = count + 1;
-                end
-            end
-            %%
-            DATASET = dataset(Program,Result,Started,Complete,TimeOfLastPulse,AgentName);
-            x = size(DATASET,1);
-            disp(['Number Of Tasks for this PC: ',num2str(x)])
-        end
         function [N_DATASET] = AddTimeSinceLastPulse(obj,DATASET)
             %% Time since last update
             TimeOfLastPulse = obj.GetColumn(DATASET,'TimeOfLastPulse');
@@ -60,9 +31,13 @@ classdef TaskMonitor <  handle & ...
             NumberOfStale = size(P_DATASET,1);
             for i = 1:NumberOfStale
                 Entry = P_DATASET(1,:);
-                AgentName = obj.GetColumn(Entry,'AgentName');
-                programName = ['URL_Download_',AgentName{1}];
-                obj.KillProgram(programName);
+                try
+                    AgentName = obj.GetColumn(Entry,'AgentName');
+                    programName = ['URL_Download_',AgentName{1}];
+                    obj.KillProgram(programName);
+                catch
+                    disp('Agent Name Not logged')   
+                end
             end
         end
     end

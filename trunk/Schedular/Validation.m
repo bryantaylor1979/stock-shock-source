@@ -15,11 +15,16 @@ classdef Validation <   URL_Download & ...
            struct = load(String);
            struct = struct.struct
            
+           struct.detial
            Macros = fieldnames(struct.detial.(Type));
            for i = 1:max(size(Macros))
                 Val = struct.detial.(Type).(Macros{i})
                 Array{i,1} = Macros{i};
+                try
                 Array{i,2} = Val.Time;
+                catch
+                Array{i,2} = 'N/A';    
+                end
                 Array{i,3} = Val.Started;
                 Array{i,4} = Val.Complete;
                 try

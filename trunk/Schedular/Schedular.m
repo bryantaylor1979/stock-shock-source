@@ -1,7 +1,9 @@
 classdef Schedular <    handle & ...
                         MacroRun & ...
                         TaskMonitor & ...
-                        DataSetFiltering
+                        DataSetFiltering & ...
+                        StructureManagement & ...
+                        TrackerManagement
     properties
         job
         timers
@@ -42,10 +44,10 @@ classdef Schedular <    handle & ...
                         disp('Could not create log file')
                     end
                     Plan = obj.LoadPlanner('Planner');
-%                     N_DATASET = obj.Planner2DataSet(Plan)
-%                     NumberOfPasses = 3;
-%                     disp('Planner loaded sucessfully')
-%                     obj.Run(N_DATASET,NumberOfPasses);
+                    N_DATASET = obj.Planner2DataSet(Plan)
+                    NumberOfPasses = 3;
+                    disp('Planner loaded sucessfully')
+                    obj.Run(N_DATASET,NumberOfPasses);
                     
                     diary off
                 end
@@ -55,6 +57,7 @@ classdef Schedular <    handle & ...
 %             end
         end
         function Run(obj,N_DATASET,NumberOfPasses)
+            %%
             date = today;
             date = obj.GetStoreDate(date);  
             Name = getComputerName;
@@ -64,15 +67,18 @@ classdef Schedular <    handle & ...
 
             %%
             struct = obj.GetStatusStruct(DATASET,date,Name); %Load if file exist, create if not found and save.
-            [DATASET] = obj.struct2DATASET(struct)
+%             struct = struct.detial;
+            [DATASET] = obj.struct2DATASET(struct);
             NextAgentID = obj.CheckHung(DATASET); %On this PC only
             
             %%
             [ProgramName,MacroName] = obj.GetNextAction(struct);
+            
+            [struct, Error] = obj.LoadStatus(date,Name);
+            struct = struct.detial;
             struct.(ProgramName).(MacroName).Started = true;
             struct.(ProgramName).(MacroName).TimeOfLastPulse = now;
             struct.(ProgramName).(MacroName).StartTime = datestr(now,'HH:MM:SS');
-
             o_struct.detial = struct;
             obj.SaveStatus(o_struct,date,Name);
             
@@ -80,19 +86,23 @@ classdef Schedular <    handle & ...
             for i = 1:NumberOfPasses
                 obj.RunProgram(ProgramName,MacroName,NextAgentID);
             end
+            
+            %% Double check everything is closed
+            programName = ['URL_Download_Agent',num2str(NextAgentID)];
+            obj.KillProgram(programName);
+            pause(30)
+            obj.KillProgram(programName);
 
             %% Load struct modify to be complete then save. 
             [struct, Error] = obj.LoadStatus(date,Name);
             struct = struct.detial; 
-
             struct.(ProgramName).(MacroName).Started = false;
             struct.(ProgramName).(MacroName).Complete = true;
             struct.(ProgramName).(MacroName).TimeOfLastPulse = now;
             struct.(ProgramName).(MacroName).EndTime = datestr(now,'HH:MM:SS');
             struct.(ProgramName).(MacroName).Progress = 1;
-
             o_struct.detial = struct;
-            obj.SaveStatus(o_struct,date,Name);            
+            obj.SaveStatus(o_struct,date,Name);  
         end
         function NextAgentID = CheckHung(obj,DATASET)
             %%
@@ -117,15 +127,18 @@ classdef Schedular <    handle & ...
             obj.KillStale(P_DATASET);
             
             %% Get ID for next event
-            AgentName = obj.GetColumn(N_DATASET,'AgentName');
-            AgentNumStr = strrep(AgentName,'Agent','');
-            AgentNum = str2num(cell2mat(AgentNumStr));
-            
-            for i = 1:size(AgentNum,1)
-                n = find(not(AgentNum(i) == NumberOfScedulars));
-                NumberOfScedulars = NumberOfScedulars(n);
+            try
+                AgentName = obj.GetColumn(N_DATASET,'AgentName');
+                AgentNumStr = strrep(AgentName,'Agent','');
+                AgentNum = str2num(cell2mat(AgentNumStr));
+                for i = 1:size(AgentNum,1)
+                    n = find(not(AgentNum(i) == NumberOfScedulars));
+                    NumberOfScedulars = NumberOfScedulars(n);
+                end
+                NextAgentID = NumberOfScedulars(1);
+            catch
+                NextAgentID = 1;
             end
-            NextAgentID = NumberOfScedulars(1);
         end
     end
     methods
@@ -133,21 +146,6 @@ classdef Schedular <    handle & ...
             disp(['Load planner: ',obj.InstallDir,'Macros\',Name,'.m'])
             [DATASET,Error] = obj.ExecuteMacro([obj.InstallDir,'Macros\',Name,'.m']);
             Macro = DATASET;
-        end
-        function N_DATASET = Planner2DataSet(obj,DATASET)
-            %%
-            NumberOfFields = size(DATASET.table,2)
-            FieldNames = DATASET.FieldNames
-            for i = 1:NumberOfFields
-                FieldName = FieldNames{i}
-                columndata = DATASET.table(:,i)
-                column = dataset({columndata,FieldName})
-                if i == 1
-                    N_DATASET = column;
-                else
-                    N_DATASET = [N_DATASET,column];
-                end
-            end
         end
         function KillStatus = CheckKillAll(obj,KillTime,KillStatus)
             %%
@@ -253,25 +251,6 @@ classdef Schedular <    handle & ...
             disp(['Starting macro: ',ProgamName,'-',MacroName])
             obj.job.(ProgamName).(MacroName) = obj.RunMaro(ProgamName,MacroName);
         end
-        function [struct, Error] = LoadStatus(obj,date,Name)
-            %%
-            filename = [obj.InstallDir,'Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
-            filename = [obj.StockData,'Schedular\Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
-            try
-                disp(['Load Path: ',filename])
-                load(filename)
-                Error = 0;
-            catch
-                struct = [];
-                Error = -1;                
-            end
-        end
-        function SaveStatus(obj,struct,date,Name)
-            %%
-           filename = [obj.InstallDir,'Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
-           filename = [obj.StockData,'Schedular\Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
-           save(filename)
-        end
         function struct  = BuildStruct(obj,N_DATASET)
             %%
             PC_Name = obj.GetColumn(N_DATASET,'PC_Name');
@@ -340,36 +319,6 @@ classdef Schedular <    handle & ...
             
             %%
             [ProgramName,MacroName] = obj.GetDetails(struct5);
-        end
-        function structout = RemoveCompleted(obj,struct)
-            %%
-            ProgramNames = fieldnames(struct);
-            for i = 1:max(size(ProgramNames))
-                MacroNames = fieldnames(struct.(ProgramNames{i}));
-                for j = 1:max(size(MacroNames))
-                    val = struct.(ProgramNames{i}).(MacroNames{j});
-                    if val.Complete == false
-                        structout.(ProgramNames{i}).(MacroNames{j}) = struct.(ProgramNames{i}).(MacroNames{j});
-                    end
-                end
-            end
-            if not(exist('structout'))
-                disp('All task are complete. Program will be terminated')
-                error('Program terminated')
-            end
-        end
-        function structout = RemoveStarted(obj,struct)
-            %%
-            ProgramNames = fieldnames(struct);
-            for i = 1:max(size(ProgramNames))
-                MacroNames = fieldnames(struct.(ProgramNames{i}));
-                for j = 1:max(size(MacroNames))
-                    val = struct.(ProgramNames{i}).(MacroNames{j});
-                    if val.Started == false
-                        structout.(ProgramNames{i}).(MacroNames{j}) = struct.(ProgramNames{i}).(MacroNames{j});
-                    end
-                end
-            end
         end
         function structout = RemoveNotScheduled(obj,struct)
             %%
