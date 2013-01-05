@@ -1,17 +1,16 @@
 classdef Schedular <    handle & ...
                         MacroRun & ...
-                        TaskMonitor & ...
                         DataSetFiltering & ...
                         StructureManagement & ...
-                        TrackerManagement
+                        mindowsSchedular
     properties
         job
         timers
-        CompiledProgramDir = 'Y:\';
         RunOnInt = 'on';
         InstallDir = 'C:\SourceSafe\Stocks & Shares\Programs\Schedular\';
         ProgramName = 'Schedular';
         StockData = 'P:\StockData [MEDIAPC]\';
+        ENABLE = false
     end
     methods
         function obj = Schedular(varargin)
@@ -44,7 +43,7 @@ classdef Schedular <    handle & ...
                         disp('Could not create log file')
                     end
                     Plan = obj.LoadPlanner('Planner');
-                    N_DATASET = obj.Planner2DataSet(Plan)
+                    N_DATASET = obj.Planner2DataSet(Plan);
                     NumberOfPasses = 3;
                     disp('Planner loaded sucessfully')
                     obj.Run(N_DATASET,NumberOfPasses);
@@ -58,10 +57,8 @@ classdef Schedular <    handle & ...
         end
         function Run(obj,N_DATASET,NumberOfPasses)
             %%
-            date = today;
-            date = obj.GetStoreDate(date);  
-            Name = getComputerName;
-            disp(['ComputerName: ',Name])
+
+
             DATASET = obj.ColumnStr(N_DATASET,'PC_Name',Name);
             if isempty(DATASET), error('No tasks for this computer'), end %Check that task are required for this PC.
 
@@ -74,74 +71,27 @@ classdef Schedular <    handle & ...
             %%
             [ProgramName,MacroName] = obj.GetNextAction(struct);
             
-            [struct, Error] = obj.LoadStatus(date,Name);
-            struct = struct.detial;
-            struct.(ProgramName).(MacroName).Started = true;
-            struct.(ProgramName).(MacroName).TimeOfLastPulse = now;
-            struct.(ProgramName).(MacroName).StartTime = datestr(now,'HH:MM:SS');
-            o_struct.detial = struct;
-            obj.SaveStatus(o_struct,date,Name);
-            
-            %%
-            for i = 1:NumberOfPasses
-                obj.RunProgram(ProgramName,MacroName,NextAgentID);
-            end
-            
-            %% Double check everything is closed
-            programName = ['URL_Download_Agent',num2str(NextAgentID)];
-            obj.KillProgram(programName);
-            pause(30)
-            obj.KillProgram(programName);
-
-            %% Load struct modify to be complete then save. 
-            [struct, Error] = obj.LoadStatus(date,Name);
-            struct = struct.detial; 
-            struct.(ProgramName).(MacroName).Started = false;
-            struct.(ProgramName).(MacroName).Complete = true;
-            struct.(ProgramName).(MacroName).TimeOfLastPulse = now;
-            struct.(ProgramName).(MacroName).EndTime = datestr(now,'HH:MM:SS');
-            struct.(ProgramName).(MacroName).Progress = 1;
-            o_struct.detial = struct;
-            obj.SaveStatus(o_struct,date,Name);  
-        end
-        function NextAgentID = CheckHung(obj,DATASET)
-            %%
-            NumberOfScedulars = [1:6];
-            [DATASET] = obj.NumRange(DATASET,'Complete',[-0.5,0.5]); %Complete FALSE
-            x = size(DATASET,1);
-            disp(['Removing completed. Number of task left: ',num2str(x)])
-            [DATASET] = obj.NumRange(DATASET,'Started',[0.5,1.5]); %Started TRUE
-            x = size(DATASET,1);
-            disp(['Filter on complete. Number of task left: ',num2str(x)])
-            if x == 0
-                NextAgentID = 1;
-               return 
-            end
-            
-            [DATASET] = obj.ColumnStr(DATASET,'Program','URL_Download'); %Started TRUE
-            [N_DATASET] = obj.AddTimeSinceLastPulse(DATASET);
-            
-            %% Keep only started
-            StaleThreshold = '00:10:00';        
-            P_DATASET = obj.FindStale(N_DATASET,StaleThreshold);    
-            obj.KillStale(P_DATASET);
-            
-            %% Get ID for next event
-            try
-                AgentName = obj.GetColumn(N_DATASET,'AgentName');
-                AgentNumStr = strrep(AgentName,'Agent','');
-                AgentNum = str2num(cell2mat(AgentNumStr));
-                for i = 1:size(AgentNum,1)
-                    n = find(not(AgentNum(i) == NumberOfScedulars));
-                    NumberOfScedulars = NumberOfScedulars(n);
-                end
-                NextAgentID = NumberOfScedulars(1);
-            catch
-                NextAgentID = 1;
+            if obj.ENABLE == true
+                obj.RunAndTrackProgram(ProgramName,MacroName,NumberOfPasses,NextAgentID);
             end
         end
     end
     methods
+        function N_DATASET = Planner2DataSet(obj,DATASET)
+            %%
+            NumberOfFields = size(DATASET.table,2);
+            FieldNames = DATASET.FieldNames;
+            for i = 1:NumberOfFields
+                FieldName = FieldNames{i};
+                columndata = DATASET.table(:,i);
+                column = dataset({columndata,FieldName});
+                if i == 1
+                    N_DATASET = column;
+                else
+                    N_DATASET = [N_DATASET,column];
+                end
+            end
+        end
         function Macro = LoadPlanner(obj,Name)
             disp(['Load planner: ',obj.InstallDir,'Macros\',Name,'.m'])
             [DATASET,Error] = obj.ExecuteMacro([obj.InstallDir,'Macros\',Name,'.m']);
@@ -161,11 +111,6 @@ classdef Schedular <    handle & ...
                 obj.KillProgram('Schedular');
                 KillStatus = true;
             end
-        end
-        function KillProgram(obj,Program)
-            String = ['taskkill /IM ',Program,'.exe'];
-            disp(String)
-            dos(String)
         end
         function CreatejobSummaryTimer(obj,UpdateRate)
             %%
@@ -212,18 +157,6 @@ classdef Schedular <    handle & ...
         function KillJob(obj,job)
             %%
             destroy(job);
-        end
-        function job = RunProgram(obj,ProgamName,MacroName,AgentNum)
-            disp(['Running: ',ProgamName,'-',MacroName])
-            PWD = pwd;
-            Path = [obj.CompiledProgramDir,ProgamName,'\']
-            String1 = [ProgamName,'_Agent',num2str(AgentNum),'.exe "Macro" "',MacroName,'" "AgentName" "Agent',num2str(AgentNum),'"']
-            cd(Path)
-            dos(String1);
-%             String2 = ['dos(''',String1,''')'];
-%             job = batch(String2);
-            cd(PWD)
-            job = 1;
         end
         function CreateTimerObject(obj,ProgamName,MacroName,Time)
             %%
@@ -275,17 +208,6 @@ classdef Schedular <    handle & ...
                 struct.(ProgramName).(MacroName).AgentName = [];
             end
         end
-        function date = GetStoreDate(obj,date)
-            Threshold = '08:00:00';
-            if date == today %if today then find time.
-                time = now;
-                time = rem(time,1);
-                ThresholdDateNum = rem(datenum(Threshold),1);
-                if time < ThresholdDateNum;
-                    date = date - 1;
-                end
-            end            
-        end
         function [struct]  = GetStatusStruct(obj,Macros,date,Name)   
             %%
             [struct, Error] = obj.LoadStatus(date,Name);
@@ -304,8 +226,11 @@ classdef Schedular <    handle & ...
                 struct = struct.detial;    
             end
         end
+    end
+    methods %Filter Tasks to get next action
         function [ProgramName,MacroName] = GetNextAction(obj,struct)
             %%
+            
             struct2 = obj.RemoveCompleted(struct);
             
             %%
@@ -328,7 +253,6 @@ classdef Schedular <    handle & ...
                 MacroNames = fieldnames(struct.(ProgramNames{i}));
                 for j = 1:max(size(MacroNames))
                     val = struct.(ProgramNames{i}).(MacroNames{j});
-                    val.Time
                     try
                         Time = datenum(val.Time);
                         TimeDiff = Time - TimeNow;
@@ -344,6 +268,36 @@ classdef Schedular <    handle & ...
                     end
                 end
             end            
+        end       
+        function structout = RemoveCompleted(obj,struct)
+            %%
+            ProgramNames = fieldnames(struct);
+            for i = 1:max(size(ProgramNames))
+                MacroNames = fieldnames(struct.(ProgramNames{i}));
+                for j = 1:max(size(MacroNames))
+                    val = struct.(ProgramNames{i}).(MacroNames{j});
+                    if val.Complete == false
+                        structout.(ProgramNames{i}).(MacroNames{j}) = struct.(ProgramNames{i}).(MacroNames{j});
+                    end
+                end
+            end
+            if not(exist('structout'))
+                disp('All task are complete. Program will be terminated')
+                error('Program terminated')
+            end
+        end
+        function structout = RemoveStarted(obj,struct)
+            %%
+            ProgramNames = fieldnames(struct);
+            for i = 1:max(size(ProgramNames))
+                MacroNames = fieldnames(struct.(ProgramNames{i}));
+                for j = 1:max(size(MacroNames))
+                    val = struct.(ProgramNames{i}).(MacroNames{j});
+                    if val.Started == false
+                        structout.(ProgramNames{i}).(MacroNames{j}) = struct.(ProgramNames{i}).(MacroNames{j});
+                    end
+                end
+            end
         end
         function structout = GetFirstEntry(obj,struct)
             %%
