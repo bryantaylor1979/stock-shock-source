@@ -1,5 +1,7 @@
 classdef DOS_Command_Logger < handle
     properties
+        LogInputs = true
+        LogOutputs = false
         Log2CommandWindow = true
         ProgramName = 'Schedular';
 		LogProgamName = true;
@@ -18,15 +20,19 @@ classdef DOS_Command_Logger < handle
         function [Error,String] = Dos_Command(obj,commandstr)
             %%
             if obj.Log2CommandWindow == true
-				if obj.LogProgamName == true
-					disp([obj.ProgramName,': ',commandstr]) 
-				else
-					disp(commandstr) 
-				end
+                if obj.LogInputs == true
+                    if obj.LogProgamName == true
+                        disp([obj.ProgramName,': ',commandstr]) 
+                    else
+                        disp(commandstr) 
+                    end
+                end
             end
             [Error,String] = system(commandstr);
             if not(isempty(String))
-                disp(String)
+                if obj.LogOutputs == true
+                    disp(String)
+                end
             end
         end
     end
