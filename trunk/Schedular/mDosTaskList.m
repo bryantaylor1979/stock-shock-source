@@ -5,7 +5,7 @@ classdef mDosTaskList       < 	handle & ...
 	%TODO: The table column filter is not avaliable. 
 	%TODO: find out about a PID kill command.
 	%TODO: PRIORITY-HIGH, string table decode.
-	properties
+	properties (SetObservable = true)
 		% this control access to remote system
 		remotesystem_Enable = false
 		remotesystem_name = 'LTCBG-BRYANT'  % Windows Computer Name
@@ -100,15 +100,22 @@ classdef mDosTaskList       < 	handle & ...
 		filter_windowTitle_operator = 'eq'  %ne - not equal
 											%eq - equal		
 	end
-	properties %Should not need modified
+	properties (SetObservable = true)%Should not need modified
 		% table output format
 		output_format = 'CSV'	% TABLE LIST CSV	
-	end
+    end
+    properties (SetObservable = true)
+       DATASET 
+    end
 	methods
 		function Example(obj)
 			%% 
 			close all
 			clear classes
+            obj = mDosTaskList();
+            
+            %%
+            ObjectInspector(obj);
 			
 			%% run normal tasklist display
 			% ============================
@@ -335,6 +342,8 @@ classdef mDosTaskList       < 	handle & ...
 			for i = 1:2:x
 				obj.(varargin{i}) = varargin{i+1};
             end
+            
+            obj.DATASET = obj.TaskList;
         end
     end
     methods %Decoders
