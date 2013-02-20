@@ -1,27 +1,30 @@
-classdef mindowsSchedular < handle & ...
-                            DataSetFiltering
+classdef mindowsSchedular < handle 
     % this class is intended to control
     %   - Run a task in windows schedular
     %   - Ensure we control all the task and monitor the tasks.
-    properties
+    properties (SetObservable = true)
         CompiledProgramDir = 'Y:\';
+        ComputerName
+        TaskController
+        LastTradingDate
+        LastTradingDateNum
+        SharedDir = 'Y:\Schedular\'; % shared between PCs to track tasks.
+    end
+    properties (Hidden = true)
+        handles
     end
     methods
         function Example(obj)
            %%
             close all
             clear classes
+            
+            %%
             obj = mindowsSchedular;
-            
-            %%
-            NotFound = obj.KillProgram('openvpn-gui');
-            
-            %%
-            obj.RunProgram('URL_Download','BritishBulls_ALLSTATUS',1)
+            ObjectInspector(obj)
         end
         function RunAndTrackProgram(obj,ProgramName,MacroName,NumberOfPasses,NextAgentID)
-            date = today;
-            date = obj.GetStoreDate(date);  
+
             Name = getComputerName;
             disp(['ComputerName: ',Name])
             
@@ -117,22 +120,8 @@ classdef mindowsSchedular < handle & ...
             NumStale = size(P_DATASET,1);
             disp(['Number Stale: ',num2str(NumStale)])
         end
-        function KillStale(obj,P_DATASET)
-            NumberOfStale = size(P_DATASET,1);
-            for i = 1:NumberOfStale
-                Entry = P_DATASET(1,:);
-                try
-                    AgentName = obj.GetColumn(Entry,'AgentName');
-                    programName = ['URL_Download_',AgentName{1}];
-                    %%
-                    obj.KillProgram(programName);
-                catch
-                    disp('Agent Name Not logged')   
-                end
-            end
-        end
     end 
-    methods %Support functions
+    methods (Hidden = true) %Support functions
         function date = GetStoreDate(obj,date)
             Threshold = '08:00:00';
             if date == today %if today then find time.
@@ -144,32 +133,22 @@ classdef mindowsSchedular < handle & ...
                 end
             end            
         end 
-        function name = getComputerName(obj)
-            % GETCOMPUTERNAME returns the name of the computer (hostname)
-            % name = getComputerName()
-            %
-            % WARN: output string is converted to lower case
-            %
-            %
-            % See also SYSTEM, GETENV, ISPC, ISUNIX
-            %
-            % m j m a r i n j (AT) y a h o o (DOT) e s
-            % (c) MJMJ/2007
-            %
-
-            [ret, name] = system('hostname');   
-
-            if ret ~= 0,
-               if ispc
-                  name = getenv('COMPUTERNAME');
-               else      
-                  name = getenv('HOSTNAME');      
-               end
-            end
-            name = lower(name);
-            load cr
-            name = strrep(name,cr,'');
-            name = strrep(name,' ','');
+        function obj = mindowsSchedular()
+            %% Load objects
+            obj.TaskController = TaskController;
+            obj.handles.DataSetFiltering = DataSetFiltering;
+            
+            %% process
+            obj.ComputerName = obj.getComputerName;
+            obj.LastTradingDateNum = obj.GetLastTradingDate();
+            obj.LastTradingDate = datestr(obj.LastTradingDateNum);
+            
+            %%
+            [struct, Error] = obj.LoadStatus(date,obj.ComputerName)
+        end
+        function date = GetLastTradingDate(obj)
+            date = today;
+            date = obj.GetStoreDate(date);              
         end
     end
     methods % Load and Save Tracker.
@@ -181,8 +160,7 @@ classdef mindowsSchedular < handle & ...
         end
         function [struct, Error] = LoadStatus(obj,date,Name)
             %%
-            filename = [obj.InstallDir,'Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
-            filename = [obj.StockData,'Schedular\Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
+            filename = [obj.SharedDir,'Schedular\Track\',Name,'_',strrep(datestr(date),'-','_'),'.mat'];
             try
                 disp(['Load Path: ',filename])
                 load(filename)
@@ -191,30 +169,6 @@ classdef mindowsSchedular < handle & ...
                 struct = [];
                 Error = -1;                
             end
-        end
-    end
-    methods % Basic Dos Commands
-        function NotFound = KillProgram(obj,Program)
-            %%
-            String = ['taskkill /IM ',Program,'.exe'];
-            disp(String)
-            [code,ReturnString] = system(String);
-            if code == 128
-                NotFound = true;
-                disp('Task not found. It may have been close by a user')
-            else
-                NotFound = false;
-            end
-            disp(ReturnString)
-        end
-        function RunProgram(obj,ProgamName,MacroName,AgentNum)
-            disp(['Running: ',ProgamName,'-',MacroName])
-            PWD = pwd;
-            Path = [obj.CompiledProgramDir,ProgamName,'\'];
-            String1 = [ProgamName,'_Agent',num2str(AgentNum),'.exe "Macro" "',MacroName,'" "AgentName" "Agent',num2str(AgentNum),'"']
-            cd(Path)
-            dos(String1);
-            cd(PWD);
         end
     end
 end

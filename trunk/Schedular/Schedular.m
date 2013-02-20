@@ -13,6 +13,14 @@ classdef Schedular <    handle & ...
         ENABLE = false
     end
     methods
+        function Example(obj)
+            %%
+            close all
+            clear classes
+            
+            %%
+            obj.Schedular
+        end
         function obj = Schedular(varargin)
 %             try
                 [x] = size(varargin,2);
