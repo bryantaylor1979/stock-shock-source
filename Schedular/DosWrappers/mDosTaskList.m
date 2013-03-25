@@ -98,7 +98,7 @@ classdef mDosTaskList       < 	handle
 		filter_windowTitle = 'Spotify'		%Service name
 		filter_windowTitle_operator = 'eq'  %ne - not equal
 											%eq - equal	
-        DosShell
+        Dos_Shell
 	end
 	properties (SetObservable = true, Hidden = true)%Should not need modified
 		% table output format
@@ -270,25 +270,25 @@ classdef mDosTaskList       < 	handle
 			%% on eith a local or remote machine. 
 			CommandString = obj.StringBuilder();
             
-            obj.DosShell.CommandStr = CommandString;
-			obj.DosShell.RUN();
+            obj.Dos_Shell.CommandStr = CommandString;
+			obj.Dos_Shell.RUN();
             
             if obj.remotesystem_Enable == true
                 ErrorString = 'ERROR: Logon failure: unknown user name or bad password.';
-                if strncmp(obj.DosShell.String,ErrorString,56)
+                if strncmp(obj.Dos_Shell.String,ErrorString,56)
                    errordlg(ErrorString, 'Error Dialog', 'modal');
                    error(ErrorString);
                 end
                 %%
                 ErrorString = 'ERROR: The RPC server is unavailable.'
-                if strncmp(obj.DosShell.String,ErrorString,37)
+                if strncmp(obj.Dos_Shell.String,ErrorString,37)
                    errordlg(ErrorString, 'Error Dialog', 'modal');
                    error(ErrorString);                   
                 end
             end
             
             %%
-            DATASET_OUT = obj.DecodeString(obj.DosShell.String);
+            DATASET_OUT = obj.DecodeString(obj.Dos_Shell.String);
             obj.DATASET = DATASET_OUT;
         end
     end
@@ -376,8 +376,10 @@ classdef mDosTaskList       < 	handle
 				obj.(varargin{i}) = varargin{i+1};
             end
             
-            obj.DosShell = DOS_Command_Logger(  'Mode','system', ...
+            if isempty(obj.Dos_Shell)
+            obj.Dos_Shell = DOS_Command_Logger(  'Mode','system', ...
                                                 'ProgramName','mDosTaskList');
+            end
         end
     end
     methods (Hidden = true) %Decoders
