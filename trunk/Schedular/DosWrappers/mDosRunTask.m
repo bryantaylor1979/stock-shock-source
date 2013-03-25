@@ -1,13 +1,17 @@
 classdef mDosRunTask <  handle 
     properties (SetObservable = true)
+        computerName
         Mode = 'batch'; %system or batch
         Path = 'Y:\URL_Download\';
         ProgramName = 'URL_Download.exe';
         MacroName = 'Stox';
-        DosShell
+        Dos_Shell
     end
     properties (Hidden = true)
         handles
+        computerName_LUT = {    'mediapc'; ...
+                             	'mt'; ...
+                            	'ltcbg-bryant'};
     end
     methods
         function Example(obj)
@@ -23,7 +27,7 @@ classdef mDosRunTask <  handle
             %%
             Path = 'Y:\URL_Download\';
             ExeName = 'URL_Download_Agent1.exe';
-            ArgStr = '"Macro" "BritishBulls_ALLSTATUS" "AgentName" "Agent1"';
+            ArgStr = '"Macro" "BritishBulls_ALLSTATUS"';
             obj.RunExecutable( Path,  ExeName, ArgStr)
                         
             %%
@@ -42,9 +46,11 @@ classdef mDosRunTask <  handle
                 obj.(varargin{i}) = varargin{i+1};
             end
             %%
-            obj.DosShell = DOS_Command_Logger(  'ProgramName','mDosRunTask', ...
-                                                'Path',obj.Path, ...
-                                                'Mode',obj.Mode);
+            if isempty(obj.Dos_Shell)
+            obj.Dos_Shell = DOS_Command_Logger(     'ProgramName','mDosRunTask', ...
+                                                    'Path',obj.Path, ...
+                                                    'Mode',obj.Mode);
+            end
             obj.handles.DataSetFiltering = DataSetFiltering;
         end
     end
@@ -57,10 +63,10 @@ classdef mDosRunTask <  handle
         function RunExecutable(obj,Path, ExeName, ArgStr)
             %%
             CommandString = [ExeName,' ', ArgStr];
-            obj.DosShell.Path = Path;
-            obj.DosShell.Mode = obj.Mode;
-            obj.DosShell.CommandStr = CommandString;
-            obj.DosShell.RUN;
+            obj.Dos_Shell.Path = Path;
+            obj.Dos_Shell.Mode = obj.Mode;
+            obj.Dos_Shell.CommandStr = CommandString;
+            obj.Dos_Shell.RUN;
         end
     end
 end
