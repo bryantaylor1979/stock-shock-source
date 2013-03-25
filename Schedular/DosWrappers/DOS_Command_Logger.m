@@ -11,7 +11,7 @@ classdef DOS_Command_Logger < handle
         Path
         State = 'ready'
         currentComputerName
-        selectedComputerName = char([]) %if empty it will default to non remote executions
+        selectedComputerName = '' %Default is currentComputerName (non remote executions)
         remoteShareDir = 'S:\DOS\';
     end
     properties (SetObservable = true) %Batch only properties
@@ -34,7 +34,9 @@ classdef DOS_Command_Logger < handle
                                     'mt'; ...
                                     'ltcbg-bryant'};
        ControllerMode_LUT = {   'Listener'; ...
-                                'Master'};
+                                'Master'; ...
+                                'MasterSim'}; %In master sim mode you can force a token even on the same machine.
+       infoFileToBeExcute
     end
     methods
         function Example(obj)
@@ -53,7 +55,17 @@ classdef DOS_Command_Logger < handle
             obj.selectedComputerName = 'mt'
             obj.RUN()
             
-            %% listener mode
+            %% MasterSim  mode
+            obj = DOS_Command_Logger(   'ControllerMode', 'MasterSim', ...
+                                        'Path', 'Y:\URL_Download\', ...
+                                        'remoteShareDir','Y:\URL_Download\Swap\');
+            obj.CommandStr = 'URL_Download.exe "Macro" "BritishBulls_ALLSTATUS"';
+            ObjectInspector(obj)
+            
+            %% 
+            obj = DOS_Command_Logger(      'ControllerMode', 'Listener', ...
+                                            'remoteShareDir', 'Y:\URL_Download\Swap\');
+            ObjectInspector(obj)
         end
         function RUN(obj)
             %%
@@ -62,13 +74,13 @@ classdef DOS_Command_Logger < handle
                 %%
                 info_filelist = obj.GetInfoList('info.mat');
                 track_filelist = obj.GetInfoList('track.mat');
-                infoFileToBeExcute = obj.GetInfoFileToBeExecuted(info_filelist,track_filelist);
+                obj.infoFileToBeExcute = obj.GetInfoFileToBeExecuted(info_filelist,track_filelist);
                 
-                if isempty(infoFileToBeExcute)
+                if isempty(obj.infoFileToBeExcute)
                     disp('not dos commands need to be executed')
                     return 
                 end
-                obj.applySettings(infoFileToBeExcute)
+                obj.applySettings(obj.infoFileToBeExcute)
 
 
                 
@@ -84,37 +96,61 @@ classdef DOS_Command_Logger < handle
                 obj.selectedComputerName = obj.getComputerName;
             end
             if strcmpi(obj.selectedComputerName,obj.currentComputerName)
-                obj.RunOnThisMachine();
-            else
-                struct.Mode = obj.Mode;
-                struct.ProgramName = obj.ProgramName;
-                struct.CommandStr = obj.CommandStr;
-                struct.selectedComputerName = obj.selectedComputerName;
-                struct.Path = obj.Path;
-                
-                %logging
-                struct.LogInputs = obj.LogInputs;
-                struct.LogOutputs = obj.LogOutputs;
-                struct.Log2CommandWindow = obj.Log2CommandWindow;
-                struct.LogProgamName =  obj.LogProgamName;
-                
-                files = ImageIO('Path',obj.remoteShareDir,'ImageType','info.mat');
-                files.RUN;
-                info_filelist = files.names;
-                
-                info_filelist = strrep(info_filelist,'_info.mat','');
-                info_filelist = strrep(info_filelist,'dos_command_','');
-                nums = str2double(info_filelist);
-                Num = max(nums);
-                if isempty(Num)
-                    Num = -1;
+                if strcmpi(obj.ControllerMode,'MasterSim')
+                    Num = obj.FindLastTokenNumber();
+                    obj.CreateTokens(Num+1);
+                    obj.State = 'waiting for tracker';
+                    starttime = now;
+                    obj.StartTime = datestr(starttime,'HH:MM:SS');
+                    obj.handles.timerObj = timer('TimerFcn',@(x,y)obj.Listen2RemoteTask(Num+1));
+                    set(obj.handles.timerObj,'ExecutionMode','fixedSpacing','Period',3);
+                    start(obj.handles.timerObj);
+                else
+                    obj.RunOnThisMachine();
                 end
-                save([obj.remoteShareDir,'dos_command_',num2str(Num+1),'_info.mat'],'struct')
-                disp('run on other machine')
+            else
+                Num = obj.FindLastTokenNumber();
+                obj.CreateTokens(Num+1);
+                obj.State = 'waiting for tracker';
+                starttime = now;
+                obj.StartTime = datestr(starttime,'HH:MM:SS');
+                obj.handles.timerObj = timer('TimerFcn',@(x,y)obj.Listen2RemoteTask(Num+1));
+                set(obj.handles.timerObj,'ExecutionMode','fixedSpacing','Period',3);
+                start(obj.handles.timerObj);
             end
         end
     end
     methods (Hidden = true) %support for remote
+        function Num = FindLastTokenNumber(obj)
+            files = ImageIO('Path',obj.remoteShareDir,'ImageType','info.mat');
+            files.RUN;
+            info_filelist = files.names;
+
+            info_filelist = strrep(info_filelist,'_info.mat','');
+            info_filelist = strrep(info_filelist,'dos_command_','');
+            nums = str2double(info_filelist);
+            Num = max(nums);
+            if isempty(Num)
+                Num = -1;
+            end            
+        end
+        function CreateTokens(obj,Num)
+            struct.Mode = obj.Mode;
+            struct.ProgramName = obj.ProgramName;
+            struct.CommandStr = obj.CommandStr;
+            struct.selectedComputerName = obj.selectedComputerName;
+            struct.Path = obj.Path;
+
+            %logging
+            struct.LogInputs = obj.LogInputs;
+            struct.LogOutputs = obj.LogOutputs;
+            struct.Log2CommandWindow = obj.Log2CommandWindow;
+            struct.LogProgamName =  obj.LogProgamName;
+
+
+            save([obj.remoteShareDir,'dos_command_',num2str(Num),'_info.mat'],'struct')
+            disp('run on other machine')            
+        end
         function info_filelist = GetInfoList(obj,EndStr)
             files = ImageIO('Path',obj.remoteShareDir,'ImageType',EndStr);
             files.RUN;
@@ -124,7 +160,8 @@ classdef DOS_Command_Logger < handle
             x = size(info_filelist,1);
             infoFileToBeExcute = [];
             for i = 1:x
-                n = strcmpi(info_filelist{i},track_filelist);
+                track = strrep(info_filelist{i},'info.mat','track.mat');
+                n = find(strcmpi(track,track_filelist));
                 if isempty(n)
                     infoFileToBeExcute = info_filelist{i};
                     break
@@ -133,11 +170,12 @@ classdef DOS_Command_Logger < handle
         end
         function applySettings(obj,infoFileToBeExcute)
             %% apply settings
-            load([obj.remoteShareDir,infoFileToBeExcute])
-            names = fieldnames(struct);
+            filename = [obj.remoteShareDir,infoFileToBeExcute]
+            o_struct = load(filename);
+            names = fieldnames(o_struct.struct);
             x = size(names,1);
             for i = 1:x
-                obj.(names{i}) = struct.(names{i});
+                obj.(names{i}) = o_struct.struct.(names{i});
             end
         end
     end
@@ -192,12 +230,14 @@ classdef DOS_Command_Logger < handle
                 end
             end            
         end
-        function obj = DOS_Command_Logger(varargin)    
+        function obj = DOS_Command_Logger(varargin)   
+            obj.currentComputerName = obj.getComputerName();
+            obj.selectedComputerName = obj.currentComputerName;
+            
             x = size(varargin,2);
 			for i = 1:2:x
 				obj.(varargin{i}) = varargin{i+1};
-            end
-            obj.currentComputerName = obj.getComputerName();
+            end  
         end
         function runSystem(obj)
             if not(isempty(obj.Path))
@@ -220,13 +260,14 @@ classdef DOS_Command_Logger < handle
             end
             
             obj.State = 'creating job';
+            starttime = now;
+            obj.StartTime = datestr(starttime,'HH:MM:SS');
+            drawnow;
             obj.Batch_Worker = createJob();
             obj.Batch_Job = createTask(obj.Batch_Worker,@system,0,{obj.CommandStr});
             obj.State = 'submitting job';
-            
+            drawnow;            
             submit(obj.Batch_Worker); 
-            starttime = now;
-            obj.StartTime = datestr(starttime,'HH:MM:SS');
             obj.State = 'Pending';
             
 
@@ -257,7 +298,39 @@ classdef DOS_Command_Logger < handle
             end
             
             if strcmpi(obj.ControllerMode,'Listener')
+                %%
                 
+                disp('Listener updating track file')
+                infoFileToBeExcute = strrep(obj.infoFileToBeExcute,'info.mat','track.mat');
+                struct.State = obj.State;
+                struct.LastStatusUpdate = obj.LastStatusUpdate;
+                struct.Duration = obj.Duration;
+                struct.FinishTime = obj.FinishTime; 
+                save([obj.remoteShareDir,infoFileToBeExcute],'struct')
+            end
+        end
+        function Listen2RemoteTask(obj,Num)
+            %%
+            
+            filename2load = ['dos_command_',num2str(Num),'_track.mat'];
+            track_filelist = obj.GetInfoList('track.mat');
+            disp('Master reading track file')
+            n = find(strcmpi(filename2load,track_filelist));
+            if not(isempty(n))
+                %%
+                struct = load([obj.remoteShareDir,filename2load]);
+                struct = struct.struct;
+                obj.State = struct.State;
+                obj.LastStatusUpdate = struct.LastStatusUpdate;
+                obj.Duration = struct.Duration;
+                obj.FinishTime = struct.FinishTime;  
+                
+                if strcmpi(obj.State,'finished')
+                    stop(obj.handles.timerObj);
+                    delete(obj.handles.timerObj);
+                end
+            else
+                obj.LastStatusUpdate = datestr(now,'HH:MM:SS');
             end
         end
     end
