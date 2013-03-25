@@ -1,13 +1,17 @@
 classdef TaskController < handle
-    properties (SetObservable = true)    
+    properties (SetObservable = true) 
+        computerName = 'ltcbg-bryant';
+        SimulationMode = true;
         ProgramRoot = 'Y:\'
         ProgramName = 'URL_Download' 
         MacroName = 'Stox'
         PID = NaN
         State
+        Dos_Shell
         TaskList
         RunTask
         TaskKill
+        remoteShareDir = 'Y:\URL_Download\Swap\'
     end
     properties (SetObservable = true)  % STATUS
         MacroFolder = 'Y:\URL_Download\Macros\'
@@ -16,6 +20,9 @@ classdef TaskController < handle
         MacroName_LUT = [];        
         ProgramName_LUT = { 'URL_Download'; ...
                             'WebPageDecoder'};
+        computerName_LUT = {    'mediapc'; ...
+                             	'mt'; ...
+                            	'ltcbg-bryant'};
     end
     methods
         function Example(obj)
@@ -24,10 +31,16 @@ classdef TaskController < handle
             clear classes
             
             %%
-            obj = TaskController
+            obj = TaskController('SimulationMode', true)
             ObjectInspector(obj)
         end
         function RUN_Task(obj)
+            if obj.SimulationMode == true
+                obj.Dos_Shell.ControllerMode = 'MasterSim';
+            else
+                obj.Dos_Shell.ControllerMode = 'Master';
+            end
+            
             DATASET = obj.GetTaskList;
             x = size(DATASET,1);
             y = x;
@@ -42,6 +55,12 @@ classdef TaskController < handle
             obj.PID = PID;
         end
         function KillTask(obj)
+            if obj.SimulationMode == true
+                obj.Dos_Shell.ControllerMode = 'MasterSim';
+            else
+                obj.Dos_Shell.ControllerMode = 'Master';
+            end
+            
             % check PID still exists
             obj.TaskKill.PID = obj.PID;
             logic = obj.CheckPIDExists(obj.PID);
@@ -62,15 +81,24 @@ classdef TaskController < handle
         end
     end
     methods (Hidden = true)
-        function obj = TaskController()
+        function obj = TaskController(varargin)
+            x = size(varargin,2);
+            for i = 1:2:x
+                obj.(varargin{i}) = varargin{i+1};
+            end
+            
             %% set macro folder
             obj.MacroFolder = fullfile(obj.ProgramRoot,obj.ProgramName,'Macros\');
+            obj.Dos_Shell = DOS_Command_Logger( 'remoteShareDir',   'Y:\URL_Download\Swap\');
                 
             %%
-            obj.TaskList = mTaskList();
-            obj.RunTask = mDosRunTask(  'ProgramName', [obj.ProgramName,'.exe'], ...
-                                        'MacroName',    obj.MacroName);
-            obj.TaskKill = mDosTaskKill;
+            obj.TaskList = mTaskList(    'computerName', obj.computerName, ...
+                                         'Dos_Shell',    obj.Dos_Shell);
+            obj.RunTask = mDosRunTask(   'computerName', obj.computerName, ...
+                                         'Dos_Shell',    obj.Dos_Shell, ...
+                                         'ProgramName', [obj.ProgramName,'.exe'], ...
+                                         'MacroName',    obj.MacroName);
+            obj.TaskKill = mDosTaskKill( 'Dos_Shell',    obj.Dos_Shell);
             imageIO = ImageIO;
             imageIO.ImageType = '.m';
             imageIO.Path = obj.MacroFolder;
@@ -81,8 +109,8 @@ classdef TaskController < handle
             obj.MacroName_LUT = strrep(names,'.m','');
             
             %%
-            obj.State = obj.RunTask.DosShell.State;
-            addlistener(obj.RunTask.DosShell,'State','PostSet',@obj.UpdateState)
+            obj.State = obj.RunTask.Dos_Shell.State;
+            addlistener(obj.RunTask.Dos_Shell,'State','PostSet',@obj.UpdateState)
         end
         function UpdateState(varargin)
             obj = varargin{1};
