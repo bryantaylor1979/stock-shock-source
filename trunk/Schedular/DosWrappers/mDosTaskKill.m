@@ -4,7 +4,7 @@ classdef mDosTaskKill     < 	handle
         PID = 8928;
         IM = 'Spotify.exe';
         Termination = 'ForceParent' %End, ForceParent, ForceParentAndChildren 
-        DosShell
+        Dos_Shell
     end
     properties (Hidden = true)
         Termination_LUT = { 'ForceParent'; ...
@@ -57,7 +57,7 @@ classdef mDosTaskKill     < 	handle
             for i = 1:2:x
                 obj.(varargin{i}) = varargin{i+1};
             end
-            obj.DosShell = DOS_Command_Logger(  'ProgramName','mDosTaskKill', ...
+            obj.Dos_Shell = DOS_Command_Logger(  'ProgramName','mDosTaskKill', ...
                                                 'Mode','system');
         end
         function TaskKill_PID(obj, PID, TerminationType)
@@ -89,7 +89,7 @@ classdef mDosTaskKill     < 	handle
         end
         function TaskKillDosHelp(obj)
             %%
-            obj.DosShell.Dos_Command('taskkill /?')
+            obj.Dos_Shell.Dos_Command('taskkill /?')
         end 
     end
 end
