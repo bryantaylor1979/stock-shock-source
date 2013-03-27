@@ -6,7 +6,7 @@ classdef ContinuousListener <   handle & ...
         ExecutionMode = 'fixedDelay';
         Dos_Shell
         TimeOfLastCheck
-        TokenDrive = 'Y:\URL_Download\Swap\'
+        TokenDrive = 'S:\DOS\'
     end
     properties (Hidden = true)
         ExecutionMode_LUT = {   'singleShot'; ...

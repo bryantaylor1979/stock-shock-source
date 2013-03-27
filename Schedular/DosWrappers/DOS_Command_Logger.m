@@ -72,23 +72,26 @@ classdef DOS_Command_Logger < handle
             if strcmpi(obj.ControllerMode,'Listener')
                 disp('DOS_Command_Logger is in listener mode')
                 %%
-                info_filelist = obj.GetInfoList('info.mat');
-                track_filelist = obj.GetInfoList('track.mat');
-                obj.infoFileToBeExcute = obj.GetInfoFileToBeExecuted(info_filelist,track_filelist);
+                info_filelist = obj.GetInfoList('info.mat')
+                track_filelist = obj.GetInfoList('track.mat')
+                infoFileToBeExcute = obj.GetInfoFileToBeExecuted(info_filelist,track_filelist)
                 
-                if isempty(obj.infoFileToBeExcute)
-                    disp('not dos commands need to be executed')
-                    return 
+                x = size(infoFileToBeExcute,1);
+                NoneForThisMachine = true;
+                for i = 1:x
+                    obj.applySettings(infoFileToBeExcute{i});
+                    disp([infoFileToBeExcute{i},' to be executed on ',obj.selectedComputerName])
+                    if not(strcmpi(obj.selectedComputerName,obj.currentComputerName))
+                       % not for this machine end
+                       disp('NOT for this machine')
+                    else
+                       obj.infoFileToBeExcute = infoFileToBeExcute{i};
+                       NoneForThisMachine = false;
+                       break
+                    end
                 end
-                obj.applySettings(obj.infoFileToBeExcute)
-
-
-                
-                %% 
-                if not(strcmpi(obj.selectedComputerName,obj.currentComputerName))
-                   % not for this machine end
-                   disp('NOT for this machine')
-                   return
+                if NoneForThisMachine == true
+                    return
                 end
             end
             %%
@@ -157,20 +160,21 @@ classdef DOS_Command_Logger < handle
             info_filelist = files.names;
         end    
         function infoFileToBeExcute = GetInfoFileToBeExecuted(obj,info_filelist,track_filelist)
-            x = size(info_filelist,1);
+            x = size(info_filelist,1)
             infoFileToBeExcute = [];
+            count = 1;
             for i = 1:x
                 track = strrep(info_filelist{i},'info.mat','track.mat');
                 n = find(strcmpi(track,track_filelist));
                 if isempty(n)
-                    infoFileToBeExcute = info_filelist{i};
-                    break
+                    infoFileToBeExcute{count,1} = info_filelist{i};
+                    count = count + 1;
                 end
             end
         end
         function applySettings(obj,infoFileToBeExcute)
             %% apply settings
-            filename = [obj.remoteShareDir,infoFileToBeExcute]
+            filename = [obj.remoteShareDir,infoFileToBeExcute];
             o_struct = load(filename);
             names = fieldnames(o_struct.struct);
             x = size(names,1);
@@ -306,6 +310,7 @@ classdef DOS_Command_Logger < handle
                 struct.LastStatusUpdate = obj.LastStatusUpdate;
                 struct.Duration = obj.Duration;
                 struct.FinishTime = obj.FinishTime; 
+                struct.String = obj.String;
                 save([obj.remoteShareDir,infoFileToBeExcute],'struct')
             end
         end
@@ -320,10 +325,11 @@ classdef DOS_Command_Logger < handle
                 %%
                 struct = load([obj.remoteShareDir,filename2load]);
                 struct = struct.struct;
-                obj.State = struct.State;
-                obj.LastStatusUpdate = struct.LastStatusUpdate;
-                obj.Duration = struct.Duration;
-                obj.FinishTime = struct.FinishTime;  
+                obj.State               = struct.State;
+                obj.LastStatusUpdate    = struct.LastStatusUpdate;
+                obj.Duration            = struct.Duration;
+                obj.FinishTime          = struct.FinishTime;  
+                obj.String              = struct.String;
                 
                 if strcmpi(obj.State,'finished')
                     stop(obj.handles.timerObj);
