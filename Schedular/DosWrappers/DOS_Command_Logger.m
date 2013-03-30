@@ -15,8 +15,6 @@ classdef DOS_Command_Logger < handle
         remoteShareDir = 'S:\DOS\';
     end
     properties (SetObservable = true) %Batch only properties
-        Batch_Job
-        Batch_Worker
         StartTime
         LastStatusUpdate = '';
         Duration
@@ -24,7 +22,8 @@ classdef DOS_Command_Logger < handle
     end
     properties (SetObservable = true) %Status
         Error = 0;
-        String = '';
+        String = {  ''; ...
+                    ''};
     end
     properties (Hidden = true)
        handles 
@@ -37,6 +36,8 @@ classdef DOS_Command_Logger < handle
                                 'Master'; ...
                                 'MasterSim'}; %In master sim mode you can force a token even on the same machine.
        infoFileToBeExcute
+       Batch_Job
+       Batch_Worker
     end
     methods
         function Example(obj)
@@ -230,7 +231,7 @@ classdef DOS_Command_Logger < handle
             
             if not(isempty(obj.String))
                 if obj.LogOutputs == true
-                    disp(String)
+                    disp(obj.String)
                 end
             end            
         end
@@ -283,7 +284,6 @@ classdef DOS_Command_Logger < handle
         end
         function UpdateState(varargin)
             %%
-            disp('updating')
             obj = varargin{1};
             starttime = varargin{2};
             
