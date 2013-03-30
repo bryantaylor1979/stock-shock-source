@@ -11,7 +11,7 @@ classdef TaskController < handle
         TaskList
         RunTask
         TaskKill
-        remoteShareDir = 'Y:\URL_Download\Swap\'
+        remoteShareDir = 'S:\DOS\'
     end
     properties (SetObservable = true)  % STATUS
         MacroFolder = 'Y:\URL_Download\Macros\'
@@ -35,15 +35,24 @@ classdef TaskController < handle
             ObjectInspector(obj)
         end
         function RUN_Task(obj)
+            %%
             if obj.SimulationMode == true
                 obj.Dos_Shell.ControllerMode = 'MasterSim';
             else
                 obj.Dos_Shell.ControllerMode = 'Master';
             end
             
+            %%
+            obj.Dos_Shell.remoteShareDir = obj.remoteShareDir;
+            obj.RunTask.computerName = obj.computerName;
+            
+            %%
             DATASET = obj.GetTaskList;
             x = size(DATASET,1);
             y = x;
+
+            
+            %%
             obj.RunTask.ProgramName = [obj.ProgramName,'.exe'];
             obj.RunTask.MacroName = obj.MacroName;
             obj.RunTask.RUN;
@@ -111,6 +120,7 @@ classdef TaskController < handle
             %%
             obj.State = obj.RunTask.Dos_Shell.State;
             addlistener(obj.RunTask.Dos_Shell,'State','PostSet',@obj.UpdateState)
+            obj.Dos_Shell.remoteShareDir = obj.remoteShareDir;
         end
         function UpdateState(varargin)
             obj = varargin{1};
