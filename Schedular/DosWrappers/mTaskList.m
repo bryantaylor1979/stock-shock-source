@@ -1,16 +1,20 @@
 classdef mTaskList < handle
     properties (SetObservable = true)
-        computerName
-    	output_table_view    	
+        filter_value = 'URL_Download.exe';
+        computerName = 'mediapc';
+    	output_table_view = 'standard'	
         filter_Enable = true;
         filter_name = 'imagename';
-        filter_value = 'URL_Download.exe';
         filter_operator = 'eq';
         DATASET = dataset()
         Dos_Shell
         mDosTaskList
     end
     properties (Hidden = true)
+        computerName_LUT = {   'mediapc'; ...
+                               'mt'; ...
+                               'ltcbg-bryant'};
+                           
         filter_name_LUT = {  'username' ; ...
                              'status'; ...
                              'imagename'; ...
@@ -25,9 +29,7 @@ classdef mTaskList < handle
                                    'services'; ...
                                    'modules'; ...
                                    'verbose'};
-        computerName_LUT = {   'mediapc'; ...
-                               'mt'; ...
-                               'ltcbg-bryant'};
+
         remotesystem_Enable %Not working
     	remotesystem_name   %Not working
     	remotesystem_username %Not working
@@ -51,6 +53,7 @@ classdef mTaskList < handle
            obj.SetEnables();
            obj.mDosTaskList.(['filter_',obj.filter_name]) = obj.filter_value;
            obj.mDosTaskList.(['filter_',obj.filter_name,'_operator']) = obj.filter_operator;
+           obj.Dos_Shell.selectedComputerName = obj.computerName;
            obj.mDosTaskList.RUN()
            obj.DATASET = obj.mDosTaskList.DATASET;
         end
@@ -64,10 +67,13 @@ classdef mTaskList < handle
             
             if isempty(obj.Dos_Shell)
                 obj.mDosTaskList = mDosTaskList();
+                obj.Dos_Shell = obj.mDosTaskList.Dos_Shell;
             else
                 obj.mDosTaskList = mDosTaskList('Dos_Shell',obj.Dos_Shell);
             end
             
+            obj.Dos_Shell.Mode = 'batch';
+            obj.Dos_Shell.selectedComputerName = obj.computerName;
             obj.remotesystem_Enable = obj.mDosTaskList.remotesystem_Enable;
             obj.remotesystem_name = obj.mDosTaskList.remotesystem_name;
             obj.remotesystem_username = obj.mDosTaskList.remotesystem_username;
