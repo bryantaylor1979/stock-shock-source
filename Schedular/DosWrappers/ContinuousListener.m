@@ -35,6 +35,7 @@ classdef ContinuousListener <   handle & ...
         end
         function Start(obj)
            %%
+           stop(obj.handles.timer)
            obj.handles.timer.ExecutionMode = obj.ExecutionMode;
            obj.handles.timer.Period = obj.Period;
            
@@ -64,6 +65,7 @@ classdef ContinuousListener <   handle & ...
         end
         function varargout = Update(varargin)
             %%
+            disp('cont listener is updating')
             obj = varargin{1};
             obj.TimeOfLastCheck = datestr(now,'HH:MM:SS');
             
