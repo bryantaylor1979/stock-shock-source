@@ -283,6 +283,7 @@ classdef DOS_Command_Logger < handle
         end
         function UpdateState(varargin)
             %%
+            disp('updating')
             obj = varargin{1};
             starttime = varargin{2};
             
