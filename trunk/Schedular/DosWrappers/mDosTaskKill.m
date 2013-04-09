@@ -1,5 +1,6 @@
 classdef mDosTaskKill     < 	handle 
 	properties (SetObservable = true)
+        selectedComputerName = 'mediapc'
         mode = 'PID'    %PID or IM
         PID = 8928;
         IM = 'Spotify.exe';
@@ -7,10 +8,13 @@ classdef mDosTaskKill     < 	handle
         Dos_Shell
     end
     properties (Hidden = true)
+        mode_LUT = {'PID'; ... 
+                    'IM'};
         Termination_LUT = { 'ForceParent'; ...
                             'End'; ...
                             'ForceParentAndChildren'}
         handles
+        selectedComputerName_LUT %inherited from dos_shell
     end
     methods
         function Example(obj)
@@ -58,7 +62,9 @@ classdef mDosTaskKill     < 	handle
                 obj.(varargin{i}) = varargin{i+1};
             end
             obj.Dos_Shell = DOS_Command_Logger(  'ProgramName','mDosTaskKill', ...
-                                                'Mode','system');
+                                                'Mode','batch');
+                                            
+            obj.selectedComputerName_LUT = obj.Dos_Shell.selectedComputerName_LUT;
         end
         function TaskKill_PID(obj, PID, TerminationType)
             %%
@@ -71,8 +77,9 @@ classdef mDosTaskKill     < 	handle
             else
                 CommandString = [CommandString];
             end 
-            obj.DosShell.CommandStr = CommandString;
-            obj.DosShell.RUN();
+            obj.Dos_Shell.selectedComputerName = obj.selectedComputerName;
+            obj.Dos_Shell.CommandStr = CommandString;
+            obj.Dos_Shell.RUN();
         end
         function TaskKill_IM(obj, IM, TerminationType)
             %%

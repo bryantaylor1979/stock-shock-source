@@ -14,15 +14,6 @@ classdef mindowsSchedular < handle
         handles
     end
     methods
-        function Example(obj)
-           %%
-            close all
-            clear classes
-            
-            %%
-            obj = mindowsSchedular;
-            ObjectInspector(obj)
-        end
         function RunAndTrackProgram(obj,ProgramName,MacroName,NumberOfPasses,NextAgentID)
 
             Name = getComputerName;
@@ -122,17 +113,7 @@ classdef mindowsSchedular < handle
         end
     end 
     methods (Hidden = true) %Support functions
-        function date = GetStoreDate(obj,date)
-            Threshold = '08:00:00';
-            if date == today %if today then find time.
-                time = now;
-                time = rem(time,1);
-                ThresholdDateNum = rem(datenum(Threshold),1);
-                if time < ThresholdDateNum;
-                    date = date - 1;
-                end
-            end            
-        end 
+
         function obj = mindowsSchedular()
             %% Load objects
             obj.TaskController = TaskController;
