@@ -31,6 +31,9 @@ classdef TaskController < handle
             clear classes
             
             %%
+            delete(timerfindall)
+            
+            %%
             obj = TaskController('SimulationMode', true)
             ObjectInspector(obj)
         end
@@ -44,7 +47,8 @@ classdef TaskController < handle
             
             %%
             obj.Dos_Shell.remoteShareDir = obj.remoteShareDir;
-            obj.RunTask.computerName = obj.computerName;
+            obj.RunTask.Dos_Shell.remoteShareDir = obj.remoteShareDir;
+            obj.RunTask.Dos_Shell.selectedComputerName = obj.computerName;
             
             %%
             DATASET = obj.GetTaskList;
@@ -71,7 +75,7 @@ classdef TaskController < handle
             end
             
             % check PID still exists
-            obj.TaskKill.PID = obj.PID;
+            obj.TaskKill.PID = double(obj.PID);
             logic = obj.CheckPIDExists(obj.PID);
             if logic == false
                 obj.PID = NaN;
@@ -79,7 +83,7 @@ classdef TaskController < handle
             end
             
 
-            obj.TaskKill.PID = obj.PID;
+            obj.TaskKill.PID = double(obj.PID);
             obj.TaskKill.RUN();
             
             % check PID ends
@@ -104,7 +108,6 @@ classdef TaskController < handle
             obj.TaskList = mTaskList(    'computerName', obj.computerName, ...
                                          'Dos_Shell',    obj.Dos_Shell);
             obj.RunTask = mDosRunTask(   'computerName', obj.computerName, ...
-                                         'Dos_Shell',    obj.Dos_Shell, ...
                                          'ProgramName', [obj.ProgramName,'.exe'], ...
                                          'MacroName',    obj.MacroName);
             obj.TaskKill = mDosTaskKill( 'Dos_Shell',    obj.Dos_Shell);
@@ -123,8 +126,9 @@ classdef TaskController < handle
             obj.Dos_Shell.remoteShareDir = obj.remoteShareDir;
         end
         function UpdateState(varargin)
+            disp('updating state')
             obj = varargin{1};
-            obj.State = obj.RunTask.DosShell.State;
+            obj.State = obj.RunTask.Dos_Shell.State;
             if strcmpi(obj.State,'finished')
                 obj.PID = NaN;
             end
@@ -146,6 +150,7 @@ classdef TaskController < handle
         function DATASET = GetTaskList(obj)
             obj.TaskList.filter_name = 'imagename';
             obj.TaskList.filter_value = [obj.ProgramName,'.exe'];
+            obj.TaskList.computerName = obj.computerName;
             obj.TaskList.RUN();
             DATASET = obj.TaskList.DATASET;
         end

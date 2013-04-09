@@ -287,6 +287,17 @@ classdef mDosTaskList       < 	handle
                 end
             end
             
+            count = 1;
+            while not(strcmpi(obj.Dos_Shell.State,'finished'))
+               disp('waiting for task to finish')
+               pause(3);
+               drawnow;
+               count = count  + 1;
+               if count == 20
+                  error('task never got tracker. A cont listener may not be running on the pc targeted.') 
+               end
+            end
+            
             %%
             DATASET_OUT = obj.DecodeString(obj.Dos_Shell.String);
             obj.DATASET = DATASET_OUT;
