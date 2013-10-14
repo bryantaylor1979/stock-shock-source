@@ -20,10 +20,13 @@ classdef ObjectInspector < handle
                                            'RemoveClipped',             true);
            obj = ObjectInspector(csp);
         end
-        function obj = ObjectInspector(ObjHandle)
+        function obj = ObjectInspector(ObjHandle1)
            %% Vars
+           persistent ObjHandle 
+           ObjHandle = ObjHandle1;
+           
            obj.handles.ObjHandle = ObjHandle;
-            
+           
             
            %%
            Params = obj.GetParamList();
@@ -39,12 +42,18 @@ classdef ObjectInspector < handle
            MaxControls = Inf;
            
            obj.AddAllControls(MaxControls,FigureHeight,Spacing,Params);
+                   
            
            %%
            
            x = size(Params,1);
            StartHeight = Spacing*(x+1);
            obj.AddAllMethodControls(MaxControls,FigureHeight,StartHeight,Spacing,VisibleMethods);
+           
+           
+           temp.ObjHandle = ObjHandle;
+           obj.handles = temp;
+           
         end
     end
     methods %Support
@@ -71,13 +80,17 @@ classdef ObjectInspector < handle
                 x = MaxControls;
             end
             for i = 1:x
-                Param = Params{i};
+                Param = Params{i}
                 CLASSTYPE = obj.ClassTypeDetection(Param);
                 switch lower(CLASSTYPE)
                     case 'editbox'
                         handles(i) = obj.addEditBox(Param,FigureHeight,Spacing*(i));
+                    case 'struct'
+                        error('not currently supported')
                     case 'image'
                         handles(i) = obj.addImageBox(Param,FigureHeight,Spacing*(i))
+                    case 'array'
+                        handles(i) = obj.addDataSetTableView(Param,FigureHeight,Spacing*(i));
                     case 'logical'
                         handles(i) = obj.addLogicalBox(Param,FigureHeight,Spacing*(i));
                     case 'object'
@@ -87,9 +100,9 @@ classdef ObjectInspector < handle
                     case 'matrix3by1'
                         handles(i) = obj.addMatrix3by1Box(Param,FigureHeight,Spacing*(i));
                     case 'multitext'
-                        handles(i) = obj.addMultiTextBox(Param,FigureHeight,Spacing*(i));
+                        obj.addMultiTextBox(Param,FigureHeight,Spacing*(i));
                     case 'multitextselection'
-                        handles(i) = obj.addMultiTextSelectionBox(Param,FigureHeight,Spacing*(i));
+                        obj.addMultiTextSelectionBox(Param,FigureHeight,Spacing*(i));
                     case 'dataset'
                         handles(i) = obj.addDataSetTableView(Param,FigureHeight,Spacing*(i));
                     case 'dirselection'
@@ -99,9 +112,9 @@ classdef ObjectInspector < handle
                     otherwise
                 end
             end
-            if not(exist('handles'))
-                handles = [];
-            end
+%             if not(exist('handles'))
+%                 handles = [];
+%             end
         end
         function CLASSTYPE = ClassTypeDetection(obj,Param)
             disp(['Evaluting: ',Param])
@@ -120,6 +133,15 @@ classdef ObjectInspector < handle
             end
             if strcmpi(CLASS,'dataset')
                 CLASSTYPE = 'dataset';
+            end
+            if strcmpi(CLASS,'struct')
+                NAMES = fieldnames(obj.handles.ObjHandle.(Param));
+                n = strcmpi(NAMES,'image');
+                if not(isempty(n))
+                    CLASSTYPE = 'image';
+                else
+                    CLASSTYPE = 'struct';
+                end
             end
             if not(or(x > 1, y > 1))      
                 switch lower(CLASS)
@@ -156,7 +178,7 @@ classdef ObjectInspector < handle
                     switch lower(CLASS)
                         case {'uint16','double','uint8'}  
                             if or(z == 1,z == 3)
-                                CLASSTYPE = 'image';
+                                CLASSTYPE = 'array';
                             end
                         otherwise
                     end
@@ -288,7 +310,7 @@ classdef ObjectInspector < handle
             filename = fullfile( matlabroot,'toolbox','matlab','icons','HDF_filenew.gif');
             [X map] = imread(filename);
             icon = ind2rgb(X,map);  
-            icon = obj.ChangeBG_Colour(icon,[1,1,1])
+            icon = obj.ChangeBG_Colour(icon,[1,1,1]);
             
             % create a pushbutton to confirm the assignment
             h3 = uicontrol( 'Style',                'pushbutton', ...
@@ -297,7 +319,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.getFileDir(paramName,h2), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -404,7 +426,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.getFolderDir(paramName,h2), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -506,7 +528,7 @@ classdef ObjectInspector < handle
             filename = fullfile( matlabroot,'toolbox','matlab','icons','HDF_VData.gif');
             [X map] = imread(filename);
             icon = ind2rgb(X,map);
-            icon = obj.ChangeBG_Colour(icon,[1,1,1])
+            icon = obj.ChangeBG_Colour(icon,[1,1,1]);
             
             h3 = uicontrol( 'Style',                'pushbutton', ...
                             'String' ,              '', ...
@@ -515,7 +537,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.runDataSetTableView(paramName), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -541,187 +563,95 @@ classdef ObjectInspector < handle
     methods  %GUI - Add multi Text Selection Box Selection
         function handle = addMultiTextSelectionBox(obj,paramName,FigureHeight,H_StartLoc)
             %%
-            mode = 'pixels'; %pixels or normalized
-            Fudge = 18;
-
-            height = FigureHeight - H_StartLoc;
-            Gap_Border2ParamBox = 8;
-            ParameterBoxWidth = 158;
-            SlitherHeight = 22;  
-
-            % edit box
-            EditBoxWidth = 158-Fudge;
-            Gap_ParamBox2EditBox = Fudge;
-
-            % set button
-            Gap_EditBox2SetButtom = 0;
-            SetButtonWidth = 26;
-                
-            Pos.editBox2 =   [   Gap_Border2ParamBox+ParameterBoxWidth, ...
-                                height, ...
-                                Fudge, ...
-                                SlitherHeight];
-                            
-            %
-            Pos.editBox =   [   Gap_Border2ParamBox+ParameterBoxWidth+Gap_ParamBox2EditBox, ...
-                                height, ...
-                                EditBoxWidth, ...
-                                SlitherHeight];
-                            
-            Pos.paramName = [   Gap_Border2ParamBox, ...
-                                height, ...
-                                ParameterBoxWidth, ...
-                                SlitherHeight];
-                            
-            Pos.setButton = [   Gap_Border2ParamBox+ParameterBoxWidth+Gap_ParamBox2EditBox+EditBoxWidth+Gap_EditBox2SetButtom, ...
-                                height, ...
-                                SetButtonWidth, ...
-                                SlitherHeight];     
+            persistent listen ObjHandle
+            listen = true;
+            ObjHandle = obj.handles.ObjHandle;
+            disp(['Disp Loc: ',num2str(H_StartLoc-22)])
+            handle = MultiTextSelectionBox( 'Type', 'MultiTextSelection', ...
+                                            'paramName', paramName, ...
+                                            'paramValue', obj.handles.ObjHandle.(paramName), ...
+                                            'LUT', obj.handles.ObjHandle.([paramName,'_LUT']), ...
+                                            'SpaceFromTop',H_StartLoc-22)
             
-            figure( obj.handles.figure )
-            % create the popup menu which include all the properties
-            h1 = uicontrol( 'Style',                'edit', ...
-                            'string',               paramName, ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'Enable',               'inactive', ...
-                            'Position',             Pos.paramName);
-    
-            h4 = uicontrol( 'Style',                'edit', ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'Enable',               'inactive', ...
-                            'String',               '', ...
-                            'Position',             Pos.editBox2);
-                        
-            % create a edit box for you to type the desired value
-            h2 = uicontrol( 'Style',                'popupmenu', ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'String',               '', ...
-                            'Position',             Pos.editBox);
-                        
-            LUT = obj.handles.ObjHandle.([paramName,'_LUT']);
-            Value = obj.handles.ObjHandle.(paramName);
-            n = find(strcmpi(LUT,Value));
-            set(h2, 'Value',    n, ...
-                    'String',   LUT, ...
-                    'Callback', @(x,y)obj.setMultiTextSelectionBox(paramName,h2))
-    
-
-                        
-            handle.Type = 'edit_double';
-            handle.ParamName   = h1;
-            handle.EditBox     = h2;
-            handle.SetButton   = 1;
             
-            %%
-            h = findprop(obj.handles.ObjHandle,paramName);
-            if h.SetObservable == false
-                error(['Please change "',paramName,'", parameter to SetObservable = true'])
+            obj.CheckParamsAreObservable({  paramName; ...
+                                            [paramName,'_LUT']});
+                  
+            obj.handles.ObjHandle.addlistener(  paramName,          'PostSet',  @(x,y)obj.GUI_updateMultiTextSelectionBox(handle,paramName));  
+            obj.handles.ObjHandle.addlistener( [paramName,'_LUT'],  'PostSet',  @(x,y)obj.GUI_updateMultiTextLUT(handle,paramName)); 
+            
+            handle.addlistener( 'paramValue', 'PostSet',  @(x,y)obj.Params_updateMultiTextSelectionBox(handle,paramName)); 
+        end
+        function CheckParamsAreObservable(obj,paramName)
+            if ischar(paramName)
+                h = findprop(obj.handles.ObjHandle,paramName);
+                if h.SetObservable == false
+                    error(['Please change "',paramName,'", parameter to SetObservable = true'])
+                end     
+            else
+                x = max(size(paramName))
+                for i = 1:x
+                    h = findprop(obj.handles.ObjHandle,paramName{i});
+                    if h.SetObservable == false
+                        error(['Please change "',paramName{i},'", parameter to SetObservable = true'])
+                    end   
+                end
             end
-            obj.handles.ObjHandle.addlistener(paramName,'PostSet',@(x,y)obj.updateMultiTextSelectionBox(paramName,h2));         
+        end  
+        function GUI_updateMultiTextSelectionBox(varargin)
+            persistent listen 
+            obj = varargin{1};
+            handle = varargin{2};
+            paramName = varargin{3};
+            if listen == true
+                disp('GUI_updateMultiTextSelectionBox')
+                listen = false;
+                currentValue = obj.handles.ObjHandle.(paramName)
+                handle.paramValue = currentValue;
+                listen = true;
+            end
         end
-        function setMultiTextSelectionBox(obj,paramName,h2)
-            %%
-            Value = get(h2,'Value');
-            String = get(h2,'String');
-            obj.handles.ObjHandle.(paramName) = String{Value};
+        function GUI_updateMultiTextLUT(varargin)
+            persistent ObjHandle
+            obj = varargin{1};
+            handle = varargin{2};
+            paramName = varargin{3};
+            disp('GUI_updateMultiTextLUT')
+            currentValue = ObjHandle.([paramName,'_LUT'])
+            handle.LUT = currentValue;
         end
-        function updateMultiTextSelectionBox(obj,paramName,h2)
-            Value = obj.handles.ObjHandle.(paramName);
-            String = get(h2,'String');
-            n = find(strcmpi(String,Value));
-            set(h2,'Value',n);
+        function Params_updateMultiTextSelectionBox(varargin)
+            persistent listen
+            if isempty(listen)
+                listen = true;
+            end
+            obj = varargin{1};
+            handle = varargin{2};
+            paramName = varargin{3};
+            
+            if listen == true
+                disp('Params_updateMultiTextSelectionBox')
+                listen = false;
+                paramValue = handle.paramValue;
+                obj.handles.ObjHandle.(paramName) = paramValue;
+                listen = true;
+            end
         end
     end
     methods  %GUI - Add Multi Text Box Selection
         function handle = addMultiTextBox(obj,paramName,FigureHeight,H_StartLoc)
             %%
-            mode = 'pixels'; %pixels or normalized
-            Fudge = 18;
-
-            height = FigureHeight - H_StartLoc;
-            Gap_Border2ParamBox = 8;
-            ParameterBoxWidth = 158;
-            SlitherHeight = 22;  
-
-
-            % edit box
-            EditBoxWidth = 158-Fudge;
-            Gap_ParamBox2EditBox = Fudge;
-
-            % set button
-            Gap_EditBox2SetButtom = 0;
-            SetButtonWidth = 26;
-            
-            %%
-            Pos.editBox =   [   Gap_Border2ParamBox+ParameterBoxWidth+Gap_ParamBox2EditBox, ...
-                                height, ...
-                                EditBoxWidth, ...
-                                SlitherHeight];
-                            
-            Pos.paramName = [   Gap_Border2ParamBox, ...
-                                height, ...
-                                ParameterBoxWidth, ...
-                                SlitherHeight];
-                            
-            Pos.setButton = [   Gap_Border2ParamBox+ParameterBoxWidth+Gap_ParamBox2EditBox+EditBoxWidth+Gap_EditBox2SetButtom, ...
-                                height, ...
-                                SetButtonWidth, ...
-                                SlitherHeight]; 
-                            
-            Pos.editBox2 =   [   Gap_Border2ParamBox+ParameterBoxWidth, ...
-                                height, ...
-                                Fudge, ...
-                                SlitherHeight];
-            
-            figure( obj.handles.figure )
-            % create the popup menu which include all the properties
-            h1 = uicontrol( 'Style',                'edit', ...
-                            'string',               paramName, ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'Enable',               'inactive', ...
-                            'Position',             Pos.paramName);
-    
-            % create a edit box for you to type the desired value
-            h2 = uicontrol( 'Style',                'edit', ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'String',               '[Multi Text]', ...
-                            'Position',             Pos.editBox);
-    
-            filename = fullfile( matlabroot,'toolbox','matlab','icons','pageicon.gif');
-            [X map] = imread(filename);
-            icon = ind2rgb(X,map);
-            
-
-
-
-            % create a pushbutton to confirm the assignment
-            h3 = uicontrol( 'Style',                'pushbutton', ...
-                            'CDATA' ,               icon, ...
-                            'Units',                mode, ...
-                            'Callback',             @(x,y)obj.runMultiTextBox(paramName), ...
-                            'position',             Pos.setButton);
-                        
-            % create a edit box for you to type the desired value
-            h4 = uicontrol( 'Style',                'edit', ...
-                            'Units',                mode, ...
-                            'HorizontalAlignment',  'left', ...
-                            'String',               '', ...
-                            'Position',             Pos.editBox2);
-
-                        
-            handle.Type = 'edit_double';
-            handle.ParamName   = h1;
-            handle.EditBox     = h2;
-            handle.SetButton   = h3;      
+            handle = MultiTextSelectionBox( 'Type', 'MultiText', ...
+                                            'paramName', paramName, ...
+                                            'LUT', obj.handles.ObjHandle.(paramName), ...
+                                            'SpaceFromTop',H_StartLoc-22)  
+            obj.handles.ObjHandle.addlistener(  paramName,  'PostSet', ...
+                                                @(x,y)obj.runMultiTextBox(handle,paramName));                                                        
         end
-        function runMultiTextBox(obj,paramName)
+        function runMultiTextBox(varargin)
             %%
-            obj = uiMultiText('String',obj.handles.ObjHandle.(paramName));
+            dips('harrya')
+            handle.LUT = obj.handles.ObjHandle.(paramName);            
         end
     end
     methods  %GUI - Add Metric 3by1 Box
@@ -820,7 +750,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.setMatrix3by1Box(paramName,h6,h5,h2,CLASS), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -938,7 +868,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.setMatrix2by1Box(paramName,h5,h2), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1025,7 +955,7 @@ classdef ObjectInspector < handle
             icon = ind2rgb(X,map);
             
             %%
-            icon = obj.ChangeBG_Colour(icon,[1,1,1])
+            icon = obj.ChangeBG_Colour(icon,[1,1,1]);
 
             % create a pushbutton to confirm the assignment
             h3 = uicontrol( 'Style',                'pushbutton', ...
@@ -1041,7 +971,7 @@ classdef ObjectInspector < handle
                             'String',               '', ...
                             'Position',             Pos.editBox2);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1084,7 +1014,7 @@ classdef ObjectInspector < handle
                                 ParameterBoxWidth, ...
                                 SlitherHeight];
            
-            [x,y,z] = size(obj.handles.ObjHandle.(paramName))
+            [x,y,z] = size(obj.handles.ObjHandle.(paramName).image);
             String = ['IMAGE <',num2str(x),'x',num2str(y),'x',num2str(z),'>'];
             Value = 0;
 
@@ -1116,7 +1046,7 @@ classdef ObjectInspector < handle
     
             set(h2,'Callback', @(x,y)obj.setImageBox(paramName,h2))
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1134,7 +1064,7 @@ classdef ObjectInspector < handle
             %%
             Value = get(h2,'Value');
             if Value == true
-            obj.handles.images.(paramName) = imageShow(     'image',        obj.handles.ObjHandle.(paramName), ...
+            obj.handles.images.(paramName) = imageShow(     'imageOUT',        obj.handles.ObjHandle.(paramName), ...
                                                             'box_enable',   false)
             else
                 try
@@ -1145,16 +1075,18 @@ classdef ObjectInspector < handle
         function updateImageBox(obj,paramName,h2)
             %%
             Value = get(h2,'Value');
-            disp('update image box')
             if Value == true
-                [x,y,z] = size(obj.handles.ObjHandle.(paramName));
-                [x1,y1,z1] = size(obj.handles.images.(paramName).image);
-                if and(x1 == x,y == y1)
-                    obj.handles.images.(paramName).image = obj.handles.ObjHandle.(paramName);
-                else
-                    delete(obj.handles.images.(paramName).handles.figure);
-                    obj.handles.images.(paramName) = imageShow(     'image',        obj.handles.ObjHandle.(paramName), ...
-                                                                    'box_enable',   false)
+                %%
+                if not(isempty(obj.handles.ObjHandle.(paramName))) %it get set to zero to save memory
+                    [x,y,z] = size(obj.handles.ObjHandle.(paramName).image);
+                    [x1,y1,z1] = size(obj.handles.images.(paramName).imageOUT.image);
+                    if and(x1 == x,y == y1)
+                        obj.handles.images.(paramName).imageOUT.image = obj.handles.ObjHandle.(paramName).image;
+                    else
+                        delete(obj.handles.images.(paramName).handles.figure);
+                        obj.handles.images.(paramName) = imageShow(     'imageOUT',     obj.handles.ObjHandle.(paramName).image, ...
+                                                                        'box_enable',   false)
+                    end
                 end
             end
             drawnow;
@@ -1232,7 +1164,7 @@ classdef ObjectInspector < handle
     
             set(h2,'Callback', @(x,y)obj.setLogicalBox(paramName,h2,h3))
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1258,7 +1190,11 @@ classdef ObjectInspector < handle
                 set(editbox,'String','TRUE', ...
                             'ForegroundColor',Color)
             end
-            obj.handles.ObjHandle.(paramName) = Value;
+            if Value == 1
+                obj.handles.ObjHandle.(paramName) = true;
+            else
+                obj.handles.ObjHandle.(paramName) = false;
+            end
         end
         function updateLogicalBox(obj,paramName,checkbox,editbox)
             %%
@@ -1367,7 +1303,7 @@ classdef ObjectInspector < handle
                             'String',               '', ...
                             'Position',             Pos.editBox2);
 
-                        
+            handle.ParmeterName = methodName;             
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1465,7 +1401,7 @@ classdef ObjectInspector < handle
                             'Callback',             @(x,y)obj.setEditBox(paramName,h2), ...
                             'position',             Pos.setButton);
 
-                        
+            handle.ParmeterName = paramName;            
             handle.Type = 'edit_double';
             handle.ParamName   = h1;
             handle.EditBox     = h2;
@@ -1481,14 +1417,18 @@ classdef ObjectInspector < handle
             
         end
         function updateEditBox(varargin)
+            persistent ObjHandle
             obj = varargin{1};
             paramName = varargin{2};
             h2 = varargin{3};
+            if isempty(ObjHandle)
+                ObjHandle = obj.handles.ObjHandle;
+            end
             %%
-            if ischar(obj.handles.ObjHandle.(paramName))
-                set(h2,'String',obj.handles.ObjHandle.(paramName));
+            if ischar(ObjHandle.(paramName))
+                set(h2,'String',ObjHandle.(paramName));
             else
-                set(h2,'String',num2str(obj.handles.ObjHandle.(paramName)));
+                set(h2,'String',num2str(ObjHandle.(paramName)));
             end
         end
         function deleteEditBox(obj,handle)
