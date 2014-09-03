@@ -61,6 +61,9 @@ classdef DataSetFiltering < handle
                     Data = double(Data2);
                 case 'logical'
                     Data = double(Data2);
+                case 'int32'
+                    Data = datasetfun(@cell,Data2,'UniformOutput',false);
+                    Data = Data{1,1};
                 otherwise
                    error(['Class not recognised: ',class(Data2{1,1})])
             end
