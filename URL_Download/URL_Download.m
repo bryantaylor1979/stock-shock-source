@@ -25,8 +25,7 @@ classdef URL_Download < handle & ...
            clear classes
            
            %%
-           URL_Download('Macro','Stox', ...
-                        'ResultsDir','/home/bryan/svn/stock-shock/trunk/URL_Download/Results');
+           URL_Download('Macro','Stox');
         end        
     end
     methods (Hidden = false)
@@ -2717,7 +2716,8 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
         function obj = URL_Download(varargin)
             % set-up defaults
             [path,~,~] = fileparts(which('URL_Download'));
-            obj.InstallDir = path;            
+            obj.InstallDir = path;         
+            obj.ResultsDir = fullfile(path,'Results');
             
             disp('Start URL Download')
             [x] = size(varargin,2);
