@@ -18,6 +18,12 @@ classdef URL_Download < handle & ...
         IllegalSymbols = {'CON'}; %Add symbols here if you get a save error.
     end
     %TODO: CON__ load ? I think this is now working
+    methods (Static)
+        function Example()
+           %%
+           URL_Download('Macro','BritishBulls_ALLSTATUS');
+        end        
+    end
     methods (Hidden = false)
         function Symbols = GetRequiredSymbols(obj,Program,MacroName,Date)
             %% Required Symbols
@@ -37,7 +43,7 @@ classdef URL_Download < handle & ...
         function [s, Error] = LoadURLs(obj,Program,Macro,Symbol,date)
             % Example
             % [s, Error] = obj.LoadURLs(Program,Macro,Symbol,date)
-            n = find(strcmpi(Symbol,obj.IllegalSymbols));
+            n = find(strcmpi(Symbol,obj.IllegalSymbols), 1);
             if not(isempty(n))
                 Symbol = [Symbol,'__'];
             end
@@ -57,14 +63,14 @@ classdef URL_Download < handle & ...
             cd(PWD) 
         end
         function DateNum = GetLastDateOfURL(obj,Program,Macro,DateNum)
-            FileName = [obj.ResultsDir,Program,'\Results\',Macro,'\URL\']
+            FileName = [obj.ResultsDir,Program,'\Results\',Macro,'\URL\'];
             CD = pwd;
             cd(FileName);
             names = struct2cell(dir);
             Name = rot90(strrep(names(1,:,:),'.mat',''));
             
             DateNums = datenum(Name(1:end-2));
-            n = find(DateNums <= DateNum);
+            n = DateNums <= DateNum;
             DateNums = DateNums(n);
             
             DateNum = max(DateNums);
@@ -79,7 +85,7 @@ classdef URL_Download < handle & ...
             try
                 get(obj.handles.figure);
             catch
-                h = waitbar(0)
+                h = waitbar(0);
                 position = get(h,'position');
                 position(4) = 75;
                 set(h,'position',position)
@@ -93,7 +99,7 @@ classdef URL_Download < handle & ...
                   if rem(j,HeartBeatUpdateRate) == 0
                       try
                         obj.HeartBeat(MacroName,Date);
-                        disp(['URL Download: Tracker downloaded']) 
+                        disp('URL Download: Tracker downloaded') 
                       catch
                         disp('Schedular entry not found') 
                       end
@@ -108,7 +114,7 @@ classdef URL_Download < handle & ...
             pause(5);
             close(h)
         end
-        function date = GetStoreDate(obj,date)
+        function date = GetStoreDate(~,date)
             disp('Found function')
             Threshold = '08:00:00';
             if date == today %if today then find time.
@@ -164,7 +170,7 @@ classdef URL_Download < handle & ...
             name = strrep(name,cr,'');
             name = strrep(name,' ','');
         end
-        function [Symbols] = RemoveSymbols(obj,array1,array2)
+        function [Symbols] = RemoveSymbols(~,array1,array2)
             % remove small array from the big symbol array
             % order doesn't matter.
             % input array must be column-wise
@@ -173,17 +179,17 @@ classdef URL_Download < handle & ...
             big_array = strrep(array2,'.L','');
             Symbols = [];
 
-            [x] = size(small_array,1)
-            [y] = size(big_array,1)
+            [x] = size(small_array,1);
+            [y] = size(big_array,1);
 
             for i = 1:x %first symbol to remove
-                n = find(strcmpi(small_array{i},big_array));
+                n = find(strcmpi(small_array{i},big_array), 1);
                 if isempty(n)
                     Symbols = [Symbols;small_array(i)];
                 end
             end
         end
-        function [Map,FieldNames,SectorList] = III_IndexMap(obj);
+        function [Map,FieldNames,SectorList] = III_IndexMap(obj)
 % List of symbols from http://www.iii.co.uk
 % Manually Created
 SectorList = {  'Aerospace & Defence',                  '^NMX2710'; ...
@@ -2704,13 +2710,17 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
 };
             end
         function obj = URL_Download(varargin)
+            % set-up defaults
+            [path,~,~] = fileparts(which('URL_Download'));
+            obj.InstallDir = path;            
+            
             disp('Start URL Download')
             [x] = size(varargin,2);
             for i = 1:2:x
                 obj.(varargin{i}) = varargin{i+1};
             end
             
-            obj.InstallDir = [pwd,'\'];
+
             
             try
                 cd('P:\StockData [MEDIAPC]\StockData [MEDIAPC]\')
@@ -2724,7 +2734,7 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
             
             if isempty(obj.Macro)
                 PWD = pwd;
-                cd([obj.InstallDir,'Macros\'])
+                cd(fullfile(obj.InstallDir,'Macros'))
                 d = dir;
                 str = {d.name};
                 str = str(3:end);
@@ -2748,12 +2758,12 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
             time = 1;
             while time < obj.timeout
                 try 
-                    Method
+                    Method;
                     switch lower(Method)
                         case 'xml'
                             s = parseXML([obj.sURL,Symbol,obj.eURL]);
                         case 'url'
-                            url = [obj.sURL,Symbol,obj.eURL]
+                            url = [obj.sURL,Symbol,obj.eURL];
                             s = urlread2([obj.sURL,Symbol,obj.eURL],[],[],obj.t1);
                         case 'wq'
                             s = obj.ReadWebQuery([obj.sURL,Symbol,obj.eURL]); 
@@ -2771,7 +2781,7 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
                Error = -2;
             end 
             
-            n = find(strcmpi(Symbol,obj.IllegalSymbols));
+            n = find(strcmpi(Symbol,obj.IllegalSymbols), 1);
             if not(isempty(n))
                 Symbol = [Symbol,'__'];
             end
@@ -2782,7 +2792,7 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
             Filename = [Path,Symbol,'.mat'];
             load(Filename);           
         end
-        function TimeStr = CalculateTime(obj,Seconds)
+        function TimeStr = CalculateTime(~,Seconds)
             secs = round(Seconds);
             minutes = floor(secs/60);
             hours = floor(minutes/60);
@@ -2814,7 +2824,7 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
            while time < obj.timeout
                 try
                     obj.WriteWebQuery(string);
-                    [num,data,raw] = xlsread([obj.InstallDir,'DL.iqy']);
+                    [~,~,raw] = xlsread([obj.InstallDir,'DL.iqy']);
                     break
                 catch
                     disp('Connection problems')

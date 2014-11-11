@@ -30,7 +30,7 @@ classdef MacroRun < handle
             %%
             PWD = pwd;
             Path = [obj.MacroLogDir,'Generic\MacroEvents\']
-            String = [Path,strrep(datestr(today),'-','_'),'.mat']
+            String = [Path,strrep(datestr(floor(now)),'-','_'),'.mat']
             
             %% Does folder exist, if not create folder.
             try
@@ -83,7 +83,7 @@ classdef MacroRun < handle
             %%
             diary(string)
             disp(['Time Start: ',datestr(now)])
-            Name = [obj.InstallDir,'Macros\',Name,'.m'];
+            Name = fullfile(obj.InstallDir,'Macros',[Name,'.m']);
             varargin{2} = Name;
             [DATASET, Error] = obj.ExecuteMacro(varargin(2:end));
             if Error == -1
