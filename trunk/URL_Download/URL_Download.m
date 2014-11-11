@@ -125,7 +125,9 @@ classdef URL_Download < handle & ...
                   obj.SaveFormat(Method,Symbol,ProgramName,ResultName,Date);
             end
             pause(5);
-            close(h)
+            if obj.WaitbarEnable == true
+                close(h)
+            end
         end
         function date = GetStoreDate(~,date)
             disp('Found function')
