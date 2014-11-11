@@ -3,6 +3,8 @@ classdef URL_Download < handle & ...
                         SymbolInfo2 & ...
                         ResultsLog
     properties
+        WaitbarEnable = false
+        HeartBeatEnable = false
         Rev = 'v1.00'
         sURL
         eURL
@@ -89,30 +91,37 @@ classdef URL_Download < handle & ...
             try
                 get(obj.handles.figure);
             catch
-                h = waitbar(0);
-                position = get(h,'position');
-                position(4) = 75;
-                set(h,'position',position)
+                if obj.WaitbarEnable == true
+                    h = waitbar(0);
+                    position = get(h,'position');
+                    position(4) = 75;
+                    set(h,'position',position)
+                end
             end
 
             %% Load Objects
             %Verfied - The symbols 
             [x] = size(Symbols,1);
             tic
+            disp(['URL_Download -',obj.Macro])
             parfor j = 1:x
-                  if rem(j,HeartBeatUpdateRate) == 0
-                      try
-                        obj.HeartBeat(MacroName,Date);
-                        disp('URL Download: Tracker downloaded') 
-                      catch
-                        disp('Schedular entry not found') 
+                  if obj.HeartBeatEnable == true
+                      if rem(j,HeartBeatUpdateRate) == 0
+                          try
+                            obj.HeartBeat(MacroName,Date);
+                            disp('URL Download: Tracker downloaded') 
+                          catch
+                            disp('Schedular entry not found') 
+                          end
                       end
                   end
-                  waitbar((x-j)/x,h,{['URL_Download -',obj.Macro];['Processing... ',num2str(x-j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)']})
-                  drawnow;
-
+                  if obj.WaitbarEnable == true
+                      waitbar((x-j)/x,h,{['URL_Download -',obj.Macro];['Processing... ',num2str(x-j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)']})
+                      drawnow;
+                  else
+                      disp(['Processing... ',num2str(x-j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)'])
+                  end
                   Symbol = strrep(Symbols{j},'.L','');
-
                   obj.SaveFormat(Method,Symbol,ProgramName,ResultName,Date);
             end
             pause(5);
