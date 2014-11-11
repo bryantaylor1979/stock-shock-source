@@ -1,5 +1,5 @@
 
-obj.sURL = 'http://www.nakedtrader.co.uk/trades.htm?type=';
+obj.sURL = 'http://www.nakedtrader.co.uk/';
 obj.eURL = '';
 obj.timeout = 8;
 Method = 'URL';
@@ -13,8 +13,9 @@ MacroName = 'NakedTrader';
 Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
-Symbols = { 'sh' ; ...
-            'sbs'; ...
-            'sbl'};
+Symbols = { 'agree.htm?agree=1'; ...
+            'trades.htm?type=sh' ; ...
+            'trades.htm?type=sbs'; ...
+            'trades.htm?type=sbl'};
         
 obj.SaveALL(Method,Symbols,ProgramName,ResultName,Date,MacroName);

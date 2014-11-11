@@ -9,7 +9,7 @@ classdef URL_Download < handle & ...
         timeout = 200;
         t1 = 5000; 
         loglevel = 0;
-        InstallDir = 'C:\SourceSafe\Stocks & Shares\Programs\WebPageDownload\';
+        InstallDir = [];
         RunOnInt = 'on'
         ProgramName = 'URL_Download';
         AgentName = 1;
@@ -21,7 +21,12 @@ classdef URL_Download < handle & ...
     methods (Static)
         function Example()
            %%
-           URL_Download('Macro','BritishBulls_ALLSTATUS');
+           close all
+           clear classes
+           
+           %%
+           URL_Download('Macro','Stox', ...
+                        'ResultsDir','/home/bryan/svn/stock-shock/trunk/URL_Download/Results');
         end        
     end
     methods (Hidden = false)
@@ -117,7 +122,7 @@ classdef URL_Download < handle & ...
         function date = GetStoreDate(~,date)
             disp('Found function')
             Threshold = '08:00:00';
-            if date == today %if today then find time.
+            if date == floor(now) %if today then find time.
                 time = now;
                 time = rem(time,1);
                 ThresholdDateNum = rem(datenum(Threshold),1);
@@ -2719,17 +2724,7 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
             for i = 1:2:x
                 obj.(varargin{i}) = varargin{i+1};
             end
-            
-
-            
-            try
-                cd('P:\StockData [MEDIAPC]\StockData [MEDIAPC]\')
-                obj.ResultsDir = 'P:\StockData [MEDIAPC]\StockData [MEDIAPC]\';
-                obj.MacroLogDir = 'P:\StockData [MEDIAPC]\StockData [MEDIAPC]\';
-            catch
-                obj.ResultsDir = 'P:\StockData [MEDIAPC]\';
-                obj.MacroLogDir = 'P:\StockData [MEDIAPC]\';
-            end
+            obj.MacroLogDir = obj.ResultsDir;
             disp(['ResultsDir: ',obj.ResultsDir])
             
             if isempty(obj.Macro)
@@ -2763,10 +2758,13 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
                         case 'xml'
                             s = parseXML([obj.sURL,Symbol,obj.eURL]);
                         case 'url'
+                            %%
                             url = [obj.sURL,Symbol,obj.eURL];
                             s = urlread2([obj.sURL,Symbol,obj.eURL],[],[],obj.t1);
                         case 'wq'
                             s = obj.ReadWebQuery([obj.sURL,Symbol,obj.eURL]); 
+                        otherwise
+                            error('method not recognised')
                     end
                     break
                 catch

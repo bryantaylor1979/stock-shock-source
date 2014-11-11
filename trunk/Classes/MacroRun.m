@@ -1,5 +1,7 @@
 classdef MacroRun < handle
     properties
+        RunDirectNoParse = true
+        IncludeProgramInPath = false;
         Macro
         MacroLogDir = 'X:\'
     end
@@ -66,9 +68,22 @@ classdef MacroRun < handle
             obj = varargin{1};
             Name = varargin{2};
             
+            if obj.RunDirectNoParse == true
+               eval(Name)
+               return 
+            end            
             Name = strrep(Name,'.m','');
+            
+
+            
             PWD = pwd;
-            string = [obj.MacroLogDir,obj.ProgramName,'\MacroLog\',Name];
+            
+            if obj.IncludeProgramInPath == true
+                string = fullfile(obj.MacroLogDir,obj.ProgramName,'MacroLog');
+            else
+                string = obj.MacroLogDir;
+            end
+            string = fullfile(string,Name);
             
             %%
             try
