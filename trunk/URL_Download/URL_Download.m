@@ -96,6 +96,8 @@ classdef URL_Download < handle & ...
                     position = get(h,'position');
                     position(4) = 75;
                     set(h,'position',position)
+                else
+                    h = 1; 
                 end
             end
 
@@ -103,8 +105,8 @@ classdef URL_Download < handle & ...
             %Verfied - The symbols 
             [x] = size(Symbols,1);
             tic
-            disp(['URL_Download -',obj.Macro])
-            parfor j = 1:x
+            disp(['URL_Download - ',obj.Macro])
+            for j = 1:x
                   if obj.HeartBeatEnable == true
                       if rem(j,HeartBeatUpdateRate) == 0
                           try
