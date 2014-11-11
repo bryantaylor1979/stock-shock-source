@@ -12,4 +12,4 @@ Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
-obj.SaveALL(Method,Symbols(1:10),ProgramName,ResultName,Date,MacroName);
+obj.SaveALL(Method,Symbols,ProgramName,ResultName,Date,MacroName);
