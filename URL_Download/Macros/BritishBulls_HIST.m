@@ -1,6 +1,6 @@
 %% ['http://markets.ft.com/tearsheets/analysis.asp?s=',Symbol,'%3ALSE'];
-obj.sURL = 'http://www.britishbulls.com/StockPage.asp?CompanyTicker=';
-obj.eURL = '&MarketTicker=Financials&Typ=S';
+obj.sURL = 'http://www.britishbulls.com/members/SignalPage.aspx?lang=en&Ticker=';
+obj.eURL = '';
 obj.timeout = 2;
 Method = 'URL';
 

@@ -1,31 +1,36 @@
 classdef ResultsLog < handle
     properties
+        AddSubPaths = false
         ResultsDir = 'P:\StockData [MEDIAPC]\';
     end
     methods %Save Data
         function SaveDataSet(obj,DataSet,ProgramName,ResultName,Date)
             PWD = pwd;
-            Path = [obj.ResultsDir,ProgramName,'\Results\',ResultName,'\DataSet\'];
+            Path = fullfile(obj.ResultsDir,ProgramName,'Results',ResultName,'DataSet');
             try
                 cd(Path);
             catch
                 mkdir(Path);
                 cd(Path);
             end
-            Filename = [Path,datestr(Date),'.mat'];
+            Filename = fullfile(Path,[datestr(Date),'.mat']);
             save(Filename,'DataSet');
             cd(PWD);            
         end 
         function SaveResult_Type(obj,s,Symbol,ProgramName,ResultName,Type,Date)
             PWD = pwd;
-            Path = [obj.ResultsDir,ProgramName,'\Results\',ResultName,'\',Type,'\',datestr(Date),'\'];
+            if obj.AddSubPaths == true
+                Path = fullfile(obj.ResultsDir,ProgramName,'Results',ResultName,Type,datestr(Date));
+            else
+                Path = obj.ResultsDir;
+            end
             try
                 cd(Path);
             catch
                 mkdir(Path);
                 cd(Path);
             end
-            Filename = [Path,Symbol,'.mat'];
+            Filename = fullfile(Path,[Symbol,'.mat']);
             save(Filename,'s');
             cd(PWD);            
         end 
@@ -44,7 +49,7 @@ classdef ResultsLog < handle
             %  -1 - Could not load file
             Datestr = datestr(DateNum);
             Datestr = strrep(Datestr,':','_');
-            FileName = [obj.ResultsDir,Program,'\Results\',Macro,'\',Type,'\',Datestr,'.mat']
+            FileName = fullfile(obj.ResultsDir,Program,'Results',Macro,Type,[Datestr,'.mat'])
             try
                 load(FileName); 
                 Error = 0;
