@@ -77,7 +77,11 @@ classdef ResultsLog < handle
             %  -1 - Could not load file
             Datestr = datestr(DateNum);
             Datestr = strrep(Datestr,':','_');
-            FileName = [obj.ResultsDir,Program,'\Results\',Macro,'\',Type,'\',Datestr,'\',Symbol,'.mat'];
+            FileName = fullfile(obj.ResultsDir,Program,'Results',Macro,Type,Datestr);
+            [s, Error] = obj.LoadFile(FileName,Symbol);
+        end  
+        function [s, Error] = LoadFile(obj,Path,Symbol)
+            FileName = fullfile(Path,[Symbol,'.mat']);
             try
                 load(FileName); 
                 Error = 0;
@@ -85,8 +89,8 @@ classdef ResultsLog < handle
                 s = [];
                 disp(FileName)
                 Error = -1; 
-            end
-        end  
+            end            
+        end
         function [DataSet, DateNum, Error] = LoadLastWorkingDaysResult(obj,Program,Macro)
              %%
              switch datestr(today,8)
@@ -244,20 +248,31 @@ classdef ResultsLog < handle
              warning on
              cd(PWD);
         end
-        function Symbols = GetSaveURL_Symbols(obj,ProgramName,MacroName,date)
-            %%
-            error('This function is now obselete. please use GetSaveType_Symbols')
+        function Symbols = GetSavedSymbolsFromPath(obj,Path)
             PWD = pwd;
-            Path = [obj.ResultsDir,ProgramName,'\Results\',MacroName,'\URL\',datestr(date),'\'];
             cd(Path);
             cells = rot90(struct2cell(dir),3);
             Symbols = strrep(cells(3:end,end),'.mat','');
-            cd(PWD)            
+            cd(PWD)  
+        end
+        function Symbols = GetSaveURL_Symbols(obj,ProgramName,MacroName,date)
+            %%
+            error('This function is now obselete. please use GetSaveType_Symbols')
+            if obj.AddSubPaths == true
+                Path = [obj.ResultsDir,ProgramName,'\Results\',MacroName,'\URL\',datestr(date),'\'];
+            else
+                Path = obj.ResultsDir;
+            end
+            Symbols = obj.GetSavedSymbolsFromPath(Path);
         end
         function Symbols = GetSaveType_Symbols(obj,Type,ProgramName,MacroName,date)
             %%
             PWD = pwd;
-            Path = [obj.ResultsDir,ProgramName,'\Results\',MacroName,'\',Type,'\',datestr(date),'\'];
+            if obj.AddSubPaths == true
+                Path = [obj.ResultsDir,ProgramName,'\Results\',MacroName,'\',Type,'\',datestr(date),'\'];
+            else
+                Path = obj.ResultsDir;
+            end
             cd(Path);
             cells = rot90(struct2cell(dir),3);
             Symbols = strrep(cells(3:end,end),'.mat','');

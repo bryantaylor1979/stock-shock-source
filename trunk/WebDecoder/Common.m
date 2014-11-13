@@ -5,14 +5,14 @@ classdef Common < handle & ...
     end
     methods
         function struct = GetConfig(obj,ProgramName,TrainerName)
-            file = [obj.InstallDir,'DecodeTrainers\',ProgramName,'\',TrainerName,'.m'];
+            file = fullfile(obj.InstallDir,'DecodeTrainers',ProgramName,[TrainerName,'.m']);
             struct = obj.GetConfigFullPath(file);  
             try
             struct = obj.ReplaceIllegalChars(struct);
             end
         end
         function s = GetURL(obj,ProgramName,TrainerName)
-            file = [obj.InstallDir,'DecodeTrainers\',ProgramName,'\',TrainerName,'.mat'];
+            file = fullfile(obj.InstallDir,'DecodeTrainers',ProgramName,[TrainerName,'.mat']);
             load(file);             
         end
         function [struct] = ReplaceIllegalChars(obj,struct)

@@ -1,56 +1,56 @@
 classdef PGin_Stox <    handle & ...
                         DataSetFiltering
     methods
-        function DataSet2 = StarRating(obj,DataSet)
+        function DataSet = StarRating(obj,DataSet)
             %%
-            Overall = obj.GetColumn(DataSet,'Overall');
+            Overall = DataSet.Overall;
             Overall = strrep(Overall,'<img border=0 src=http://uk.stoxline.com/pics/','');
-            Rating = str2double(strrep(Overall,'s.bmp>',''));
-            DataSet2 = [DataSet,dataset(Rating)];
+            Rating = str2double(strrep(Overall,'s.bmp>',''))
+            DataSet.Rating = Rating;
         end
-        function DataSet3 = Signal(obj,DataSet2)
+        function DataSet2 = Signal(obj,DataSet2)
             %%
-            Rating = obj.GetColumn(DataSet2,'Rating');
-            x = size(Rating,1);
+            Rating = DataSet2.Rating;
+            x = max(size(Rating))
             for i = 1:x
                 switch Rating(i)
                     case 1
-                        Signal{i,1} = 'Strong Sell';
+                        Signal{i} = 'Strong Sell';
                     case 2
-                        Signal{i,1} = 'Sell';
+                        Signal{i} = 'Sell';
                     case 3
-                        Signal{i,1} = 'Neutral';
+                        Signal{i} = 'Neutral';
                     case 4
-                        Signal{i,1} = 'Buy';
+                        Signal{i} = 'Buy';
                     case 5
-                        Signal{i,1} = 'Strong Buy';
+                        Signal{i} = 'Strong Buy';
                     otherwise
-                        Signal{i,1} = 'N/A';
+                        Signal{i} = 'N/A';
                 end
             end
-            DataSet3 = [DataSet2,dataset(Signal)];
+            DataSet2.Signal = Signal;
         end
-        function DataSet4 = Stars(obj,DataSet3)
+        function DataSet = Stars(obj,DataSet)
             %%
-            Rating = obj.GetColumn(DataSet3,'Rating');
-            x = size(Rating,1);
+            Rating = DataSet.Rating;
+            x = max(size(Rating));
             for i = 1:x
                 switch Rating(i)
                     case 1
-                        Stars{i,1} = '?';
+                        Stars{i} = '?';
                     case 2
-                        Stars{i,1} = '??';
+                        Stars{i} = '??';
                     case 3
-                        Stars{i,1} = '???';
+                        Stars{i} = '???';
                     case 4
-                        Stars{i,1} = '????';
+                        Stars{i} = '????';
                     case 5
-                        Stars{i,1} = '?????';
+                        Stars{i} = '?????';
                     otherwise
-                        Stars{i,1} = 'N/A';
+                        Stars{i} = 'N/A';
                 end
             end
-            DataSet4 = [DataSet3,dataset(Stars)];
+            DataSet.Stars = Stars;
         end
     end
 end
