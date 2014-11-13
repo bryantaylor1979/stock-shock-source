@@ -283,7 +283,7 @@ classdef ResultsLog < handle
         function DisplayHTML(obj,s,HTML_PATH)
             fid = fopen(HTML_PATH,'wt');
             fprintf(fid,'%c',s)
-            web(HTML_PATH)
+            web(HTML_PATH) 
         end
     end
     methods (Hidden = true)
