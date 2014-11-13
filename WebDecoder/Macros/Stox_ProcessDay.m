@@ -1,18 +1,27 @@
 %%
 ProgramName = 'Stox';
 ResultName = 'Best_Investments';
-if not(exist('Date')), Date = today;,  Date = obj.GetStoreDate(Date);, end
-% 
-Symbol = obj.GetURL_Symbols(ProgramName,ResultName,Date);
+Symbols = obj.GetSavedSymbolsFromPath('/var/lib/jenkins/jobs/Stox Download/workspace/URL_Download/Results')
 struct = obj.GetConfig2('Stox');
-[DATASET, N_ErrorSymbols] = obj.DecodeALL(struct,'URL',Symbol,ProgramName,ResultName,Date);
 
-DATASET = [dataset(Symbol),DATASET];
-DATASET = obj.Stox.Signal(DATASET);
+%%
+[DATASET, N_ErrorSymbols] = obj.DecodeALL_Jenkins(struct,'/var/lib/jenkins/jobs/Stox Download/workspace/URL_Download/Results',Symbols);
+
+%%
 DATASET = obj.Stox.StarRating(DATASET);
-DATASET = obj.Stox.Star(DATASET);
+DATASET = obj.Stox.Signal(DATASET);
+DATASET = obj.Stox.Stars(DATASET);
 
-obj.SaveDataSet(DATASET,ProgramName,ResultName,Date);
+%%
+try
+save('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+catch
+mkdir('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/') 
+save('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+end
+
+%%
+% obj.SaveDataSet(DATASET,ProgramName,ResultName,Date);
 % obj.DataSet2xls(DATASET, [obj.InstallDir,'Results\',Folder,'\xls\',datestr(Date,1),'.xls']);
 % obj.DataSet2csv(DATASET,[obj.InstallDir,'Results\',Folder,'\stoxlinebestpick.csv']);
 % obj.SendFtp([obj.InstallDir,'Results\',Folder,'\stoxlinebestpick.csv'],'httpdocs/Stox/','wfoote.com','shares','cormorant');

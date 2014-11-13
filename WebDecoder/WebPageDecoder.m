@@ -1,6 +1,5 @@
 classdef WebPageDecoder < handle & ...
                           Common & ...
-                          URL_Download & ...
                           ResultsLog & ...
                           WQ_Decoder & ...
                           MacroRun
@@ -17,9 +16,20 @@ classdef WebPageDecoder < handle & ...
         DL_Sym2Num
     end
     methods
-        function obj = WebPageDecoder(varargin)
+        function Example(obj)
             %%
-            obj.InstallDir = [pwd,'\'];
+            close all
+            clear classes
+            obj = WebPageDecoder('Macro','Stox_ProcessDay')
+        end
+        function obj = WebPageDecoder(varargin)
+            % set-up defaults
+            [path,~,~] = fileparts(which('WebPageDecoder'));
+            obj.InstallDir = path;         
+            obj.ResultsDir = fullfile(path,'Results');
+            obj.SettingsDir = obj.InstallDir;
+            
+            %%
             for i = 1:2:max(size(varargin))
                 obj.(varargin{i}) = varargin{i+1};
             end
@@ -31,15 +41,6 @@ classdef WebPageDecoder < handle & ...
             obj.WBS = PGin_WBS;
             obj.DL_Sym2Num = PGin_DL_Symbol2Num;
             
-            
-            try
-                cd('P:\StockData [MEDIAPC]\StockData [MEDIAPC]\')
-                obj.ResultsDir = 'P:\StockData [MEDIAPC]\StockData [MEDIAPC]\';
-                obj.MacroLogDir = 'P:\StockData [MEDIAPC]\StockData [MEDIAPC]\';
-            catch
-                obj.ResultsDir = 'P:\StockData [MEDIAPC]\';
-                obj.MacroLogDir = 'P:\StockData [MEDIAPC]\';
-            end
             disp(['ResultsDir: ',obj.ResultsDir])
             
             if isempty(obj.Macro)
@@ -160,6 +161,53 @@ classdef WebPageDecoder < handle & ...
 %                     count = count + 1;
 %                 end
             end
+            close(h)
+        end
+        function [DATASET2, ErrorSymbols] = DecodeALL_Jenkins(obj,struct,Path,Symbols)
+            %%
+            h = waitbar(0);
+            x = max(size(Symbols));
+            ErrorSymbols = [];
+            count = 1;
+            for i = 1:x
+                waitbar(i/x,h,[num2str(i),' of ',num2str(x)])
+                Symbol = Symbols{i};
+                Symbol = strrep(Symbol,'.L','');
+                [s, Error] = obj.LoadFile(Path,Symbol);
+                if not(Error == -1)
+                    outStruct = obj.DecodeURL(s,struct);
+                    y = size(outStruct,2);
+                    for j = 1:y
+                        Name = strrep(outStruct(j).Name,' ','');
+                        Val = outStruct(j).Val;
+                        if strcmpi(outStruct(j).Class,'Char')
+                            struct2.(Name){count} = outStruct(j).Val;
+                        else
+                            Val = outStruct(j).Val;
+                            if isempty(Val)
+                                struct2.(Name){count}= NaN;
+                            else
+                                struct2.(Name){count}= Val;
+                            end
+                        end
+                        %disp([outStruct(i).Name,' - ',outStruct(i).Val])
+                    end
+                    struct2.Symbols{count} = Symbol;
+                    count = count + 1;
+                end
+            end
+            %%
+            x = size(outStruct,2)
+            for i = 1:x
+                Name = strrep(outStruct(i).Name,' ','');
+                ARRAY = struct2.(Name);
+                if not(strcmpi(outStruct(i).Class,'char'))
+                    ARRAY = cell2mat(ARRAY);
+                end
+                DATASET2.(Name) = ARRAY;
+            end   
+            DATASET2.Symbols = struct2.Symbols;
+            %%
             close(h)
         end
         function DATASET = Struct2DataSet(obj,outStruct)
@@ -388,7 +436,7 @@ classdef WebPageDecoder < handle & ...
     end
     methods (Hidden = true) %DecodeURL - Support
         function struct = GetConfig2(obj,ProgramName)
-            file = [obj.InstallDir,'DecodeConfigs\',ProgramName,'.m'];
+            file = fullfile(obj.InstallDir,'DecodeConfigs',[ProgramName,'.m']);
             struct = obj.GetConfigFullPath(file);  
             try
             struct = obj.ReplaceIllegalChars(struct);
