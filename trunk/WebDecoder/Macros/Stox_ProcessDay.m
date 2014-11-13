@@ -14,10 +14,10 @@ DATASET = obj.Stox.Stars(DATASET);
 
 %%
 try
-save('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+save('/var/lib/jenkins/jobs/Stox Download/workspace/WebDecoder/Results/DecodedDATASET.mat','DATASET')
 catch
-mkdir('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/') 
-save('/home/bryan/svn/stock-shock/trunk/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+mkdir('/var/lib/jenkins/jobs/Stox Download/workspace/WebDecoder/Results/') 
+save('/var/lib/jenkins/jobs/Stox Download/workspace/WebDecoder/Results/DecodedDATASET.mat','DATASET')
 end
 
 %%
