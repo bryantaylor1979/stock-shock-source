@@ -28,6 +28,9 @@ classdef URL_Download < handle & ...
            
            %%
            URL_Download('Macro','Stox');
+           
+           %%
+           URL_Download('Macro','BritishBulls_HIST');
         end        
     end
     methods (Hidden = false)

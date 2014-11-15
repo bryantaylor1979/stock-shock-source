@@ -1,11 +1,16 @@
-%%
-Date = today-1;
+%% Vars
+jobName = 'BritishBulls Decode';
+jenkinsRoot = '/var/lib/jenkins/jobs/';
 
-ProgramName = 'BritishBulls';
-MacroName = 'CurrentEvent';
-Symbol = 'HAWK';
+%% Paths
+workspace = [jenkinsRoot,jobName,'/workspace'];
+Symbols = obj.GetSavedSymbolsFromPath([workspace,'/URL_Download/Results']);
+CE_DataSet = obj.BB_Hist.Hist_URL2Data_Sync(Symbols,floor(now));
 
 %%
-Symbols = obj.GetSaveType_Symbols('URL',   ProgramName,   MacroName, Date);
-CE_DataSet = obj.BB_Hist.Hist_URL2Data_Sync(Symbols,Date);
-obj.SaveDataSet(CE_DataSet,ProgramName,MacroName,Date);
+try
+save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'CE_DataSet')
+catch
+mkdir([workspace,'/WebDecoder/Results/']) 
+save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'CE_DataSet')
+end
