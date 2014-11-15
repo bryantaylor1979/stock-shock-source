@@ -1,11 +1,16 @@
+%% Vars
+jobName = 'Stox Decode';
+jenkinsRoot = '/var/lib/jenkins/jobs/';
+
+%% Paths
+workspace = [jenkinsRoot,jobName,'/workspace'];
+
 %%
-ProgramName = 'Stox';
-ResultName = 'Best_Investments';
-Symbols = obj.GetSavedSymbolsFromPath('/var/lib/jenkins/jobs/Stox Download/workspace/URL_Download/Results')
+Symbols = obj.GetSavedSymbolsFromPath([workspace,'/URL_Download/Results']);
 struct = obj.GetConfig2('Stox');
 
 %%
-[DATASET, N_ErrorSymbols] = obj.DecodeALL_Jenkins(struct,'/var/lib/jenkins/jobs/Stox Download/workspace/URL_Download/Results',Symbols);
+[DATASET, N_ErrorSymbols] = obj.DecodeALL_Jenkins(struct,[workspace,'/URL_Download/Results'],Symbols);
 
 %%
 DATASET = obj.Stox.StarRating(DATASET);
@@ -14,10 +19,10 @@ DATASET = obj.Stox.Stars(DATASET);
 
 %%
 try
-save('/var/lib/jenkins/jobs/Stox Decode/workspace/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'DATASET')
 catch
-mkdir('/var/lib/jenkins/jobs/Stox Decode/workspace/WebDecoder/Results/') 
-save('/var/lib/jenkins/jobs/Stox Decode/workspace/WebDecoder/Results/DecodedDATASET.mat','DATASET')
+mkdir([workspace,'/WebDecoder/Results/']) 
+save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'DATASET')
 end
 
 %%
