@@ -9,7 +9,7 @@ classdef URL_Download < handle & ...
         sURL
         eURL
         timeout = 200;
-        t1 = 5000; 
+        t1 = 100000; 
         loglevel = 0;
         InstallDir = [];
         RunOnInt = 'on'
@@ -30,7 +30,7 @@ classdef URL_Download < handle & ...
            URL_Download('Macro','Stox');
            
            %%
-           URL_Download('Macro','BritishBulls_HIST');
+           obj = URL_Download('Macro','BritishBulls_HIST','RunOnInt',false);
         end        
     end
     methods (Hidden = false)
@@ -2776,7 +2776,9 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
                         case 'url'
                             %%
                             url = [obj.sURL,Symbol,obj.eURL];
-                            s = urlread2([obj.sURL,Symbol,obj.eURL],[],[],obj.t1);
+                            disp(url);
+                            s = urlread2(url,[],[],obj.t1);
+                            obj.DisplayHTML(s,'temp.html')
                         case 'wq'
                             s = obj.ReadWebQuery([obj.sURL,Symbol,obj.eURL]); 
                         otherwise

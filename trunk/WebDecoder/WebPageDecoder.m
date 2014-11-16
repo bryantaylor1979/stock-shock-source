@@ -21,6 +21,11 @@ classdef WebPageDecoder < handle & ...
             close all
             clear classes
             obj = WebPageDecoder('Macro','Stox_ProcessDay')
+            
+            %%
+            close all
+            clear classes
+            obj = WebPageDecoder('Macro','BB_HIST_Decode','RunOnInt',false)
         end
         function obj = WebPageDecoder(varargin)
             % set-up defaults

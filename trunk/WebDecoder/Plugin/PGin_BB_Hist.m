@@ -8,7 +8,28 @@ classdef PGin_BB_Hist < handle & ...
         InstallDir = 'C:\SourceSafe\Stocks & Shares\Programs\BritishBulls\';
     end
     methods
-        function CE_DataSet = Hist_URL2Data_Sync(obj,Symbols,date)
+        function URL2Table_ALL(obj,Symbols,Src_Path,Dest_Path)
+                %% Load Objects
+                %Verfied - The symbols 
+                [x] = size(Symbols,1);
+                tic
+                first = true;
+                for j = 1:x
+                      disp(['Processing... ',num2str(j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)'])
+
+                      Symbol = strrep(Symbols{j},'.L','');
+                      Symbol = strrep(Symbol,'.','_');
+                      
+                      [s, Error] = obj.LoadFile(Src_Path,Symbol);
+                      try
+                        DataSet = obj.URL2Table(Symbol,s);
+                        Error = obj.SaveDat(Dest_Path,Symbol,DataSet);
+                      catch
+                        warning(['Unable to decode symbol: ',Symbol])
+                      end
+                end        
+        end
+        function CE_DataSet = Hist_URL2Data_Sync(obj,Symbols,Path)
                 %Get last URL downloaded
                 %
                 %
@@ -17,15 +38,7 @@ classdef PGin_BB_Hist < handle & ...
                 %Date Modified: 3rd January 2008
                 UpdateRate = 30;
                 
-                ProgramName = 'BritishBulls';
-                ResultName = 'CurrentEvent';
                 disp(['Executed: ',datestr(now)])
-
-                DateNum = date;
-
-                if not(date == DateNum)
-                   warning('URL was not updated today... Running last download') 
-                end
 
                 %% Load Objects
                 %Verfied - The symbols 
@@ -49,7 +62,8 @@ classdef PGin_BB_Hist < handle & ...
                       Symbol = strrep(Symbols{j},'.L','');
                       Symbol = strrep(Symbol,'.','_');
                       
-                      [s, Error] = obj.LoadResult_Type(ProgramName,ResultName,Symbol,DateNum,'URL');
+                      %[s, Error] = obj.LoadResult_Type(ProgramName,ResultName,Symbol,DateNum,'URL');
+                      [s, Error] = obj.LoadFile(Path,Symbol)
                       %
                       if Error == 0
                           try
@@ -234,13 +248,6 @@ classdef PGin_BB_Hist < handle & ...
                 Symbol = {Symbol};
                 DataSet = dataset(Symbol,Date,Signal);
             end
-        end
-        function [DataSet,CE_DataSet] = HistoricalSignals_URL2DataSet(obj,Symbol,s)
-            % Historical URL2Dataset
-            %
-            DataSet = obj.URL2Table(Symbol,s);
-%             CE_DataSet = obj.GetCurrentEvent(Symbol,s);
-            CE_DataSet = 1;
         end
         function [Array, Error] = LoadData(obj,Folder,Symbol)
         %Error:

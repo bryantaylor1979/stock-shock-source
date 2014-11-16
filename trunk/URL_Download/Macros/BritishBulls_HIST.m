@@ -1,6 +1,6 @@
 %% ['http://markets.ft.com/tearsheets/analysis.asp?s=',Symbol,'%3ALSE'];
 obj.sURL = 'http://www.britishbulls.com/SignalPage.aspx?lang=en&Ticker=';
-obj.eURL = '';
+obj.eURL = '.L';
 obj.timeout = 2;
 Method = 'URL';
 
@@ -16,5 +16,5 @@ Date = obj.GetStoreDate(Date);
 % Should use BB ALL_STATUS Symbol Set. 
 Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
         
-obj.SaveALL(Method,Symbols,ProgramName,ResultName,Date,MacroName);
+obj.SaveALL(Method,Symbols(1:10),ProgramName,ResultName,Date,MacroName);
 
