@@ -2777,8 +2777,9 @@ Map = {'Aerospace & Defence',   'ADIS.L',   'Armor Designs Inc'; ...
                             %%
                             url = [obj.sURL,Symbol,obj.eURL];
                             disp(url);
-                            s = urlread2(url,[],[],obj.t1);
-                            obj.DisplayHTML(s,'temp.html')
+                            %s = urlread2(url,[],[],obj.t1);
+                            s = urlread(url);
+%                             obj.DisplayHTML(s,'temp.html')
                         case 'wq'
                             s = obj.ReadWebQuery([obj.sURL,Symbol,obj.eURL]); 
                         otherwise
