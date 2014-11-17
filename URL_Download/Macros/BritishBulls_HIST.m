@@ -14,7 +14,9 @@ Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
 % Should use BB ALL_STATUS Symbol Set. 
-Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
+%Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
+[Data] = obj.III_IndexMap;
+Symbols = Data(:,2);
         
-obj.SaveALL(Method,Symbols(4),ProgramName,ResultName,Date,MacroName);
+obj.SaveALL(Method,Symbols,ProgramName,ResultName,Date,MacroName);
 
