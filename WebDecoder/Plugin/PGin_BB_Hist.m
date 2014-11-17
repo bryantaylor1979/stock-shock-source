@@ -24,6 +24,9 @@ classdef PGin_BB_Hist < handle & ...
                       try
                         DataSet = obj.URL2Table2(Symbol,s);
                         Error = obj.SaveDat(Dest_Path,Symbol,DataSet);
+                        if Error == -1
+                           warning(['Unable to save the result: ',Symbol]) 
+                        end
                       catch
                         warning(['Unable to decode symbol: ',Symbol])
                       end
@@ -360,7 +363,7 @@ classdef PGin_BB_Hist < handle & ...
         end
         function Error = SaveDat(obj,Folder,Symbol,DataSet)
             Table = DataSet;
-            PATH = [obj.InstallDir,Folder,'\',Symbol];
+            PATH = [Folder,'\',Symbol];
             try
                 save(PATH,'Table');
                 Error = 0;
