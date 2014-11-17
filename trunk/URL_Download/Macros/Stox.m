@@ -14,4 +14,4 @@ Date = obj.GetStoreDate(Date);
 %Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
 [Data] = obj.III_IndexMap;
 Symbols = Data(:,2);
-obj.SaveALL(Method,Symbols(1:10),ProgramName,ResultName,Date,MacroName);
+obj.SaveALL(Method,Symbols(4),ProgramName,ResultName,Date,MacroName);
