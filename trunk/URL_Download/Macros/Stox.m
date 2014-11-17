@@ -11,5 +11,7 @@ MacroName = 'Stox';
 Date = floor(now);
 Date = obj.GetStoreDate(Date);
 
-Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
+%Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
+[Data] = obj.III_IndexMap;
+Symbols = Data(:,2);
 obj.SaveALL(Method,Symbols,ProgramName,ResultName,Date,MacroName);
