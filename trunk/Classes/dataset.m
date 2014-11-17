@@ -17,8 +17,8 @@ classdef dataset < handle & ...
                 set = varargin{i};
                 VarName = set{2};
                 Values = set{1};
-                obj.addprop(VarName)
-                obj.(VarName) = Values
+                obj.addprop(VarName);
+                obj.(VarName) = Values;
             end
         end
     end

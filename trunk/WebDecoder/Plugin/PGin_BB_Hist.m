@@ -22,7 +22,7 @@ classdef PGin_BB_Hist < handle & ...
                       
                       [s, Error] = obj.LoadFile(Src_Path,Symbol);
                       try
-                        DataSet = obj.URL2Table(Symbol,s);
+                        DataSet = obj.URL2Table2(Symbol,s);
                         Error = obj.SaveDat(Dest_Path,Symbol,DataSet);
                       catch
                         warning(['Unable to decode symbol: ',Symbol])
@@ -210,6 +210,98 @@ classdef PGin_BB_Hist < handle & ...
             end
             Symbol = Symbols;
             DATASET = dataset(Symbol,Date,CurrentPrice,Signal,ConfSignal,Money);            
+        end
+        function DATASET = URL2Table2(obj,Symbol,s)
+            % Extract the history table from the URL
+            %
+            
+            %% Table Crop
+            n = findstr(s,'>Signal History<');
+            nend = findstr(s(n:end),'</table><script id="');
+            TableCrop = s(n:n+nend(1));
+            
+            %% 
+            n = findstr(TableCrop,'               </font></td><td class="dxgv" ');
+            x = size(n,2);
+            %
+            LineCrop = [];
+            for i = 1:x-1
+                Line = TableCrop(n(i):n(i+1));
+                LineCrop = [LineCrop;{Line}];
+            end
+            Line = TableCrop(n(x):end);
+            LineCrop = [LineCrop;{Line}];
+            
+            %%
+            [x] = size(LineCrop,1);
+            for i = 1:x
+               Line = LineCrop{i};
+               Symbols{i,1} = Symbol;
+               
+               % Money
+               n1 = findstr(Line,'<font face="Verdana">');
+               EndLine = Line(n1(1)+21:end);
+               n = findstr(EndLine,'</font>');
+               Money2 = strrep(EndLine(1:n(1)-1),',','');
+               Money(i,1) = str2num(Money2);
+            
+               % Signal
+               startn = findstr(Line,'<font face="Verdana" color=');
+               EndLine = Line(startn+10:end);
+               n = findstr(EndLine,'</font>');
+               SignalLine = EndLine(1:n-1);
+               n = findstr(SignalLine,'BUY');
+               if isempty(n)
+                    Signal{i,1} = 'Sell';
+               else
+                    Signal{i,1} = 'Buy';
+               end
+               
+               % Confimation Signal
+               n7 = findstr(Line,'src="img/Check.gif');
+               if not(isempty(n7)) %Check True
+                    ConfSignal{i,1} = 'TRUE';
+               else
+                    ConfSignal{i,1} = '';
+               end
+               n8 = findstr(Line,'src="img/Uncheck.gif');
+               if not(isempty(n8))
+                    ConfSignal{i,1} = 'FALSE';
+               end
+               
+               % Date
+               n1 = findstr(Line,'<font face="Verdana">');
+               EndLine = Line(n1(2)+21:end);
+               n = findstr(EndLine,'</font>');
+               DateStr = strrep(EndLine(1:n(1)-1),',','');
+               try
+               Date{i,1} = datestr(datenum(DateStr,'mm/dd/yyyy'));
+               catch
+               Date{i,1} = 'N/A';    
+               end
+
+               % Current Price
+               startstr = '<font face="Verdana">';
+               
+               %%
+               try
+               n5 = findstr(Line,startstr);
+               EndLine = Line(n5(3)+21:end);
+               endstr = '</font>';          
+               n6 = findstr(EndLine,endstr);
+               String = EndLine(1:n6(1)-1);
+               CurrentPrice(i,1) = str2num(String); 
+               catch
+               CurrentPrice(i,1) = NaN;    
+               end
+               
+            end
+            DATASET = dataset(  {Symbols,'Symbol'}, ...
+                                {Date,'Date'}, ...
+                                {CurrentPrice,'CurrentPrice'}, ...
+                                {Signal,'Signal'}, ...
+                                {ConfSignal,'ConfSignal'}, ...
+                                {Money,'Money'});            
         end
         function DataSet = GetCurrentEvent(obj,Symbol,s)
             try

@@ -280,10 +280,13 @@ classdef ResultsLog < handle
         end
     end
     methods %display result
-        function DisplayHTML(obj,s,HTML_PATH)
+        function DisplayHTML(obj,s)
+            WriteHTML(obj,s,'temp.html')
+            web('temp.html') 
+        end
+        function WriteHTML(obj,s,HTML_PATH)
             fid = fopen(HTML_PATH,'wt');
-            fprintf(fid,'%c',s)
-            web(HTML_PATH) 
+            fprintf(fid,'%c',s)            
         end
     end
     methods (Hidden = true)
