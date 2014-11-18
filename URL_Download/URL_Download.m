@@ -34,7 +34,7 @@ classdef URL_Download < handle & ...
            
            %%
            obj = URL_Download('Macro','BritishBulls_HIST','RunOnInt',false);
-        end        
+        end         
     end
     methods (Hidden = false)
         function Symbols = GetRequiredSymbols(obj,Program,MacroName,Date)
