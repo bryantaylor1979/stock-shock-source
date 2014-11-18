@@ -3,6 +3,7 @@ classdef URL_Download < handle & ...
     %TODO: GetRequiredSymbols Working.
     properties
         MapName = 'III_IndexMap'
+        Method = 'url' %url | url2 | wq | xml
         WaitbarEnable = false
         sURL
         eURL
@@ -52,7 +53,7 @@ classdef URL_Download < handle & ...
             end
             [Symbols] = obj.RemoveSymbols(RequiredSymbols,SavedSymbols);
         end
-        function DownloadAllURL(obj,Method,Symbols,ProgramName,ResultName,Date,MacroName)
+        function DownloadAllURL(obj,Symbols,ProgramName,ResultName,Date,MacroName)
             %
             disp(['Executed: ',datestr(now)])
             
@@ -83,20 +84,20 @@ classdef URL_Download < handle & ...
                       disp(['Processing... ',num2str(j),' of ',num2str(x),' (',num2str(round(j/x*100)),'%)'])
                   end
                   Symbol = strrep(Symbols{j},'.L','');
-                  obj.DownloadURL(Method,Symbol,ProgramName,ResultName,Date);
+                  obj.DownloadURL(Symbol,ProgramName,ResultName,Date);
             end
             pause(5);
             if obj.WaitbarEnable == true
                 close(h)
             end
         end
-        function s = DownloadURL(obj,Method,Symbol,ProgramName,ResultName,Date)
+        function s = DownloadURL(obj,Symbol,ProgramName,ResultName,Date)
             time = 1;
             while time < obj.timeout
                 try 
                     url = [obj.sURL,Symbol,obj.eURL];
                     disp(url);
-                    switch lower(Method)
+                    switch lower(obj.Method)
                         case 'xml'
                             s = parseXML(url);
                         case 'url'
@@ -116,16 +117,17 @@ classdef URL_Download < handle & ...
                 end
             end
             if obj.timeout <= time
-               return 
                s = [];
                Error = -2;
+               warning(['Failed to download: ',Symbol])
+               return 
             end 
             
             n = find(strcmpi(Symbol,obj.IllegalSymbols), 1);
             if not(isempty(n))
                 Symbol = [Symbol,'__'];
             end
-            obj.ResultsLog_OBJ.SaveResult_Type(s,Symbol,ProgramName,ResultName,Method,Date);
+            obj.ResultsLog_OBJ.SaveResult_Type(s,Symbol,ProgramName,ResultName,upper(obj.Method),Date);
         end
     end
     methods (Hidden = true)
