@@ -112,8 +112,56 @@ classdef ResultsLog < handle
                  Error = -1;
              end
         end
+        function [s, Error] = LoadURLs(obj,Program,Macro,Symbol,date)
+            % Example
+            % [s, Error] = obj.LoadURLs(Program,Macro,Symbol,date)
+            n = find(strcmpi(Symbol,obj.IllegalSymbols), 1);
+            if not(isempty(n))
+                Symbol = [Symbol,'__'];
+            end
+            
+            PWD = pwd;
+            Path = [obj.ResultsDir,Program,'\Results\',Macro,'\URL\',datestr(date),'\'];
+            Filename = [Path,Symbol,'.mat'];
+            
+            %%
+            try
+                load(Filename);
+                Error = 0;
+            catch
+                s = [];
+                Error = -1;   
+            end
+            cd(PWD) 
+        end
     end
     methods %Get Info
+        function date = GetStoreDate(~,date)
+            disp('Found function')
+            Threshold = '08:00:00';
+            if date == floor(now) %if today then find time.
+                time = now;
+                time = rem(time,1);
+                ThresholdDateNum = rem(datenum(Threshold),1);
+                if time < ThresholdDateNum;
+                    date = date - 1;
+                end
+            end            
+        end
+        function DateNum = GetLastDateOfURL(obj,Program,Macro,DateNum)
+            FileName = [obj.ResultsDir,Program,'\Results\',Macro,'\URL\'];
+            CD = pwd;
+            cd(FileName);
+            names = struct2cell(dir);
+            Name = rot90(strrep(names(1,:,:),'.mat',''));
+            
+            DateNums = datenum(Name(1:end-2));
+            n = DateNums <= DateNum;
+            DateNums = DateNums(n);
+            
+            DateNum = max(DateNums);
+            cd(CD);
+        end 
         function DateNum = GetLastDateNum(obj,Program,Macro,Type)
             DateNum = max(obj.GetResultDateNums(Program,Macro,Type));
         end
@@ -290,6 +338,12 @@ classdef ResultsLog < handle
         end
     end
     methods (Hidden = true)
+        function obj = ResultsLog(varargin)
+            x = size(varargin,2);
+            for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+            end
+        end
         function DATES2 = combinedates(obj,struct)
             Types = fieldnames(struct);
             x = size(Types,1);
