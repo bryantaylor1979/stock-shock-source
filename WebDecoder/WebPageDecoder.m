@@ -5,6 +5,7 @@ classdef WebPageDecoder < handle & ...
                           MacroRun
     properties
         Rev_WebPageDecoder = 0.01;
+        WaitbarEnable = false
         InstallDir = [];
         RunOnInt = 'on'
         ProgramName = 'WebDecoder'
@@ -170,12 +171,18 @@ classdef WebPageDecoder < handle & ...
         end
         function [DATASET2, ErrorSymbols] = DecodeALL_Jenkins(obj,struct,Path,Symbols)
             %%
-            h = waitbar(0);
+            if obj.WaitbarEnable == true
+                h = waitbar(0);
+            end
             x = max(size(Symbols));
             ErrorSymbols = [];
             count = 1;
             for i = 1:x
-                waitbar(i/x,h,[num2str(i),' of ',num2str(x)])
+                if obj.WaitbarEnable == true
+                    waitbar(i/x,h,[num2str(i),' of ',num2str(x)])
+                else
+                    disp([num2str(i),' of ',num2str(x)])
+                end
                 Symbol = Symbols{i};
                 Symbol = strrep(Symbol,'.L','');
                 [s, Error] = obj.LoadFile(Path,Symbol);
@@ -213,7 +220,9 @@ classdef WebPageDecoder < handle & ...
             end   
             DATASET2.Symbols = struct2.Symbols;
             %%
-            close(h)
+            if obj.WaitbarEnable == true
+                close(h)
+            end
         end
         function DATASET = Struct2DataSet(obj,outStruct)
             %%
