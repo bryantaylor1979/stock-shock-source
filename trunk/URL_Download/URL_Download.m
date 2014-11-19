@@ -188,7 +188,9 @@ classdef URL_Download < handle & ...
             close(obj.handles.figure)
             end
         end
-        function TimeStr = CalculateTime(~,Seconds)
+        % The CalculateTime function is not currently being used. The time
+        % is calculate anyway by jenkins. May not be required anymore. 
+        function TimeStr = CalculateTime(~,Seconds) %Add this in to the batcher. (Once the batcher is adopted)
             secs = round(Seconds);
             minutes = floor(secs/60);
             hours = floor(minutes/60);

@@ -1,27 +1,29 @@
 classdef WebPageDecoder < handle & ...
                           Common & ...
-                          ResultsLog & ...
                           WQ_Decoder & ...
                           MacroRun
     properties
-        Rev_WebPageDecoder = 0.01;
         WaitbarEnable = false
         InstallDir = [];
         RunOnInt = 'on'
         ProgramName = 'WebDecoder'
+        
+        % plug-ins
         Stox
         FT_Perf
         BB_ALLSTATUS
         BB_Hist
         WBS
         DL_Sym2Num
+        
+        ResultsLog_OBJ = []; %This doesn't seem to be used.
     end
     methods
         function Example(obj)
             %%
             close all
             clear classes
-            obj = WebPageDecoder('Macro','Stox_ProcessDay')
+            obj = WebPageDecoder('Macro','Stox_ProcessDay','WaitbarEnable',true)
             
             %%
             close all
@@ -40,6 +42,9 @@ classdef WebPageDecoder < handle & ...
                 obj.(varargin{i}) = varargin{i+1};
             end
             
+            %%
+            obj.ResultsLog_OBJ = ResultsLog('ResultsDir',   fullfile(path,'Results'));
+            
             obj.Stox = PGin_Stox;
             obj.FT_Perf = PGin_FT_Perf;
             obj.BB_ALLSTATUS = PGin_BB_ALLSTATUS;
@@ -47,7 +52,7 @@ classdef WebPageDecoder < handle & ...
             obj.WBS = PGin_WBS;
             obj.DL_Sym2Num = PGin_DL_Symbol2Num;
             
-            disp(['ResultsDir: ',obj.ResultsDir])
+            disp(['ResultsDir: ',obj.ResultsLog_OBJ.ResultsDir])
             
             if isempty(obj.Macro)
                 PWD = pwd;
@@ -315,18 +320,6 @@ classdef WebPageDecoder < handle & ...
             end
             close(h)
         end  
-        function date = GetStoreDate(obj,date)
-            disp('Found function')
-            Threshold = '08:00:00';
-            if date == today %if today then find time.
-                time = now;
-                time = rem(time,1);
-                ThresholdDateNum = rem(datenum(Threshold),1);
-                if time < ThresholdDateNum;
-                    date = date - 1;
-                end
-            end            
-        end
         function Table2= RemoveALL_Formating(obj,Table)
             for j = 1:size(Table,2)
                 Column = j;
