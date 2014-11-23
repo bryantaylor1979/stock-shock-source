@@ -9,7 +9,7 @@ workspace = [jenkinsRoot,jobName,'/workspace'];
 Symbols = obj.GetSavedSymbolsFromPath([workspace,'/URL_Download/Results']);
 
 %%
-load([workspace,'/URL_Download/Results/',Symbols,'.mat'])
+load([workspace,'/URL_Download/Results/',Symbols{1},'.mat'])
 obj.DecodeTable_OBJ.s = s;
 obj.DecodeTable_OBJ.RUN();
 obj.Table
