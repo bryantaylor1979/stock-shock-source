@@ -23,8 +23,8 @@ for i = 1:x
 end
 %%
 try
-save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'DATASET')
+save([workspace,'/WebDecoder/Results/SymbolSet.mat'],'DATASET')
 catch
 mkdir([workspace,'/WebDecoder/Results/']) 
-save([workspace,'/WebDecoder/Results/DecodedDATASET.mat'],'DATASET')
+save([workspace,'/WebDecoder/Results/SymbolSet.mat'],'DATASET')
 end
