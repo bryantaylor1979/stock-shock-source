@@ -11,7 +11,7 @@ Symbols = obj.GetSavedSymbolsFromPath([workspace,'/URL_Download/Results']);
 %%
 x = max(size(Symbols));
 for i = 1:x
-    file = [workspace,'/URL_Download/Results/',Symbols{1},'.mat'];
+    file = [workspace,'/URL_Download/Results/',Symbols{i},'.mat'];
     load(file)
     obj.DecodeTable_OBJ.s = s;
     obj.DecodeTable_OBJ.RUN();
