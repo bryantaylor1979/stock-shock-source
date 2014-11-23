@@ -1,12 +1,37 @@
 classdef DecodeTableFromURL < handle
     properties
+        s
+        RemoveFormatting = true;
+        tableNum = 6;
+        TableStart = '<table'
+        TableEnd = '</table>'
+        RemoveFirstRow = true;
+        RowStart = '<td'
+        RowEnd = '</tr>'
+        CellStart = '<td'
+        CellEnd = '</td>'
+        CellEndT = '</td>'
+        Table
     end
     methods
-        function Table = DecodeTable(obj,s,struct)
+        function Example(obj)
+            %%
+            close all
+            clear classes
+            load('/var/lib/jenkins/jobs/Stox SymbolList Download/workspace/URL_Download/Results/A.mat')
+            obj = DecodeTableFromURL()
+            obj.s = s;
+            obj.RUN();
+            obj.Table
+        end
+        function RUN(obj)
             %%           
-            [table] = obj.CropTable(s,struct.TableStart,struct.TableEnd);
-            [rows] = obj.CropRows(table,struct.RowStart,struct.RowEnd);
-            Table = obj.GetAllCells(rows,struct.CellStart,struct.CellEnd,struct.CellEndT);   
+            [table] = obj.CropTable(obj.s,obj.TableStart,obj.TableEnd,obj.tableNum);
+            [rows] = obj.CropRows(table,obj.RowStart,obj.RowEnd);
+            obj.Table = obj.GetAllCells(rows,obj.CellStart,obj.CellEnd,obj.CellEndT); 
+            if obj.RemoveFormatting == true
+                obj.Table = obj.RemoveFormating(obj.Table);
+            end
         end
     end
     methods (Hidden = true) %DecodeTable - Support
@@ -14,7 +39,12 @@ classdef DecodeTableFromURL < handle
             %%
             x = max(size(rows));
             cells = [];
-            for i = 1:x
+            if obj.RemoveFirstRow == true
+                start = 2;
+            else
+                start = 1;
+            end
+            for i = start:x
                 rowstr = rows{i};
                 cell = obj.GetCell(rowstr,cellstart,cellend,cellend2);
                 y = size(cells,2);
@@ -55,31 +85,54 @@ classdef DecodeTableFromURL < handle
         end
         function [rows] = CropRows(obj,table,rowstart,rowend)
             n3 = findstr(table,rowstart);
-            n4 = findstr(table,rowend);
-            disp([num2str(max(size(n3))),' rows detected'])
-            
-            for i = 1:max(size(n3))
-                try
-                temp = table(n3(i):end);
-                n4 = findstr(temp,rowend);
-                rows{i} = temp(1:n4(1));
+            NumberOfPossibles = max(size(n3));
+            disp([num2str(NumberOfPossibles),' rows detected'])
+            complete = false;
+            count = 1;
+            while complete == false
+                [table, row, complete] = obj.GetNextRow(table,rowstart,rowend);
+                if complete == false
+                    rows{count} = row;
                 end
-            end            
+                count = count + 1;
+                if count == NumberOfPossibles
+                   break 
+                end
+            end
         end
-        function [table] = CropTable(obj,s,tablestart,tableend)
+        function [table_reduced, row, complete] = GetNextRow(obj,table,rowstart,rowend)
+            n3 = findstr(table,rowstart);
+            if isempty(n3)
+                complete = true;
+                row = [];
+                table_reduced = [];
+                return
+            else
+                complete = false; 
+            end
+            n4 = findstr(table,rowend);
+            temp = table(n3(1):end);
+            n4 = findstr(temp,rowend);
+            row = temp(1:n4(1)); 
+            table_reduced = temp(n4(1):end);
+        end
+        function [table] = CropTable(obj,s,tablestart,tableend,tableNum)
             n1 = findstr(s,tablestart);
-            n2 = findstr(s,tableend);
-            table = s(n1:n2);
-            
-            if isempty(table)
-                startindex = 1;
-                size(n1,2);
-                size(n2,2);
-                n1 = n1(startindex);
-                n = find(n1 < n2);
-                n2 = n2(n);
-                n2 = n2(1);
-                table = s(n1:n2);
+            table = s(n1(tableNum):end);
+            n2 = findstr(table,tableend);
+            table = table(1:n2(1));           
+        end
+        function TableOUT = RemoveFormating(obj,Table)
+            %%
+            [x,y] = size(Table);
+            for i = 1:x
+               for j = 1:y
+                   str = Table{i,j};
+                   n = findstr(str,'>');
+                   string = str(n(end-1)+1:end);
+                   n1 = findstr(string,'<');
+                   TableOUT{i,j} = string(1:n1-1);
+               end
             end
         end
     end
