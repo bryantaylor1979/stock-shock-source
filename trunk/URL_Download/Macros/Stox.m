@@ -14,6 +14,6 @@ obj.t1 = 6000;
 
 %Symbols = obj.GetRequiredSymbols(ProgramName,ResultName,Date);
 %Symbols = obj.SymbolInfo_OBJ.SymbolList();
-load([workspace,'WebDecoder/Results/SymbolList.mat']) 
+load([workspace,'/WebDecoder/Results/SymbolList.mat']) 
 Symbols = DATASET(:,1)
 obj.DownloadAllURL(Symbols,'','',1,'');
