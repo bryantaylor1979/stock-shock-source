@@ -17,6 +17,7 @@ classdef WebPageDecoder < handle & ...
         DL_Sym2Num
         
         ResultsLog_OBJ = []; %This doesn't seem to be used.
+        DecodeTable_OBJ = [];
     end
     methods
         function Example(obj)
@@ -44,6 +45,7 @@ classdef WebPageDecoder < handle & ...
             
             %%
             obj.ResultsLog_OBJ = ResultsLog('ResultsDir',   fullfile(path,'Results'));
+            obj.DecodeTable_OBJ = DecodeTableFromURL();
             
             obj.Stox = PGin_Stox;
             obj.FT_Perf = PGin_FT_Perf;
