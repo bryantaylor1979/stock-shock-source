@@ -4,24 +4,6 @@ classdef Yahoo <    handle & ...
                     Comms & ...
                     ResultsLog & ...
                     MacroRun
-    % 0.03  British Bulls Spread Analysis
-    % 0.04  Dynamic Inputs
-    % 0.05  BUY-IF Spread Analysis
-    % 0.06  Tidy up of common classes. 
-    %       Real time invested alerts via SMS.
-    properties
-        InstallDir = 'C:\SourceSafe\Stocks & Shares\Programs\Yahoo\';
-        RootDir = 'C:\SourceSafe\Stocks & Shares\Programs\';
-        YahooURL = 'http://finance.yahoo.com/d/quotes.csv?s=';
-        MacroName = 'Winners';
-        Rev = 0.05
-        RunOnInt = 'off';
-        ProgramName = 'Yahoo';
-    end
-    properties (Hidden = true)
-        TagsArray
-        ChunkLimit = 200;
-    end
     methods %Main functions
         function DATASET3 = CombineDataSets(obj,BUY_DATASET,SELL_DATASET)
             %% Combine Events
@@ -33,41 +15,10 @@ classdef Yahoo <    handle & ...
                 DATASET3 = [BUY_DATASET;SELL_DATASET];
             end
         end
-        function DATASET = GetYahooQuery(obj,Symbols,Fields)
-            %%
-            [x] = size(Symbols,1);
-            y = floor(x/obj.ChunkLimit);
-            for i = 1:y
-                Start = (i-1)*obj.ChunkLimit + 1;
-                End = Start + obj.ChunkLimit - 1;
-                DATA = obj.GetQueryChunk(Symbols(Start:End),Fields);
-                if i == 1
-                DATASET = DATA;    
-                else
-                DATASET = [DATASET;DATA];
-                end
-            end
-            Start = y*obj.ChunkLimit + 1;
-            if Start-1 == x
-                
-            else
-                DATA = obj.GetQueryChunk(Symbols(Start:end),Fields);
-                if y == 0
-                    DATASET = DATA; 
-                    return
-                end
-                DATASET = [DATASET;DATA];
-            end
-        end
         function DATASET = GetSharePriceQuery(obj,Symbols,Fields)
             objSP = SharePrice;
             DATASET = objSP.WEB_Query(Symbols);
             DATASET = obj.ColumnFiltering(DATASET,Fields);
-        end
-        function DownloadTags(obj)
-            DATASET = obj.GetTags;
-            DATASET = obj.GetClassOfTags(DATASET);
-            save([obj.InstallDir,'Tags.mat'],'DATASET')
         end
         function Symbols = GetAllSymbols(obj)
             sobj = SymbolInfo;
@@ -122,9 +73,9 @@ classdef Yahoo <    handle & ...
                 else
                 % Case 2:
                 % ======
-                % In the second case, the market opens at a level, equal to or below the previous day’s close. 
+                % In the second case, the market opens at a level, equal to or below the previous dayï¿½s close. 
                 % The benchmark is that closing price. If prices during the session stay over the benchmark, 
-                % go long. Any white candlestick closing above the previous day’s close is the second confirmation 
+                % go long. Any white candlestick closing above the previous dayï¿½s close is the second confirmation 
                 % criterion. 
                     Bench(i,1) = PreviousClose(i);
                 end
@@ -160,9 +111,9 @@ classdef Yahoo <    handle & ...
                 else
                 % Case 2:
                 % ======
-                % In the second case, the market opens at a level, equal to or below the previous day’s close. 
+                % In the second case, the market opens at a level, equal to or below the previous dayï¿½s close. 
                 % The benchmark is that closing price. If prices during the session stay over the benchmark, 
-                % go long. Any white candlestick closing above the previous day’s close is the second confirmation 
+                % go long. Any white candlestick closing above the previous dayï¿½s close is the second confirmation 
                 % criterion. 
                     Bench(i,1) = PreviousClose(i);
                 end
@@ -266,77 +217,6 @@ classdef Yahoo <    handle & ...
         end
     end
     methods (Hidden = true) %Support functions - Field Name Manage.
-        function DATASET = GetTags(obj)
-            %%
-            [num,data,Array] = xlsread([obj.InstallDir,'TAGS.iqy']);
-            
-            %% Locate And extract table
-            Start = find(strcmpi(data(:,1),'a '));
-            End = find(strcmpi(data(:,1),'For example, if y''all copy and paste this URL into your browser address:'));
-            Table = Array(Start:End-1,:);
-            
-            %% Reshape
-            ROW1 = Table(:,1:2);
-            ROW2 = Table(:,3:4);
-            if isnan(ROW2{end,1})
-                ROW2 = ROW2(1:end-1,:);
-            end
-            ROW3 = Table(:,5:6);
-            if isnan(ROW3{end,1})
-                ROW3 = ROW3(1:end-1,:);
-            end
-            Array = [ROW1;ROW2;ROW3];
-            
-            DATASET = dataset({Array(:,1),'Name'},{Array(:,2),'Description'});
-        end
-        function DATASET = GetClassOfTags(obj,DATASET)   
-            %%
-            [x] = size(DATASET,1);
-%             FieldString = [];
-%             FieldStrDelim = [];
-%             FieldOutputString = '[';
-%             for i = 1:x
-%                 FieldStrDelim = [FieldStrDelim,'%s'];
-%                 FieldString = [FieldString,strrep(Array{i,1},' ','')];
-%                 if i == 1
-%                 FieldOutputString = [FieldOutputString,'DATA{',num2str(i),'}'];
-%                 else
-%                 FieldOutputString = [FieldOutputString,',DATA{',num2str(i),'}'];   
-%                 end
-%             end
-%             FieldStrDelim = [FieldStrDelim,'%s%s%s'];
-%             FieldOutputString = [FieldOutputString,',DATA{86},DATA{87},DATA{88}]'];
-%             
-%             %%
-%             String = [obj.YahooURL,'IBM','&f=',FieldString];
-%             stockdata = urlread(String);
-%             eval([FieldOutputString,'= strread(stockdata,FieldStrDelim, ''delimiter'', '','', ''emptyvalue'', NaN);']);
-            
-            %%
-            h = waitbar(0);
-            Array = GetColumn(obj,DATASET,'Name');
-            for i = 1:x
-                waitbar(i/x,h)
-                FieldString = Array{i,1};
-                String = [obj.YahooURL,'IBM','&f=',FieldString];
-                stockdata = urlread(String);
-            
-                %% Download Data
-                n = findstr(stockdata,'"');
-                if isempty(n)
-                    Array{i,1} = 'num';
-                else
-                    Array{i,1} = 'char';
-                end
-            end
-            DATASET = [DATASET,dataset({Array,'Class'})];
-            close(h)
-        end
-        function Class = GetClassFromTag(obj,Tag)
-            Array = obj.GetColumn(obj.TagsArray,'Name');
-            n = find(strcmpi(Array,[Tag,' ']));
-            Class = obj.TagsArray{n,3};
-        end
     end
     methods (Hidden = true) %Support functions
         function [obj] = Yahoo(varargin)
@@ -368,78 +248,6 @@ classdef Yahoo <    handle & ...
                     otherwise
                 end
             end
-        end
-        function BUILDDATA = GetQueryChunk(obj,Symbols,Fields)
-            %%
-
-                    
-            %% Build Symbol List
-            [x] = size(Symbols,1);
-            SymbolString = strrep(Symbols{1},' ','');
-            SymbolString = [SymbolString,'.L'];
-            for i = 2:x
-                if i == 74
-                    x = 1;
-                end
-                Symbol = Symbols{i};
-                if isnumeric(Symbol)
-                    Symbol = num2str(Symbol);
-                end
-                Temp = strrep(Symbol,' ','');
-                Temp = [Temp,'.L'];
-                SymbolString = [SymbolString,'+',Temp];
-            end
-            
-            %% Outputs & URL string
-            [x] = max(size(Fields));
-            FieldOutputString = ['[',Fields{1,1}]; 
-            FieldString = Fields{1,1};
-            FieldStrDelim = '%s';
-            for i = 2:x
-                FieldOutputString = [FieldOutputString,',',Fields{i}];
-                FieldString = [FieldString,Fields{i}];
-                FieldStrDelim = [FieldStrDelim,'%s'];
-            end
-            FieldOutputString = [FieldOutputString,']'];      
-                  
-            %%
-            String = [obj.YahooURL,SymbolString,'&f=',FieldString]
-            
-            %% Download Data
-            stockdata = urlread(String);
-            eval([FieldOutputString,'= strread(stockdata,FieldStrDelim, ''delimiter'', '','', ''emptyvalue'', NaN);']);
-            
-            %% Build Array
-            [xt] = max(size(Fields));
-            for ik = 1:xt
-                Field = Fields{ik};
-                eval(['DATA = ',Field,';']);
-                switch obj.GetClassFromTag(Field)
-                    case 'char'
-                        %%
-                        [yf] = size(DATA,1);
-                        for pf = 1:yf
-                            NEWDATA{pf,1} = strrep(DATA{pf},'"','');
-                        end
-                    case 'num'
-                        nf = find(strcmpi(DATA,'N/A'));
-                        n1 = find(not(strcmpi(DATA,'N/A')));
-                        NEWDATA(n1,1) = str2double(DATA(n1));
-                        NEWDATA(nf,1) = NaN;
-                    otherwise
-                end
-                if ik == 1
-                    BUILDDATA = dataset({NEWDATA,Field});
-                else
-%                     try
-                    BUILDDATA = [BUILDDATA,dataset({NEWDATA,Field})];
-%                     catch
-%                         x = 1
-%                     end
-                end
-                clear NEWDATA
-            end
-            
         end
     end
 end
