@@ -1,1 +1,0 @@
-Stox "Rev" 0.05 "CloseGUIwhenComplete" "on" "RunOnInt" "on" "GUI_Mode" "Minimal"

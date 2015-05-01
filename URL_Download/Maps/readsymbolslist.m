@@ -9,13 +9,11 @@ classdef readsymbolslist < handle
         function obj = readsymbolslist(varargin)
             filename = varargin{1};
             varargin = varargin(2:end);
-            
             x = size(varargin,2);
             for i = 1:2:x
-               obj.(varargin{i}) = varargin{i+1}
+               obj.(varargin{i}) = varargin{i+1};
             end
-            
-            obj.struct = obj.ReadMap(filename)
+            obj.struct = obj.ReadMap(filename);
         end
         function Example(obj)
             %%

@@ -1,2 +1,3 @@
 %% Compile Program
-mcc('-m','URL_Download')
+CompiledDir = 'Y:\URL_Download\';
+mcc('-m','URL_Download','-d',CompiledDir)
