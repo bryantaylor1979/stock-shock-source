@@ -1,4 +1,4 @@
-classdef SymbolInfo
+classdef SymbolInfo < handle
 %Example
 %obj = SymbolInfo;
 %obj.ReadMap('III_IndexMap');
@@ -14,15 +14,15 @@ classdef SymbolInfo
         Data = [];
         FieldNames = [];
         SectorList = [];
-        InstallDir = ['C:\Users\bryan taylor\Documents\MATLAB\FT_BrokersView\'];
+        InstallDir = 'C/home/imagequality/stock-shock-source/download_url/';
         MapFiles = {'III_IndexMap'};
         Rev = 0.05;
         ProgramName = 'Symbol Information';
     end
     methods
-        function [obj] = ReadMap(obj,filename)
+        function ReadMap(obj,filename)
             drawnow;
-            Filename = [obj.InstallDir,'Maps\',filename,'.map'];
+            Filename = fullfile(obj.InstallDir,'Maps',[filename,'.map'])
             s = textread(Filename,'%s','delimiter','\n');
             [x] = size(s,1);
             String = [];
