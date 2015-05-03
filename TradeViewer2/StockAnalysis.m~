@@ -1,38 +1,52 @@
 classdef StockAnalysis < handle
+    %TODO:  break out candle function into separate function. 
+    %TODO:  Make the symbol map reader be passed into each function.  
     %TODO:  Date range Icons added to SS.
     %TODO:  Change symbol by changing properties (using set/get events)
     %TODO:  Change date range by changing the properties (using set/get)
     %TODO:  Add support and resistance levels.
    properties (SetObservable = true)
-
+      IsVisible = 'on';
+      LegendsVisible = 'off';
+      Range = '3m'; %1w, 2w, 1m, 3m, 6m, 1y, All
+      Symbol = 'HAWK.L';
+      ToolbarVisible = 'off';
+      ResistanceTwo = NaN;
+      ResistanceOne = 36;
+      SupportOne = 28;
+      SupportTwo = NaN;
+   end
+   properties % Read Only
+      Open = 1:300;
+      Close = 11:310;
+      Volume = 1:300;
+      SectorName
+      SectorSymbol
+      Name = 'Description';
+   end
+   properties (Hidden = true)
+      handles
+      Children
+      OpenLineColour = [1,0,0];
+      ProgramName = 'Stock Analysis'
+      Path = '/home/imagequality/stock-shock-source/TradeViewer2/';
+      DataPath = 'C:\SourceSafe\Stocks & Shares\Programs\Stock Quote Sync\Data\';
+      SectorList
+      Rev = 0.02
+      Date = now-300:now-1;
    end
    methods
-      function ReadDefaults(obj)
-          String = [obj.Path,'Defaults.txt'];
-          s = textread(String,'%s','delimiter','\n');
-          [x] = size(s,1);
-          for i = 1:x
-              eval(s{i});
-          end
-      end
-      function LoadObjects(obj)
+      function [COMM,MAP] = LoadObjects(obj)
           %% Local Database Setup
-          obj.Children.LocalDatabase = LocalDatabase('ExternalCommObj','offline'); %'yahoo-fetch' or 'offline'          
-          obj.Children.LocalDatabase.Location = obj.DataPath;
+          COMM = obj.LoadCommObject(obj.DataPath)
           
           %% Symbol Info
-          obj.Children.SymbolObj = SymbolInfo;
-          obj.Children.SymbolObj.InstallDir = obj.Path;
-          obj.Children.SymbolObj.ReadMap('III_IndexMap');
-   
-          obj.Children.LocalDatabase.Symbol = obj.Symbol;   
-          obj.Children.LocalDatabase.LoadData;
-          obj.Symbol = obj.Children.LocalDatabase.Symbol;  
-          try
-          obj.Name = obj.Children.SymbolObj.GetIndexDescription(obj.Children.LocalDatabase.Symbol); 
-          catch
-          obj.Name = obj.Children.SymbolObj.GetSymbolDescription(obj.Children.LocalDatabase.Symbol); 
-          end
+          MAP = readsymbolslist('iii_map_v2.m');
+          COMM.Symbol = obj.Symbol;   
+          COMM.LoadData; 
+          
+          info = MAP.GetSymbolsInfo(obj.Symbol)
+          obj.Name = info.Name;
       end
       function SaveFig(obj,filename)
           %%
@@ -40,6 +54,12 @@ classdef StockAnalysis < handle
           saveas(obj.handles.figure,filename)
 %            set(obj.handles.figure,'Visible','on')
       end
+   end
+   methods (Hidden = true) % Comms to Database
+       function OBJ = LoadCommObject(obj,DataPath)
+          OBJ = LocalDatabase('ExternalCommObj','offline'); %'yahoo-fetch' or 'offline'          
+          OBJ.Location = DataPath;           
+       end
    end
    methods (Hidden = true) %Listeners
        function IsVisibleCallback(varargin)
@@ -77,7 +97,7 @@ classdef StockAnalysis < handle
                             'LineWidth',3, ...
                             'Color',[1,0.2,1]);
        end
-       function CreateFigure(obj)
+       function CreateFigure(obj,COMM,MAP)
           % Create Main Figure
           obj.handles.figure       =figure ('Name',[obj.ProgramName,' - R',num2str(obj.Rev)], ...
                                             'Color',[0.92549 0.913725 0.847059], ...
@@ -91,7 +111,7 @@ classdef StockAnalysis < handle
                                             'Position',[504,371,250,19], ...
                                             'HorizontalAlignment','left', ...
                                             'FontWeight','bold', ... 
-                                            'String',num2str(obj.Children.LocalDatabase.LastPrice), ...
+                                            'String',num2str(COMM.LastPrice), ...
                                             'ForegroundColor',[0.2,0.2,1]);
                                         
           % Company Name Text Box
@@ -103,7 +123,7 @@ classdef StockAnalysis < handle
 %                                             'ForegroundColor',[0.2,0.2,1]);
                                         
           % Data Type (e.g. Open Close) Pulldown create.
-          FieldNames = obj.Children.LocalDatabase.DataStoreColumnNames;
+          FieldNames = COMM.DataStoreColumnNames;
           if isempty(FieldNames(7:end))
               String = {'N/A'};
           else
@@ -111,11 +131,9 @@ classdef StockAnalysis < handle
           end
           obj.handles.DataType =uicontrol(  'Style',    'popupmenu', ...
                                             'String',   String, ...
-                                            'Position', [2,380,130,40]);
-          try                              
-          obj.IndexPullDown;
+                                            'Position', [2,380,130,40]);                           
+          obj.IndexPullDown(MAP);
           obj.SymbolPullDown;
-          end
           obj.AddButton;
           
           
@@ -125,15 +143,16 @@ classdef StockAnalysis < handle
                             'Label',['About ',upper(obj.ProgramName)], ...
                             'Callback',@obj.About);
        end
-       function IndexPullDown(varargin)
-          obj = varargin{1};
-          SectorList = obj.Children.SymbolObj.SectorList;
-          obj.SectorList = SectorList;
+       function IndexPullDown(obj,MAP)
+          SectorList = MAP.GetSectorList();
           [x] = size(SectorList,1);
+          
           for i = 1:x
-            Combined{i} = [SectorList{i,1},' (',SectorList{i,2},')'];
+            info = MAP.GetIndexDescription(SectorList{i});
+            Combined{i} = [info.Description,' (',info.Symbol,')'];
           end
-          obj.SectorName = obj.Children.SymbolObj.Symbol2Sector(obj.Symbol);
+          obj.SectorName = MAP.Symbol2Sector(obj.Symbol);
+          
           try
           obj.SectorSymbol = obj.Children.SymbolObj.SectorName2Symbol(obj.SectorName{1});
           catch
@@ -172,7 +191,13 @@ classdef StockAnalysis < handle
                 
          [x] = size(Ranges,1);
          for i = 1:x
-             CDATA = imread([obj.Path,'\Icons\',Ranges{i,1},'.bmp']);
+             try
+                filename = fullfile(obj.Path,'Icons',[Ranges{i,1},'.bmp'])
+                CDATA = imread(filename);
+                warning('5 day symbol not found')
+             catch
+                CDATA(1:16,1:16,1:3) = 1;
+             end
              h = uitoggletool(obj.handles.DataRangeToolbar, ...
                                               'TooltipString',Ranges{i,2}, ...
                                               'CDATA',CDATA, ...
@@ -185,8 +210,10 @@ classdef StockAnalysis < handle
        end
        function Plot(varargin)
           obj = varargin{1};
+          COMM = varargin{2};
+          MAP = varargin{3};
           try
-              First = varargin{2};
+              First = varargin{4};
           catch
               try
                  obj.handles.candle_ax;
@@ -202,19 +229,19 @@ classdef StockAnalysis < handle
               end
           end
           %%
-          obj.CandlePlot(First);
+          obj.CandlePlot(COMM,MAP,First);
           obj.VolumePlot;
           obj.PlotResistanceLevels;
        end
-       function CandlePlot(obj,First)
+       function CandlePlot(obj,COMM,MAP,First)
           % This has been generated invisible!
           mode = 0;
           if mode == 1
-              High = obj.Children.LocalDatabase.GetRange('High',obj.Range);
-              Low = obj.Children.LocalDatabase.GetRange('Low',obj.Range);
-              Close = obj.Children.LocalDatabase.GetRange('Close',obj.Range);
-              Open = obj.Children.LocalDatabase.GetRange('Open',obj.Range);
-              date = obj.Children.LocalDatabase.GetRange('date',obj.Range);
+              High = COMM.GetRange('High',obj.Range);
+              Low = COMM.GetRange('Low',obj.Range);
+              Close = COMM.GetRange('Close',obj.Range);
+              Open = COMM.GetRange('Open',obj.Range);
+              date = COMM.GetRange('date',obj.Range);
           else
               ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close'},today-31*3,today,'d');
               High = ARRAY(:,2);
@@ -245,18 +272,18 @@ classdef StockAnalysis < handle
                        'MarkerFaceColor','k',...
                        'MarkerSize',8);
           hold on
-          obj.handles.LastPrice = plot(obj.Children.LocalDatabase.LastPriceDate,obj.Children.LocalDatabase.LastPrice,'d', ...
+          obj.handles.LastPrice = plot(COMM.LastPriceDate,COMM.LastPrice,'d', ...
                        'LineWidth',2,...
                        'MarkerEdgeColor','b',...
                        'MarkerFaceColor','b',...
                        'MarkerSize',8);
-          set(obj.handles.LstPriceTxt,'String',[num2str(obj.Children.LocalDatabase.LastPrice),' @ ',datestr(obj.Children.LocalDatabase.LastPriceDate)]);
+          set(obj.handles.LstPriceTxt,'String',[num2str(COMM.LastPrice),' @ ',datestr(COMM.LastPriceDate)]);
 
           %format graph
           h = ylabel('Price');
           set(h,'FontWeight','bold');
-          Description = obj.Children.SymbolObj.GetSymbolDescription(obj.Children.LocalDatabase.Symbol);
-          title([obj.Symbol,' - ',Description]);
+          info = MAP.GetSymbolsInfo(COMM.Symbol);
+          title([obj.Symbol,' - ',info.SectorDescription]);
           obj.handles.legends = legend({  'High-Low'; ...
                     'Rise-Open-Close'; ...
                     'Fall-Close-Open'; ...
@@ -473,47 +500,21 @@ classdef StockAnalysis < handle
            obj.Plot;
        end
        function obj = StockAnalysis(varargin)
-            % set defaults
-            args.IsVisible = 'on';
-            args.Range = '3m'; %1w, 2w, 1m, 3m, 6m, 1y, All
-            args.Symbol = 'HAWK.L';
-            args.ToolbarVisible = 'off';
-            args.LegendsVisible = 'off';
-            args.ResistanceTwo = NaN;
-            args.ResistanceOne = 36;
-            args.SupportOne = 28;
-            args.SupportTwo = NaN;
-            args.Open = 1:300;
-            args.Close = 11:310;
-            args.Volume = 1:300;
-            args.SectorName
-            args.SectorSymbol
-            args.Name = 'Description';
-            args.handles
-            args.Children
-            args.OpenLineColour = [1,0,0];
-            args.ProgramName = 'Stock Analysis'
-            args.Path = '/home/imagequality/stock-shock-source/TradeViewer2/';
-            args.DataPath = 'C:\SourceSafe\Stocks & Shares\Programs\Stock Quote Sync\Data\';
-            args.SectorList
-            args.Rev = 0.02
-            args.Date = now-300:now-1;          
-
-            [x] = size(varargin,2);
-            for i = 1:2:x
-                obj.(varargin{i}) = varargin{i+1};
-            end
-            obj.ReadDefaults;
+          %% Manage input varaiables
+          % variable arg in
+          [x] = size(varargin,2);
+          for i = 1:2:x
+              obj.(varargin{i}) = varargin{i+1};
+          end
           
           %%
           addlistener(obj,'IsVisible','PostSet',@obj.IsVisibleCallback);
           addlistener(obj,'LegendsVisible','PostSet',@obj.IsLegendsVisibleCallback); 
-          
-                   
+  
           %%
-          obj.LoadObjects;
-          obj.CreateFigure;
-          obj.Plot;
+          [COMM,MAP] = obj.LoadObjects;
+          obj.CreateFigure(COMM,MAP);
+          obj.Plot(COMM,MAP);
           
           Fields = {    'ResistanceTwo'; ...
                         'ResistanceOne'; ...
@@ -522,7 +523,6 @@ classdef StockAnalysis < handle
                     
           obj.addlistener(Fields,'PostSet',@obj.ResistanceCallback);
          
-          try
           obj.DateRangeButtons;
           set(obj.handles.figure,'ResizeFcn',{@obj.Resize}); 
           PosFig = get(obj.handles.figure,'Position');
@@ -531,8 +531,6 @@ classdef StockAnalysis < handle
           set(obj.handles.figure,'Visible','on');
           set(obj.handles.IndexPulldown,'Callback',@obj.IndexPulldownCallback);  
           set(obj.handles.SymbolPulldown,'Callback',@obj.SymbolPulldownCallback);  
-          end
-          
       end
    end
 end

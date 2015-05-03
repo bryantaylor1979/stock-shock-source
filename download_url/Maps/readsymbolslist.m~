@@ -99,22 +99,17 @@ classdef readsymbolslist < handle
             end
         end
         function Sector = Symbol2Sector(obj,Symbol)
-            sectors = fieldnames(obj.struct);
-            x = size(sectors,1);
-            for i = 1:x
-                try
-                    Symbols = obj.struct.(sectors{i}).Symbols;
-                    y = size(Symbols,2);
-                    for j = 1:y
-                        Symbol_E = Symbols(j).TickerSymbol;
-                        n = strcmpi(Symbol,Symbol_E);
-                        if not(isempty(n))
-                            Sector = sectors{i};
-                            break
-                        end
+                x = 1;
+                %%
+                sectors = fieldnames(obj.struct)
+                x = size(sectors,1)
+                for i = 1:x
+                    try
+                    Symbols = obj.struct.(sectors{i}).Symbols
+                    n = find(strcmpi(Symbols,Symbol))
+                    if not(isempty(n)
                     end
                 end
-            end
         end
     end
     methods (Hidden = true)

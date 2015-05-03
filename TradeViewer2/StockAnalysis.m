@@ -1,6 +1,5 @@
 classdef StockAnalysis < handle
     %TODO:  break out candle function into separate function. 
-    %TODO:  Add support for new symbol map reader. 
     %TODO:  Make the symbol map reader be passed into each function.  
     %TODO:  Date range Icons added to SS.
     %TODO:  Change symbol by changing properties (using set/get events)
@@ -37,23 +36,17 @@ classdef StockAnalysis < handle
       Date = now-300:now-1;
    end
    methods
-      function COMM = LoadObjects(obj)
+      function [COMM,MAP] = LoadObjects(obj)
           %% Local Database Setup
           COMM = obj.LoadCommObject(obj.DataPath)
           
           %% Symbol Info
-          obj.Children.SymbolObj = SymbolInfo;
-          obj.Children.SymbolObj.InstallDir = obj.Path;
-          obj.Children.SymbolObj.ReadMap('III_IndexMap');
-   
+          MAP = readsymbolslist('iii_map_v2.m');
           COMM.Symbol = obj.Symbol;   
-          COMM.LoadData;
-          obj.Symbol = COMM.Symbol;  
-          try
-          obj.Name = obj.Children.SymbolObj.GetIndexDescription(COMM.Symbol); 
-          catch
-          obj.Name = obj.Children.SymbolObj.GetSymbolDescription(COMM.Symbol); 
-          end
+          COMM.LoadData; 
+          
+          info = MAP.GetSymbolsInfo(obj.Symbol)
+          obj.Name = info.Name;
       end
       function SaveFig(obj,filename)
           %%
@@ -104,7 +97,7 @@ classdef StockAnalysis < handle
                             'LineWidth',3, ...
                             'Color',[1,0.2,1]);
        end
-       function CreateFigure(obj,COMM)
+       function CreateFigure(obj,COMM,MAP)
           % Create Main Figure
           obj.handles.figure       =figure ('Name',[obj.ProgramName,' - R',num2str(obj.Rev)], ...
                                             'Color',[0.92549 0.913725 0.847059], ...
@@ -138,11 +131,9 @@ classdef StockAnalysis < handle
           end
           obj.handles.DataType =uicontrol(  'Style',    'popupmenu', ...
                                             'String',   String, ...
-                                            'Position', [2,380,130,40]);
-          try                              
-          obj.IndexPullDown;
-          obj.SymbolPullDown;
-          end
+                                            'Position', [2,380,130,40]);                           
+          obj.IndexPullDown(MAP,obj.Symbol);
+          obj.SymbolPullDown(MAP,obj.Symbol);
           obj.AddButton;
           
           
@@ -152,32 +143,27 @@ classdef StockAnalysis < handle
                             'Label',['About ',upper(obj.ProgramName)], ...
                             'Callback',@obj.About);
        end
-       function IndexPullDown(varargin)
-          obj = varargin{1};
-          SectorList = obj.Children.SymbolObj.SectorList;
-          obj.SectorList = SectorList;
+       function IndexPullDown(obj,MAP,Symbol)
+          SectorList = MAP.GetSectorList();
           [x] = size(SectorList,1);
+          
           for i = 1:x
-            Combined{i} = [SectorList{i,1},' (',SectorList{i,2},')'];
+            info = MAP.GetIndexDescription(SectorList{i});
+            Combined{i} = [info.Description,' (',info.Symbol,')'];
           end
-          obj.SectorName = obj.Children.SymbolObj.Symbol2Sector(obj.Symbol);
-          try
-          obj.SectorSymbol = obj.Children.SymbolObj.SectorName2Symbol(obj.SectorName{1});
-          catch
-          obj.SectorSymbol = 'NaN';    
-          end
-          n = find(strcmpi(SectorList(:,1),obj.SectorName{1}));
+                  
+          info = MAP.GetSymbolsInfo(Symbol);
+          n = find(strcmpi(info.Sector,SectorList));
           obj.handles.IndexPulldown = uicontrol(  'Style',    'popupmenu', ...
                                                   'Value',    n, ...
                                                   'String',    Combined );
           %%
           set(obj.handles.IndexPulldown,'Position', [132,380,316,40]);     
        end
-       function SymbolPullDown(varargin)
-          obj = varargin{1};
+       function SymbolPullDown(obj,MAP,Symbol)
           
-          SectorList = obj.Children.SymbolObj.SectorList;
-          Symbol = obj.Children.SymbolObj.GetIndexSymbols(obj.SectorSymbol);
+          info = MAP.GetSymbolsInfo(Symbol)
+          Symbol = MAP.GetIndexSymbols(info.Sector)
           
           n = find(strcmpi(Symbol,obj.Symbol));
           
@@ -199,7 +185,13 @@ classdef StockAnalysis < handle
                 
          [x] = size(Ranges,1);
          for i = 1:x
-             CDATA = imread([obj.Path,'\Icons\',Ranges{i,1},'.bmp']);
+             try
+                filename = fullfile(obj.Path,'Icons',[Ranges{i,1},'.bmp'])
+                CDATA = imread(filename);
+                warning('5 day symbol not found')
+             catch
+                CDATA(1:16,1:16,1:3) = 1;
+             end
              h = uitoggletool(obj.handles.DataRangeToolbar, ...
                                               'TooltipString',Ranges{i,2}, ...
                                               'CDATA',CDATA, ...
@@ -213,8 +205,9 @@ classdef StockAnalysis < handle
        function Plot(varargin)
           obj = varargin{1};
           COMM = varargin{2};
+          MAP = varargin{3};
           try
-              First = varargin{3};
+              First = varargin{4};
           catch
               try
                  obj.handles.candle_ax;
@@ -230,27 +223,17 @@ classdef StockAnalysis < handle
               end
           end
           %%
-          obj.CandlePlot(COMM,First);
+          obj.CandlePlot(COMM,MAP,First);
           obj.VolumePlot;
           obj.PlotResistanceLevels;
        end
-       function CandlePlot(obj,COMM,First)
-          % This has been generated invisible!
-          mode = 0;
-          if mode == 1
-              High = COMM.GetRange('High',obj.Range);
-              Low = COMM.GetRange('Low',obj.Range);
-              Close = COMM.GetRange('Close',obj.Range);
-              Open = COMM.GetRange('Open',obj.Range);
-              date = COMM.GetRange('date',obj.Range);
-          else
-              ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close'},today-31*3,today,'d');
-              High = ARRAY(:,2);
-              Low = ARRAY(:,3);
-              Close = ARRAY(:,4);
-              Open = ARRAY(:,5);
-              date = ARRAY(:,1);
-          end
+       function CandlePlot(obj,COMM,MAP,First)
+          ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close'},today-31*3,today,'d');
+          High = ARRAY(:,2);
+          Low = ARRAY(:,3);
+          Close = ARRAY(:,4);
+          Open = ARRAY(:,5);
+          date = ARRAY(:,1);
           obj.Date = date;
           
           if First == false
@@ -283,8 +266,8 @@ classdef StockAnalysis < handle
           %format graph
           h = ylabel('Price');
           set(h,'FontWeight','bold');
-          Description = obj.Children.SymbolObj.GetSymbolDescription(COMM.Symbol);
-          title([obj.Symbol,' - ',Description]);
+          info = MAP.GetSymbolsInfo(COMM.Symbol);
+          title([obj.Symbol,' - ',info.SectorDescription]);
           obj.handles.legends = legend({  'High-Low'; ...
                     'Rise-Open-Close'; ...
                     'Fall-Close-Open'; ...
@@ -513,9 +496,9 @@ classdef StockAnalysis < handle
           addlistener(obj,'LegendsVisible','PostSet',@obj.IsLegendsVisibleCallback); 
   
           %%
-          COMM = obj.LoadObjects;
-          obj.CreateFigure(COMM);
-          obj.Plot(COMM);
+          [COMM,MAP] = obj.LoadObjects;
+          obj.CreateFigure(COMM,MAP);
+          obj.Plot(COMM,MAP);
           
           Fields = {    'ResistanceTwo'; ...
                         'ResistanceOne'; ...
@@ -524,7 +507,6 @@ classdef StockAnalysis < handle
                     
           obj.addlistener(Fields,'PostSet',@obj.ResistanceCallback);
          
-          try
           obj.DateRangeButtons;
           set(obj.handles.figure,'ResizeFcn',{@obj.Resize}); 
           PosFig = get(obj.handles.figure,'Position');
@@ -533,7 +515,6 @@ classdef StockAnalysis < handle
           set(obj.handles.figure,'Visible','on');
           set(obj.handles.IndexPulldown,'Callback',@obj.IndexPulldownCallback);  
           set(obj.handles.SymbolPulldown,'Callback',@obj.SymbolPulldownCallback);  
-          end
       end
    end
 end
