@@ -202,59 +202,18 @@ classdef StockAnalysis < handle
               end
           end
           %%
-            ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close'},today-31*3,today,'d');
-            Date = ARRAY(:,1);
-            High = ARRAY(:,2);
-            Low = ARRAY(:,3);
-            Open = ARRAY(:,4);
-            Close = ARRAY(:,5);
+          ARRAY = fetch(yahoo,obj.Symbol,{'high','low','open','close','volume'},today-31*3,today,'d');
+          Date = ARRAY(:,1);
+          High = ARRAY(:,2);
+          Low = ARRAY(:,3);
+          Open = ARRAY(:,4);
+          Close = ARRAY(:,5);
+          Volume = ARRAY(:,6);
             
-            handle.candle_ax = subplot(2,1,1);
-            handle.volume_ax = subplot(2,1,2);
-            
-            candleplot(Date,High,Low,Open,Close,'handle',handle);
-            set(handle.candle_ax,   'Position',[0.094,0.268,0.862,0.6], ...
-                                    'XTickLabel',[]);
-
-            obj.VolumePlot(handle);
-            obj.PlotResistanceLevels(handle.candle_ax);
-       end
-       function VolumePlot(obj,handle)
-          mode = 0
-          if mode == 1 
-            Date = obj.Children.LocalDatabase.GetRange('date',obj.Range);
-            Volume = obj.Children.LocalDatabase.GetRange('Volume',obj.Range);
-          else
-            ARRAY = fetch(yahoo,obj.Symbol,{'volume'},today-31*3,today,'d');
-            Volume = ARRAY(:,2);
-            Date = ARRAY(:,1);
-          end
-                    
-          % Check to see if plot has happened.
-          Names = fieldnames(handle);
-          n = find(strcmpi(Names,'volume_data'));
           
-          if isempty(n) %Plot for first time
-              axes(handle.volume_ax)
-
-              handle.volume_data = bar(Date,Volume, ...
-                                    'EdgeColor',[1,1,1], ...
-                                    'FaceColor',[0,0,0.3]);
-              datetick;
-              grid on
-              set(handle.volume_ax,    'XLim',[min(Date)-5,max(Date)+5], ...
-                                            'Position',[0.094,0.125,0.862,0.135]);
-
-              xlabel('Date','FontWeight','bold');
-              ylabel('Volume','FontWeight','bold');
-          else
-              set(handle.volume_data, ...
-                            'XDATA',Date, ...
-                            'YDATA',Volume);
-              set(handle.volume_ax,'XLim',[min(Date)-5,max(Date)+5])
-          end
+          obj.PlotResistanceLevels(handle.candle_ax);
        end
-       function AddButton(obj,handles);
+       function AddButton(obj,handles)
         handles.toolbar = uitoolbar(handles.figure,'Visible',obj.ToolbarVisible);
 
         filename = fullfile(obj.Path,'Icons','ADD.ico')
@@ -277,7 +236,7 @@ classdef StockAnalysis < handle
                                           'tag','Add', ...
                                           'ClickedCallback',{@obj.AddButtonCallback});
        end
-       function Resize(varargin);
+       function Resize(varargin)
           
           obj = varargin{1};
           disp('Resisze')
