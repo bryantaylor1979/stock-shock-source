@@ -113,7 +113,7 @@ classdef StockAnalysis < handle
                                             'String',   String, ...
                                             'Position', [2,380,130,40]);                           
           handles.IndexPullDown = obj.IndexPullDown(MAP,obj.Symbol);
-          handles.SymbolPulldown = obj.SymbolPullDown(MAP,obj.Symbol);
+          obj.SymbolPullDown(MAP,obj.Symbol);
           obj.AddButton(handles);
           
           
@@ -140,18 +140,18 @@ classdef StockAnalysis < handle
           %%
           set(handle,'Position', [132,380,316,40]);     
        end
-       function handle = SymbolPullDown(obj,MAP,Symbol)
+       function SymbolPullDown(obj,MAP,Symbol)
           
           info = MAP.GetSymbolsInfo(Symbol)
           Symbol = MAP.GetIndexSymbols(info.Sector)
           
           n = find(strcmpi(Symbol,obj.Symbol));
           
-          handle = uicontrol(  'Style',    'popupmenu', ...
+          obj.handles.SymbolPulldown = uicontrol(  'Style',    'popupmenu', ...
                                                     'Value',   n+1, ...
                                                     'String',    [{'Parent Index'};Symbol] );
           %%
-          set(handle,'Position', [449,380,178,40]);   
+          set(obj.handles.SymbolPulldown,'Position', [449,380,178,40]);   
        end
        function DateRangeButtons(obj,handles)
          handles.DataRangeToolbar = uitoolbar(handles.figure,'Visible','on');
@@ -210,16 +210,16 @@ classdef StockAnalysis < handle
             Close = ARRAY(:,5);
             
             handle.candle_ax = subplot(2,1,1);
-            handle.volume_ax = subplot(2,1,2);
+            obj.handles.volume_ax = subplot(2,1,2);
             
             candleplot(Date,High,Low,Open,Close,'handle',handle);
             set(handle.candle_ax,   'Position',[0.094,0.268,0.862,0.6], ...
                                     'XTickLabel',[]);
 
-            obj.VolumePlot(handle);
+            obj.VolumePlot;
             obj.PlotResistanceLevels(handle.candle_ax);
        end
-       function VolumePlot(obj,handle)
+       function VolumePlot(obj)
           mode = 0
           if mode == 1 
             Date = obj.Children.LocalDatabase.GetRange('date',obj.Range);
@@ -231,27 +231,27 @@ classdef StockAnalysis < handle
           end
                     
           % Check to see if plot has happened.
-          Names = fieldnames(handle);
+          Names = fieldnames(obj.handles);
           n = find(strcmpi(Names,'volume_data'));
           
           if isempty(n) %Plot for first time
-              axes(handle.volume_ax)
+              axes(obj.handles.volume_ax)
 
-              handle.volume_data = bar(Date,Volume, ...
+              obj.handles.volume_data = bar(Date,Volume, ...
                                     'EdgeColor',[1,1,1], ...
                                     'FaceColor',[0,0,0.3]);
               datetick;
               grid on
-              set(handle.volume_ax,    'XLim',[min(Date)-5,max(Date)+5], ...
+              set(obj.handles.volume_ax,    'XLim',[min(Date)-5,max(Date)+5], ...
                                             'Position',[0.094,0.125,0.862,0.135]);
 
               xlabel('Date','FontWeight','bold');
               ylabel('Volume','FontWeight','bold');
           else
-              set(handle.volume_data, ...
+              set(obj.handles.volume_data, ...
                             'XDATA',Date, ...
                             'YDATA',Volume);
-              set(handle.volume_ax,'XLim',[min(Date)-5,max(Date)+5])
+              set(obj.handles.volume_ax,'XLim',[min(Date)-5,max(Date)+5])
           end
        end
        function AddButton(obj,handles);
@@ -280,8 +280,7 @@ classdef StockAnalysis < handle
        function Resize(varargin);
           
           obj = varargin{1};
-          disp('Resisze')
-          handle = varargin{2}
+          handle = varargin{2};
           oldpos = get(handle.figure,'UserData');
           PosFig = get(handle.figure,'Position');
           
@@ -315,9 +314,9 @@ classdef StockAnalysis < handle
           PosPulldown(2) = PosFig(4)-40;
           set(handle.DataType,'Position',PosPulldown);
           
-          PosPulldown = get(handle.IndexPullDown,'Position');
+          PosPulldown = get(handle.IndexPulldown,'Position');
           PosPulldown(2) = PosFig(4)-40;
-          set(handle.IndexPullDown,'Position',PosPulldown);
+          set(handle.IndexPulldown,'Position',PosPulldown);
           
           PosPulldown = get(handle.SymbolPulldown,'Position');
           PosPulldown(2) = PosFig(4)-40;
@@ -449,12 +448,12 @@ classdef StockAnalysis < handle
           obj.addlistener(Fields,'PostSet',@obj.ResistanceCallback);
          
           obj.DateRangeButtons(handle);
-%           set(handle.figure,'ResizeFcn',{@obj.Resize}); 
+          set(handle.figure,'ResizeFcn',{@obj.Resize}); 
           PosFig = get(handle.figure,'Position');
           set(handle.figure,'UserData',PosFig);
           obj.Resize(handle);
           set(handle.figure,'Visible','on');
-          set(handle.IndexPullDown,'Callback',@obj.IndexPulldownCallback);  
+          set(handle.IndexPulldown,'Callback',@obj.IndexPulldownCallback);  
           set(handle.SymbolPulldown,'Callback',@obj.SymbolPulldownCallback);  
       end
    end
