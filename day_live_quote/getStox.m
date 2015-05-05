@@ -1,12 +1,16 @@
 function struct = getStox(Symbol)
+    n = findstr(Symbol,'.');
+    if not(isempty(n))
+        Symbol = Symbol(1:n-1);
+    end
     url = ['http://uk.stoxline.com/q_uk.php?s=',Symbol];
     [s,Error] = download(url);
     struct = DecodeStr(s);
 end
 function struct = DecodeStr(s)
-    TABLE1 = decodeTable(s,'nr_table',4)
-    TABLE2 = decodeTable(s,'nr_table',5)
-    TABLE3 = decodeTable(s,'nr_table',3)
+    TABLE1 = decodeTable(s,'nr_table',4);
+    TABLE2 = decodeTable(s,'nr_table',5);
+    TABLE3 = decodeTable(s,'nr_table',3);
 
     % get company name
     string = TABLE1{1,1};
@@ -178,13 +182,13 @@ function struct = DecodeStr(s)
     struct.Star = str2num(string(n-1));
 
     %
-    n = findstr(string,'down_arrow.gif')
-    n1 = findstr(string,'up_arrow.gif')
+    n = findstr(string,'down_arrow.gif');
+    n1 = findstr(string,'up_arrow.gif');
     if not(isempty(n))
-        struct.direction = 'down'
+        struct.direction = 'down';
     end
     if not(isempty(n1))
-        struct.direction = 'up'
+        struct.direction = 'up';
     end
 end
 function Example()
@@ -194,5 +198,5 @@ s = getStox('BARC')
 %%
 close all
 clear classes
-struct = getStox('HAWK')
+struct = getStox('HAWK.L')
 end

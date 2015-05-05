@@ -68,7 +68,7 @@ classdef volumeplot < handle
             obj.Date = Date;
             
             addlistener(obj,'Position','PostSet', @(x,y)obj.PositionUpdate(handle.volume_ax));
-            addlistener(obj,{'Volume','Date'},'PostSet', @(x,y)obj.Update(handle.volume_data));
+            addlistener(obj,{'Volume','Date'},'PostSet', @(x,y)obj.Update(handle.volume_data,handle.volume_ax));
         end
         function PositionUpdate(varargin)
             %%
@@ -76,10 +76,14 @@ classdef volumeplot < handle
             handle = varargin{2};
             set(handle,'Position',obj.Position);
         end
-        function Update(obj,handle)
+        function Update(obj,handle,AXES)
             %%
             set(handle,'YData',obj.Volume);
             set(handle,'XData',obj.Date);
+            set(AXES,'XLim', [min(obj.Date)-5,max(obj.Date)+5]);
+            axes(AXES)
+            datetick;
+            set(AXES,'XLim', [min(obj.Date)-5,max(obj.Date)+5]);
         end
     end
 end

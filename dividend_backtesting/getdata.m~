@@ -1,0 +1,23 @@
+% http://www.quantatrisk.com/2013/08/28/yahoo-stock-data-in-matlab-and-a-model-for-dividend-backtesting/
+
+%%
+% Yahoo! Stock Data in Matlab and a Model for Dividend Backtesting
+% (c) 2013 QuantAtRisk.com, by Pawel Lachowicz
+ 
+function getdata(stock)
+date_from=datenum('Jan 1 2009');
+date_to=datenum('Aug 27 2013');
+ 
+adjClose = fetch(yahoo,stock,'adj close',date_from,date_to);
+div = fetch(yahoo,stock,date_from,date_to,'v'); %v is dividends
+
+returns=(adjClose(2:end,2)./adjClose(1:end-1,2)-1);
+ 
+% plot adjusted Close price of  and mark days when dividends
+% have been announced
+plot(adjClose(:,1),adjClose(:,2),'color',[0.6 0.6 0.6])
+hold on;
+plot(div(:,1),min(adjClose(:,2))+10,'ob');
+ylabel('SPY (US$)');
+xlabel('Jan 1 2009 to Aug 27 2013');
+end
