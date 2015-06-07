@@ -88,35 +88,6 @@ classdef Studies <          ResultsLog & ...
         end
     end
     methods (Hidden = true) % Plots
-        function h = PlotMoneyVsProfit(obj,DATASET2,Name)
-            NumberOfTradesInBin = obj.GetColumn(DATASET2,'NumberOfTradesInBin');
-            Profit = obj.GetColumn(DATASET2,'ProfitAv');
-            BB_CE_Money = obj.GetColumn(DATASET2,'MoneyMid');
-            
-            h = figure;
-            bar(BB_CE_Money,Profit)
-            ax1 = gca;
-            xlabel(Name)
-            ylabel('Profit')
-            
-%             xlim([1,MaxMinumum])
-            hold on
-            
-            ax2 = axes( 'Position',get(ax1,'Position'),...
-                        'XAxisLocation','top',...
-                        'YAxisLocation','right',...
-                        'Color','none',...
-                        'XTick', [], ...
-                        'XColor','k', ...
-                        'YColor','r');
-       
-            hl2 = line(BB_CE_Money,NumberOfTradesInBin,'Color','r','Parent',ax2);
-            ylabel('NumberOfTradesInBin')
-%             xlim([1,MaxMinumum])
-%             xlim()
-            title('MONEY vs PROFIT')
-            set(gcf,'Name','MONEY vs PROFIT','NumberTitle','off')            
-        end      
         function h = PlotMoneyVsProfit2(obj,DATASET2,Name)
             NumberOfTradesInBin = obj.GetColumn(DATASET2,'NumberOfTradesInBin');
             ProfitAv = obj.GetColumn(DATASET2,'ProfitAv');
@@ -249,60 +220,7 @@ classdef Studies <          ResultsLog & ...
         end
     end
     methods (Hidden = true) % Support functions
-        function DATASET = HistogramProfits(obj,TT_DataSet2,MoneyName,BinSize)
-            h = waitbar(0);      
-            MaxMinumum = max(obj.GetColumn(TT_DataSet2,MoneyName));
-            MinMinumum = min(obj.GetColumn(TT_DataSet2,MoneyName));
-            NumberOfBins =  ceil((MaxMinumum-MinMinumum)/BinSize);
-            
-            %%
-            count = 1;
-            for i = 1:NumberOfBins;
-                waitbar(i/NumberOfBins,h);
-                
-                MinValue = MinMinumum + (i-1)*BinSize;
-                MaxValue = MinMinumum + (i)*BinSize;
-                disp(['Range: [',num2str(MinValue),',',num2str(MaxValue),']'])
-                
-                MoneyLow(count,1) = MinValue;
-                MoneyHigh(count,1) = MaxValue;
-                
-                [DATASET] = obj.NumRange(TT_DataSet2,MoneyName,[MoneyLow(count),MoneyHigh(count)]);
-                
-                
-                if isempty(DATASET)
-                    ProfitAv(count,1) = NaN;
-                    ProfitMax(count,1) = NaN;
-                    ProfitMin(count,1) = NaN;
-                    ProbabiltyOfProfit(count,1) = NaN;
-
-                    MoneyMid(count,1) = NaN;
-                    NumberOfTradesInBin(count,1) = 0;
-                else
-                    ProfitOut = obj.CalcAverageProfit(DATASET);
-
-                    ProfitAv(count,1) = ProfitOut.Av;
-                    ProfitMax(count,1) = ProfitOut.Max;
-                    ProfitMin(count,1) = ProfitOut.Min;
-                    ProbabiltyOfProfit(count,1) = ProfitOut.ProbabiltyOfProfit;
-
-                    MoneyMid(count,1) = (MoneyLow(count)+MoneyHigh(count))/2;
-                    NumberOfTradesInBin(count,1) = size(DATASET,1);
-                    
-                    DATASET = obj.Accuracy(DATASET,ProfitOut.Av,MoneyName);
-                    Accuracy(count,1) = mean(obj.GetColumn(DATASET,'AbsError'));
-
-                    count = count +1;
-                end
-            end       
-            %%
-            ProfitAv = ProfitAv-1;
-            ProfitMax = ProfitMax-1;
-            ProfitMin = ProfitMin-1;
-            
-            DATASET = dataset(MoneyLow,MoneyMid,MoneyHigh,ProfitAv,ProfitMax,ProfitMin,ProbabiltyOfProfit,NumberOfTradesInBin,Accuracy);
-        end %Don't think has any meaning. But left for history reasons.
-        function HighThreshold = HighThresholdOptimser(obj,TT_DataSet2)
+       function HighThreshold = HighThresholdOptimser(obj,TT_DataSet2)
             h = waitbar(0);
             count = 1;
             MaxMinumum = max(obj.GetColumn(TT_DataSet2,'BB_CE_Money'));
@@ -315,35 +233,7 @@ classdef Studies <          ResultsLog & ...
             end 
             n = find(max(ProfitAv) == ProfitAv);
             HighThreshold = min(Threshold(n));
-        end
-        function ProfitOut = CalcAverageProfit(obj,DataSet)
-            %
-            BB_CE_Money = obj.GetColumn(DataSet,'BB_CE_Money');
-            Profit = obj.GetColumn(DataSet,'Profit');
-            
-            %Remove Inf
-            n = find(not(Profit > 10));
-            BB_CE_Money = BB_CE_Money(n);
-            Profit = Profit(n); 
-            
-            %Remove Zero
-            n = find(not(Profit == 0));
-            BB_CE_Money = BB_CE_Money(n);
-            Profit = Profit(n); 
-            
-            %Remove NaN
-            n = find(not(isnan(Profit)));
-            BB_CE_Money = BB_CE_Money(n);
-            Profit = Profit(n);   
-            
-            ProfitOut.Av = mean(Profit);
-            ProfitOut.Max = max(Profit);
-            ProfitOut.Min = min(Profit);
-            
-            Num = size(Profit,1);
-            DeNum = size(find(Profit>1),1);
-            ProfitOut.ProbabiltyOfProfit = DeNum/Num;
-        end
+       end
         function Per_TT_DataSet = LoadTradeTable(obj,TradeName)
             load(['A:\Stocks & Shares\Programs\BestInvestments\Results\',TradeName,'\DATASET\Per_TT_DataSet.mat'])            
         end
@@ -368,17 +258,6 @@ classdef Studies <          ResultsLog & ...
                 drawnow;
             end
             TT_DataSet2 = [Per_TT_DataSet,NewDATASET];
-        end
-        function DATASET = Accuracy(obj,DATASET,MeanProfit,MoneyName)
-            %%
-            x = size(DATASET,1);
-            Profit = obj.GetColumn(DATASET,MoneyName);
-            for i = 1:x
-               % MeanProfit = 0.98, Profit 1.2
-               % Acc = abs(1 - Profit/MeanProfit)
-               AbsError(i,1) = abs(1 - MeanProfit/Profit(i));
-            end
-            DATASET = [DATASET,dataset(AbsError)];
         end
     end
 end

@@ -23,7 +23,13 @@ function DATASET = getBritishbullsHistory(varargin)
     
     %%
     DATASET = RemoveDoubleEntries(DATASET);
-    DATASET = AddTickerSymbol(DATASET,Symbol);
+    
+    %%
+    x = size(DATASET,1)
+    for i = 1:x
+        Symbol{i,1} = 'BARC.L';
+    end
+    
 end
 function Example(Symbol)
     %%
@@ -209,11 +215,4 @@ function DATASET = RemoveDoubleEntries(DATASET)
         end
     end
     DATASET = N_DATASET;
-end
-function DATASET = AddTickerSymbol(DATASET,Symbol)
-    x = size(DATASET,1);
-    for i = 1:x
-        Symbols{i,1} = 'BARC.L';
-    end
-    DATASET = [DATASET,dataset({Symbols,'Symbol'})];
 end
