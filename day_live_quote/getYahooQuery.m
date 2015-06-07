@@ -137,7 +137,7 @@ function [String, FieldOutputString,FieldStr] = BuildURL(YahooURL,Symbols,Fields
     %% Build Symbol List
     [x] = size(Symbols,1);
     SymbolString = strrep(Symbols{1},' ','');
-    SymbolString = [SymbolString,'.L'];
+%     SymbolString = [SymbolString,'.L'];
     for i = 2:x
         if i == 74
             x = 1;
