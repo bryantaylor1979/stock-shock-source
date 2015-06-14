@@ -98,7 +98,7 @@ function DATASET = getYahooQuery(Symbols,Fields)
     for i = 1:y
         Start = (i-1)*args.ChunkLimit + 1;
         End = Start + args.ChunkLimit - 1;
-        DATA = obj.GetQueryChunk(Symbols(Start:End),Fields);
+        DATA = GetQueryChunk(args.YahooURL,Symbols(Start:End),Fields,args.FieldStrDelim);
         if i == 1
         DATASET = DATA;    
         else
@@ -147,7 +147,7 @@ function [String, FieldOutputString,FieldStr] = BuildURL(YahooURL,Symbols,Fields
             Symbol = num2str(Symbol);
         end
         Temp = strrep(Symbol,' ','');
-        Temp = [Temp,'.L'];
+%         Temp = [Temp,'.L'];
         SymbolString = [SymbolString,'+',Temp];
     end
 
